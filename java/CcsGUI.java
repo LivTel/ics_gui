@@ -1,5 +1,5 @@
 // CcsGUI.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.8 2000-03-10 11:21:09 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.9 2000-03-10 11:51:37 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -19,14 +19,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ccs GUI.
  * @author Chris Mottram
- * @version $Revision: 0.8 $
+ * @version $Revision: 0.9 $
  */
 public class CcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.8 2000-03-10 11:21:09 cjm Exp $");
+	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.9 2000-03-10 11:51:37 cjm Exp $");
 	/**
 	 * The stream to write error messages to - defaults to System.err.
 	 */
@@ -696,10 +696,13 @@ public class CcsGUI
 	}
 
 	/**
-	 * Method to send a command to the CCS.
+	 * Method to send a command to the CCS. A CcsGUIClientConnectionThread is constructed with
+	 * the passed in command, and the Ccs Address and port number from the configuration file.
+	 * The thread is started, and added to the status's client thread list.
 	 * @param command The command to send.
+	 * @return The started client thread is returned.
 	 */	
-	public void sendCommand(COMMAND command)
+	public CcsGUIClientConnectionThread sendCommand(COMMAND command)
 	{
 		CcsGUIClientConnectionThread thread = null;
 
@@ -707,6 +710,7 @@ public class CcsGUI
 		thread.setParent(this);
 		thread.start();
 		status.addClientThread(thread);
+		return thread;
 	}
 
 	/**
@@ -1007,6 +1011,12 @@ public class CcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.9  2000/03/10 11:44:09  cjm
+// Modified sendCommand to return the started thread.
+//
+// Revision 0.8  2000/03/10 11:21:09  cjm
+// Added setCCDTemperatureLabel method.
+//
 // Revision 0.7  2000/02/28 19:14:40  cjm
 // Backup.
 //
