@@ -1,5 +1,5 @@
 // CcsGUIServerConnectionThread.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIServerConnectionThread.java,v 0.9 2001-07-10 18:21:28 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIServerConnectionThread.java,v 0.10 2001-09-12 19:28:14 cjm Exp $
 import java.lang.*;
 import java.lang.reflect.InvocationTargetException;
 import java.io.*;
@@ -20,14 +20,14 @@ import ngat.swing.GUIMessageDialogShower;
  * This class extends the TCPServerConnectionThread class for the CcsGUI application. This
  * allows CcsGUI to emulate the ISS's response to the CCS sending it commands.
  * @author Chris Mottram
- * @version $Revision: 0.9 $
+ * @version $Revision: 0.10 $
  */
 public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIServerConnectionThread.java,v 0.9 2001-07-10 18:21:28 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIServerConnectionThread.java,v 0.10 2001-09-12 19:28:14 cjm Exp $");
 	/**
 	 * Default time taken to respond to a command.
 	 */
@@ -73,9 +73,8 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 			(command instanceof AG_STOP)||
 			(command instanceof GET_FITS)||
 			(command instanceof MOVE_FOLD)||
-			(command instanceof OFFSET_DEC)||
 			(command instanceof OFFSET_FOCUS)||
-			(command instanceof OFFSET_RA)||
+			(command instanceof OFFSET_RA_DEC)||
 			(command instanceof OFFSET_ROTATOR)||
 			(command instanceof SET_FOCUS))
 		{
@@ -126,6 +125,14 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 					SwingUtilities.invokeAndWait(new GUIMessageDialogShower((Component)null,
 						(Object)("Please process Command "+command.getClass().getName()+
 						":"+((OFFSET_FOCUS)command).getFocusOffset()+" and press Ok."),
+						" ISS Command Received ",JOptionPane.INFORMATION_MESSAGE));
+				}
+				else if(command instanceof OFFSET_RA_DEC)
+				{
+					SwingUtilities.invokeAndWait(new GUIMessageDialogShower((Component)null,
+						(Object)("Please process Command "+command.getClass().getName()+
+						":"+((OFFSET_RA_DEC)command).getRaOffset()+","+
+						((OFFSET_RA_DEC)command).getDecOffset()+" and press Ok."),
 						" ISS Command Received ",JOptionPane.INFORMATION_MESSAGE));
 				}
 				else
@@ -214,18 +221,6 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 			moveFoldDone.setSuccessful(true);
 			done = moveFoldDone;
 		}
-		if(command instanceof OFFSET_DEC)
-		{
-			OFFSET_DEC offsetDecCommand = (OFFSET_DEC)command;
-			OFFSET_DEC_DONE offsetDecDone = new OFFSET_DEC_DONE(command.getId());
-
-			parent.log(command.getClass().getName()+" to "+
-				offsetDecCommand.getDecOffset()+".");
-			offsetDecDone.setErrorNum(0);
-			offsetDecDone.setErrorString("");
-			offsetDecDone.setSuccessful(true);
-			done = offsetDecDone;
-		}
 		if(command instanceof OFFSET_FOCUS)
 		{
 			OFFSET_FOCUS offsetFocusCommand = (OFFSET_FOCUS)command;
@@ -238,17 +233,17 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 			offsetFocusDone.setSuccessful(true);
 			done = offsetFocusDone;
 		}
-		if(command instanceof OFFSET_RA)
+		if(command instanceof OFFSET_RA_DEC)
 		{
-			OFFSET_RA offsetRaCommand = (OFFSET_RA)command;
-			OFFSET_RA_DONE offsetRaDone = new OFFSET_RA_DONE(command.getId());
+			OFFSET_RA_DEC offsetRaDecCommand = (OFFSET_RA_DEC)command;
+			OFFSET_RA_DEC_DONE offsetRaDecDone = new OFFSET_RA_DEC_DONE(command.getId());
 
 			parent.log(command.getClass().getName()+" to "+
-				offsetRaCommand.getRaOffset()+".");
-			offsetRaDone.setErrorNum(0);
-			offsetRaDone.setErrorString("");
-			offsetRaDone.setSuccessful(true);
-			done = offsetRaDone;
+				offsetRaDecCommand.getRaOffset()+","+offsetRaDecCommand.getDecOffset()+".");
+			offsetRaDecDone.setErrorNum(0);
+			offsetRaDecDone.setErrorString("");
+			offsetRaDecDone.setSuccessful(true);
+			done = offsetRaDecDone;
 		}
 		if(command instanceof OFFSET_ROTATOR)
 		{
@@ -307,6 +302,10 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.9  2001/07/10 18:21:28  cjm
+// Changed GET_FITS implementation to use FitsHeaderDefaults file.
+// errors print a stack trace
+//
 // Revision 0.8  2001/01/24 15:01:11  cjm
 // Improved OFFSET_FOCUS message dialog.
 //
