@@ -1,5 +1,5 @@
 // CcsGUIServerConnectionThread.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIServerConnectionThread.java,v 0.3 2000-05-23 15:31:45 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIServerConnectionThread.java,v 0.4 2000-05-25 10:59:26 cjm Exp $
 import java.lang.*;
 import java.lang.reflect.InvocationTargetException;
 import java.io.*;
@@ -19,14 +19,14 @@ import ngat.swing.GUIMessageDialogShower;
  * This class extends the TCPServerConnectionThread class for the CcsGUI application. This
  * allows CcsGUI to emulate the ISS's response to the CCS sending it commands.
  * @author Chris Mottram
- * @version $Revision: 0.3 $
+ * @version $Revision: 0.4 $
  */
 public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIServerConnectionThread.java,v 0.3 2000-05-23 15:31:45 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIServerConnectionThread.java,v 0.4 2000-05-25 10:59:26 cjm Exp $");
 	/**
 	 * Default time taken to respond to a command.
 	 */
@@ -169,7 +169,7 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 		// acording to http://www.seds.org/billa/bigeyes.html,
 		// The WHT is at: 28 46 N; 17 53 W 2400 m
 			hashTable.put("LATITUDE",new Double(28.46));
-			hashTable.put("LONGITUDE",new Double(17.53));
+			hashTable.put("LONGITUD",new Double(17.53));
 			hashTable.put("RA"," 00:00:00.000");
 			hashTable.put("DEC","+00:00:00.000");
 			hashTable.put("RADECSYS","FK5");
@@ -291,6 +291,10 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.3  2000/05/23 15:31:45  cjm
+// Improved GET_FITS command response, FITS keywords returned now as per
+// LT FITS keywords specification.
+//
 // Revision 0.2  1999/12/09 17:02:12  cjm
 // More functionality added.
 //
