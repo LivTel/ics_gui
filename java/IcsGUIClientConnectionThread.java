@@ -1,5 +1,5 @@
 // CcsGUIClientConnectionThread.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.12 2001-08-15 08:41:36 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.13 2002-05-23 12:44:53 cjm Exp $
 
 import java.lang.*;
 import java.io.*;
@@ -16,14 +16,14 @@ import ngat.util.StringUtilities;
  * It implements the generic ISS instrument command protocol.
  * It is used to send commands from the CcsGUI to the Ccs.
  * @author Chris Mottram
- * @version $Revision: 0.12 $
+ * @version $Revision: 0.13 $
  */
 public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.12 2001-08-15 08:41:36 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.13 2002-05-23 12:44:53 cjm Exp $");
 	/**
 	 * The CcsGUI object.
 	 */
@@ -126,7 +126,10 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	// print data pipeline values to log.
 		parent.log(commandName+" Seeing:"+exposeDpAck.getSeeing()+
 			":Brightest Counts:"+exposeDpAck.getCounts()+
-			":Brightest X Pixel:"+exposeDpAck.getXpix()+":Brightest Y Pixel:"+exposeDpAck.getYpix());
+			":Brightest X Pixel:"+exposeDpAck.getXpix()+":Brightest Y Pixel:"+exposeDpAck.getYpix()+
+			":Photometricity:"+exposeDpAck.getPhotometricity()+
+			":Sky Brightness:"+exposeDpAck.getSkyBrightness()+
+			":Saturated:"+exposeDpAck.getSaturation());
 	}
 
 	/**
@@ -321,7 +324,10 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 			":Seeing:"+exposeDone.getSeeing()+
 			":Brightest Counts:"+exposeDone.getCounts()+
 			":Brightest X Pixel:"+exposeDone.getXpix()+
-			":Brightest Y Pixel:"+exposeDone.getYpix());
+			":Brightest Y Pixel:"+exposeDone.getYpix()+
+			":Photometricity:"+exposeDone.getPhotometricity()+
+			":Sky Brightness:"+exposeDone.getSkyBrightness()+
+			":Saturated:"+exposeDone.getSaturation());
 		parent.setFilenameLabel(exposeDone.getFilename());
 	}
 
@@ -342,6 +348,10 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.12  2001/08/15 08:41:36  cjm
+// Re-written ACK and TELFOCUS_DONE prints for new ACK hierarchy,
+// and new TELFOCUS_DONE fields.
+//
 // Revision 0.11  2001/07/10 18:21:28  cjm
 // setFilenameLabel called for returned filenames.
 // stack trace added to error handler.
