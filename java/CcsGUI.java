@@ -1,5 +1,5 @@
 // CcsGUI.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.14 2001-02-27 13:45:40 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.15 2001-07-10 18:21:28 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -19,14 +19,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ccs GUI.
  * @author Chris Mottram
- * @version $Revision: 0.14 $
+ * @version $Revision: 0.15 $
  */
 public class CcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.14 2001-02-27 13:45:40 cjm Exp $");
+	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.15 2001-07-10 18:21:28 cjm Exp $");
 	/**
 	 * The stream to write error messages to - defaults to System.err.
 	 */
@@ -63,6 +63,11 @@ public class CcsGUI
 	 * Label for CCD temperature.
 	 */
 	private JLabel ccdTemperatureLabel = null;
+	/**
+	 * Label for last FITS filename received.
+	 */
+	private JLabel filenameLabel = null;
+
 	/**
 	 * Text field for storing the update time for status queries.
 	 */
@@ -250,7 +255,7 @@ public class CcsGUI
 			titleString = new String("Ccs Interface:"+ccsAddress.getHostName());
 		else
 			titleString = new String("Ccs Interface:None");
-		frame = new MinimumSizeFrame(titleString,new Dimension(400,275));
+		frame = new MinimumSizeFrame(titleString,new Dimension(400,300));
 	// set icon image
 		image = Toolkit.getDefaultToolkit().getImage("lt_icon.gif");
 		frame.setIconImage(image);
@@ -315,52 +320,66 @@ public class CcsGUI
 		JPanel lastStatusPanel = new JPanel();
 		JLabel label = null;
         	GridBagConstraints gridBagCon = new GridBagConstraints();
-		String ccdStatusLabelString = new String("CCD Status:");
-		String currentCommandLabelString = new String("Current Command:");
-		String remainingExposureTimeLabelString = new String("Remaining Exposure Time:");
-		String remainingExposuresLabelString = new String("Remaining Exposures:");
-		String filterSelectedLabelString = new String("Filters Selected:");
-		String ccdTemperatureLabelString = new String("CCD Temperature:");
+		int minTime;
 
 		lastStatusPanel.setLayout(new GridLayout(0,2));
-		lastStatusPanel.setMinimumSize(new Dimension(250,150));
-		lastStatusPanel.setPreferredSize(new Dimension(1024,150));
-		lastStatusPanel.setMaximumSize(new Dimension(1024,150));
+		lastStatusPanel.setMinimumSize(new Dimension(250,160));
+		lastStatusPanel.setPreferredSize(new Dimension(1024,160));
+		lastStatusPanel.setMaximumSize(new Dimension(1024,160));
 	// ccd status
-		label = new JLabel(ccdStatusLabelString);
+		label = new JLabel("CCD Status:");
 		lastStatusPanel.add(label);
 		ccdStatusLabel = new JLabel("Unknown");
 		lastStatusPanel.add(ccdStatusLabel);
 	// current Command
-		label = new JLabel(currentCommandLabelString);
+		label = new JLabel("Current Command:");
 		lastStatusPanel.add(label);
 		currentCommandLabel = new JLabel("None");
 		lastStatusPanel.add(currentCommandLabel);
 	// remaining exposure time
-		label = new JLabel(remainingExposureTimeLabelString);
+		label = new JLabel("Remaining Exposure Time:");
 		lastStatusPanel.add(label);
 		remainingExposureTimeLabel = new JLabel("0.000");
 		lastStatusPanel.add(remainingExposureTimeLabel);
 	// remaining exposures
-		label = new JLabel(remainingExposuresLabelString);
+		label = new JLabel("Remaining Exposures:");
 		lastStatusPanel.add(label);
 		remainingExposuresLabel = new JLabel("0");
 		lastStatusPanel.add(remainingExposuresLabel);
 	// selected filter
-		label = new JLabel(filterSelectedLabelString);
+		label = new JLabel("Filter(s) Selected:");
 		lastStatusPanel.add(label);
 		filterSelectedLabel = new JLabel("Unknown");
 		lastStatusPanel.add(filterSelectedLabel);
 	// ccd temperature
-		label = new JLabel(ccdTemperatureLabelString);
+		label = new JLabel("CCD Temperature:");
 		lastStatusPanel.add(label);
 		ccdTemperatureLabel = new JLabel("Unknown");
 		lastStatusPanel.add(ccdTemperatureLabel);
+	// FITS filename 
+		// filenameButton
+		JButton filenameButton = new JButton("FITS Filename:");
+		filenameButton.setHorizontalAlignment(JButton.LEFT);
+		filenameButton.setHorizontalTextPosition(JButton.LEFT);
+		filenameButton.addActionListener(new IcsGUIFilenameShowListener(this));
+		lastStatusPanel.add(filenameButton);
+		// filenameLabel
+		filenameLabel = new JLabel("");
+		lastStatusPanel.add(filenameLabel);
 	// auto update
 		JCheckBox autoUpdateCheckbox = new JCheckBox("Auto-Update",false);
 		autoUpdateCheckbox.addActionListener(new CcsGUIUpdateListener(this));
 		lastStatusPanel.add(autoUpdateCheckbox);
 		autoUpdateTextField = new JTextField();
+		try
+		{
+			minTime = status.getPropertyInteger("ics_gui.auto_update.min_time");
+		}
+		catch(NumberFormatException e)
+		{
+			minTime = 2000;
+		}
+		autoUpdateTextField.setText(""+minTime);
 		lastStatusPanel.add(autoUpdateTextField);
 	// add border
 		lastStatusPanel.setBorder(new TitledSmallerBorder("Status"));
@@ -663,10 +682,10 @@ public class CcsGUI
 	 * Main program exit routine. Waits for command to complete before exiting, if n is zero,
 	 * otherwise just terminates.
 	 * @param n The return exit value to return to the calling shell/program.
-	 * @see CcsStatus#clientThreadListCount
-	 * @see CcsStatus#clientThreadAt
-	 * @see CcsStatus#removeClientThread
-	 * @see CcsStatus#saveInstrumentConfig
+	 * @see CcsGUIStatus#clientThreadList
+	 * @see CcsGUIStatus#clientThreadAt
+	 * @see CcsGUIStatus#removeClientThread
+	 * @see CcsGUIStatus#saveInstrumentConfig
 	 * @see #stopISSServer
 	 * @see #log
 	 */
@@ -770,6 +789,15 @@ public class CcsGUI
 	}
 
 	/**
+	 * Return the GUI's error stream.
+	 * @return The error stream used by error.
+	 */
+	public PrintWriter getErrorStream()
+	{
+		return errorStream;
+	}
+
+	/**
 	 * Return the GUI's parent frame.
 	 */
 	public JFrame getFrame()
@@ -785,6 +813,17 @@ public class CcsGUI
 	public CcsGUIStatus getStatus()
 	{
 		return status;
+	}
+
+	/**
+	 * Return the Ccs GUI's Ccs internet address object, used for communication
+	 * with the Ccs.
+	 * @return The current reference stored in ccsAddress.
+	 * @see #ccsAddress
+	 */
+	public InetAddress getCcsAddress()
+	{
+		return ccsAddress;
 	}
 
 	/**
@@ -890,7 +929,7 @@ public class CcsGUI
 
 	/**
 	 * Method to set the selected filters label. If one of the parameters is null, the String
-	 * 'Unknown' is used instead.
+	 * 'Unknown' is used instead. This is used for RATCam filter settings.
 	 * @param lowerFilterString The name of the lower filter wheel's selected filter.
 	 * @param upperFilterString The name of the lower filter wheel's selected filter.
 	 */
@@ -904,6 +943,51 @@ public class CcsGUI
 		{
 			SwingUtilities.invokeLater(new GUILabelSetter(filterSelectedLabel,"lower:"+
 				lowerFilterString+" upper:"+upperFilterString));
+		}
+	}
+
+	/**
+	 * Method to set the selected filters label. This is used for Nu-View filter settings.
+	 * @param wavelength A Double object with the wavelegnth of the filter, in angstroms.
+	 */
+	public void setFiltersSelectedLabel(Double wavelength)
+	{
+		DecimalFormat decimalFormat = null;
+		String wavelengthString;
+		double wavelengthValue;
+
+		if(wavelength != null)
+		{
+			wavelengthValue = wavelength.doubleValue();
+		// format number to 2d.p.
+			decimalFormat = new DecimalFormat("#####.00");
+			wavelengthString = decimalFormat.format(wavelengthValue);
+		}
+		else
+			wavelengthString = "Unknown";
+		if(filterSelectedLabel != null)
+		{
+			SwingUtilities.invokeLater(new GUILabelSetter(filterSelectedLabel,"wavelength:"+
+				wavelengthString));
+		}
+	}
+
+	/**
+	 * Method to set the selected filters label. This is used for MES filter settings.
+	 * @param positionIndex An Integer object with the position index of the filter in the slide.
+	 */
+	public void setFiltersSelectedLabel(Integer positionIndex)
+	{
+		String positionString;
+
+		if(positionIndex != null)
+			positionString = positionIndex.toString();
+		else
+			positionString = "Unknown";
+		if(filterSelectedLabel != null)
+		{
+			SwingUtilities.invokeLater(new GUILabelSetter(filterSelectedLabel,"Slide Index:"+
+				positionString));
 		}
 	}
 
@@ -926,6 +1010,37 @@ public class CcsGUI
 	}
 
 	/**
+	 * Method to set the filename label to the last FITS filename received in a message from the Ics.
+	 * @param filenameString The string to set the label to. If it is null or of zero length, 
+	 * 	the label is not updated.
+	 */
+	public void setFilenameLabel(String filenameString)
+	{
+		if(filenameString != null)
+		{
+			if(filenameString.length() > 0)
+			{
+				if(filenameLabel != null)
+				{
+					SwingUtilities.invokeLater(new GUILabelSetter(filenameLabel,filenameString));
+				}
+			}
+		}
+	}
+
+	/**
+	 * Retrieve the current contents of the filename label, which contains the last filename
+	 * returned to the Ccs GUI.
+	 * @return A String containing the last filename. This can be blank, if no filenames have been
+	 * 	returned to the GUI yet.
+	 * @see #filenameLabel
+	 */
+	public String getFilename()
+	{
+		return filenameLabel.getText();
+	}
+
+	/**
 	 * Method to get the update time for status update. This is got from the autoUpdateTextField,
 	 * and then parsed into a long to return. If a parse exception occurs, zero is returned.
 	 * @return An auto update time. If an error occurs zero is returned.
@@ -934,20 +1049,22 @@ public class CcsGUI
 	{
 		String s = null;
 		long retval = 0;
+		int minTime;
 
 		s = autoUpdateTextField.getText();
 		try
 		{
 			retval = Long.parseLong(s);
+			minTime = status.getPropertyInteger("ics_gui.auto_update.min_time");
+			if(retval < minTime)
+			{
+				error("Auto-update time must be at least "+minTime+" milliseconds.");
+				retval = 0;
+			}
 		}
 		catch(NumberFormatException e)
 		{
-			error("Could not get the auto-update time:`"+s+"' not a valid number.");
-			retval = 0;
-		}
-		if(retval < 1000)
-		{
-			error("Auto-update time must be at least 1000 milliseconds.");
+			error("Could not get the auto-update time:"+s+": not a valid number.");
 			retval = 0;
 		}
 		return retval;
@@ -1123,6 +1240,9 @@ public class CcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.14  2001/02/27 13:45:40  cjm
+// Modified keyboard shortcuts.
+//
 // Revision 0.13  2000/11/30 18:47:44  cjm
 // Made generic for other instruments.
 //
