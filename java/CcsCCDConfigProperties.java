@@ -1,24 +1,24 @@
 // CcsCCDConfigProperties.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/CcsCCDConfigProperties.java,v 0.3 2000-02-08 16:34:21 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/CcsCCDConfigProperties.java,v 0.4 2000-11-24 11:38:15 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
 
-import ngat.phase2.*;
+import ngat.phase2.nonpersist.*;
 
 /**
  * This class holds the CCD Config information used by the CCS GUI. The information is held
  * in a Java proerties file and this class extends java.util.Properties
  * @see java.util.Properties
  * @author Chris Mottram
- * @version $Revision: 0.3 $
+ * @version $Revision: 0.4 $
  */
 public class CcsCCDConfigProperties extends Properties
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: CcsCCDConfigProperties.java,v 0.3 2000-02-08 16:34:21 cjm Exp $");
+	public final static String RCSID = new String("$Id: CcsCCDConfigProperties.java,v 0.4 2000-11-24 11:38:15 cjm Exp $");
 	/**
 	 * Filename for properties file.
 	 */
@@ -99,38 +99,47 @@ public class CcsCCDConfigProperties extends Properties
 	 * @param id The Id number.
 	 * @return The constructed CCDConfig.
 	 */
-	public CCDConfig getCCDConfigById(int id) throws NumberFormatException
+	public NPCCDConfig getCCDConfigById(int id) throws NumberFormatException
 	{
-		CCDConfig c = null;
+		NPCCDConfig c = null;
+		NPCCDDetector detector = null;
+		NPWindow windowArray[];
 
-		c = new CCDConfig(getConfigName(id));
+		c = new NPCCDConfig(getConfigName(id));
 		c.setLowerFilterWheel(getConfigLowerFilterWheel(id));
 		c.setUpperFilterWheel(getConfigUpperFilterWheel(id));
 
-		c.setXbin(getConfigXBin(id));
-		c.setYbin(getConfigYBin(id));
+	// setup detector
+		detector = new NPCCDDetector();
+		detector.setXBin(getConfigXBin(id));
+		detector.setYBin(getConfigYBin(id));
+		detector.setWindowFlags(getConfigWindowFlags(id));// diddly add setWindowFlags to NPDetector
+		// note, other NPDetector fields not set, as they are not used by the instrument.
 
-		c.setWindowFlags(getConfigWindowFlags(id));
+	// setup window list
+		windowArray = new NPWindow[detector.getMaxWindowCount()];
+		for(int i = 0; i < detector.getMaxWindowCount(); i++)
+		{
+		// Note, windows are only non-null if they are active in RCS created configs
+		// Lets re-create that effect here, we can use isActiveWindow as we set the window
+		// flags in the detector above.
+			if(detector.isActiveWindow(i))
+			{
+				windowArray[i] = new NPWindow();
 
-		c.setXs1(getConfigXStart(id,1));
-		c.setYs1(getConfigYStart(id,1));
-		c.setXe1(getConfigXEnd(id,1));
-		c.setYe1(getConfigYEnd(id,1));
-
-		c.setXs2(getConfigXStart(id,2));
-		c.setYs2(getConfigYStart(id,2));
-		c.setXe2(getConfigXEnd(id,2));
-		c.setYe2(getConfigYEnd(id,2));
-
-		c.setXs3(getConfigXStart(id,3));
-		c.setYs3(getConfigYStart(id,3));
-		c.setXe3(getConfigXEnd(id,3));
-		c.setYe3(getConfigYEnd(id,3));
-
-		c.setXs4(getConfigXStart(id,4));
-		c.setYs4(getConfigYStart(id,4));
-		c.setXe4(getConfigXEnd(id,4));
-		c.setYe4(getConfigYEnd(id,4));
+				windowArray[i].setXs(getConfigXStart(id,i));
+				windowArray[i].setYs(getConfigYStart(id,i));
+				windowArray[i].setXe(getConfigXEnd(id,i));
+				windowArray[i].setYe(getConfigYEnd(id,i));
+			}
+			else
+				windowArray[i] = null;
+		}// end for on windows
+	// set windows into detector
+		detector.setNPWindows(windowArray);
+	// set detector into config
+		c.addNPDetector(detector);
+	// return config
 		return c;
 	}
 
@@ -709,6 +718,9 @@ public class CcsCCDConfigProperties extends Properties
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.3  2000/02/08 16:34:21  cjm
+// Added window flags code.
+//
 // Revision 0.2  1999/12/09 17:02:12  cjm
 // More functionality added.
 //
