@@ -1,5 +1,5 @@
 # Makefile
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.20 2003-11-14 15:07:01 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.21 2004-01-13 20:16:08 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -38,7 +38,7 @@ CONFIG_PROPERTY_SRCS	= ltccd1.ccs_gui.properties \
 	ltccd2.ccs_gui.properties ltccd3.ccs_gui.properties ftccd1.ccs_gui.properties \
 	spectrograph.scs_gui.properties \
 	ltobs9.ratcam.ccs_gui.properties ltobs9.fartcam.ccs_gui.properties ltobs9.supircam.ccs_gui.properties \
-	ltobs9.spectrograph.scs_gui.properties supircam1.ccs_gui.properties \
+	ltobs9.spectrograph.scs_gui.properties supircam1.ccs_gui.properties ltobs9.ftspec.ics_gui.properties \
 	ccs_gui.fits.properties \
 	ltccd2.ccs_gui_config.properties ltccd3.ccs_gui_config.properties ftccd1.ccs_gui_config.properties \
 	supircam1.ccs_gui_config.properties ccs_gui_config.properties
@@ -133,6 +133,13 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.20  2003/11/14 15:07:01  cjm
+# Added new sources for FTSpec AA box.
+# Added new ccs_gui config files.
+# Added separate ccs_gui_config.properties for different released machines,
+# so that can contain different filter settings when deployed
+# (i.e. RATCam/FARTCam have different filters in the wheels.
+#
 # Revision 0.19  2003/09/19 14:41:24  cjm
 # n
 # Changed some CcsGUI sources to IcsGUI.
