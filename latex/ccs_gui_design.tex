@@ -1,0 +1,293 @@
+\documentclass[10pt,a4paper]{article}
+\pagestyle{plain}
+\textwidth 16cm
+\textheight 21cm
+\oddsidemargin -0.5cm
+\topmargin 0cm
+
+\title{CCD Control System Interface Design}
+\author{C. J. Mottram}
+\date{}
+\begin{document}
+\pagenumbering{arabic}
+\thispagestyle{empty}
+\maketitle
+\begin{abstract}
+This document describes the design of the CCD Control System Interface. This is a process
+used to control the CCD Control System interactively so that we can test it.
+\end{abstract}
+
+\centerline{\Large History}
+\begin{center}
+\begin{tabular}{|l|l|l|p{15em}|}
+\hline
+{\bf Version} & {\bf Author} & {\bf Date} & {\bf Notes} \\
+\hline
+0.1 &              C. J. Mottram & 18/11/99 & First draft \\
+\hline
+\end{tabular}
+\end{center}
+
+\newpage
+\tableofcontents
+\listoffigures
+\listoftables
+\newpage
+
+\section{Introduction}
+The process that is in control of the camera electronics on the Liverpool Telescope is called the
+CCD Control System (CCS). It receives commands from the Robotic Control System (RCS) (via the 
+Instrument Support System (ISS)) that enable it to control the camera electronics.
+
+One of the requirements for the CCS is that an interface is provided to
+{\em emulate} the ISS so that the ISS to CCS command set can be sent interactivly to the CCS.
+This enables the CCS to be tested without having the rest of the telescope control systems enabled.
+
+\subsection{Related Documentation}
+All the requirements for the interface are derived from the {\em Liverpool Telescope: CCD
+Camera Requirements} \cite{bib:ccdr}.
+
+The command set the ISS uses to communicate with the CCS is part of the {\em ngat.message} package.
+Documentation for this is at \cite{bib:messissinst} and the generated message classes are
+described at \cite{bib:messageclasses}.
+
+The documentation for the prototype CCS is located at \cite{bib:ccstop}. Communication between processes
+is performed using the Java Message System for communication. An overview of this can be found at
+\cite{bib:ngatnet}.
+
+\section{Requirements}
+All the requirements for the interface are derived from the {\em Liverpool Telescope: CCD
+Camera Requirements} \cite{bib:ccdr}. The most important are in the {\em 28. Local User Control} section.
+Section {\em 28.1 User Interface} states that a graphical user interface is required to control the
+CCD and associated hardware, which is this interface. It then goes on to outline what the interface
+requires, as shown in Tables \ref{tab:requirements1} and \ref{tab:requirements2}.
+
+\begin{table}[!h]
+\begin{center}
+\begin{tabular}{|l|l|p{19em}|}
+\hline
+{\bf Requirement} & {\bf Name} & {\bf Description} \\ \hline
+CCDR28.2	& Exposure Time & Settable to a presicision of 0.1 seconds in the range 0.1 to 1000 seconds.\\ \hline
+CCDR28.3.1	& Independant Wheel Control & We need to be able to set the position of each filter wheel using 
+		a physical position.\\ \hline
+CCDR28.3.2	& Abstracted Filter Control & We need to be able to set the position of each filter wheel 
+		using a string description. \\ \hline
+CCDR28.4	& Repeated Exposure Configuration & We need to be able to do several exposures with the same
+		configuration. \\ \hline
+CCDR28.5	& Readout Speed Configuration & We need to be able to vary the readout speed between several
+		levels. \\ \hline
+CCDR28.6	& Chip Window and Binning Configuration & The ability to set up in advance of an exposure 
+		the windowing and binning parameters
+		for the chip should be provided.  This should be provided via a
+		system of user configuration files which are editable via a graphic
+		representation of a user-selected image taken from the temporary data store.\\ \hline
+CCDR28.7	& Chip Window and Binning Selection & The ability to select the Chip Window and Binning 
+		configuration file to be used for a given Single or Multiple Exposure should be provided.\\ \hline
+CCDR28.8	& Exposure Control & The ability to start, stop and suspend exposures and groups of exposures
+		should be provided.\\ \hline
+CCDR28.8.1	& Aborting Exposures & It should be possible to interrupt a single or multiple exposure of 
+		the CCD at any time during clearing, 
+		exposure or read-out and for the system to be ready to obtain the
+		next exposure in less than 20 seconds. \\ \hline
+\end{tabular}
+\end{center}
+\caption{\em Requirements.}
+\label{tab:requirements1}
+\end{table}
+
+\begin{table}[!h]
+\begin{center}
+\begin{tabular}{|l|l|p{25em}|}
+\hline
+{\bf Requirement} & {\bf Name} & {\bf Description} \\ \hline
+CCDR28.9	& Status Display & A status display should display at least the following instrument characteristics:
+		\begin{enumerate}
+		\item CCD Status (CLEARING/ EXPOSING/ READING\_OUT/ IDLE/ FAULT etc).
+		\item Current Binning and Windowing Config.
+		\item Requested Exposure Time.
+		\item Remaining Exposure Time.
+		\item Remaining Number of Exposures of a multiple-exposure run.
+		\item Filter wheel positions and current filter combination selected.
+		\item CCD Temperature.
+		\item Object Name as will be written to the FITS file.
+		\item A scrollable text box for fault reporting.
+		\end{enumerate}
+		\\ \hline
+CCDR29.1	& Interface Requirement & We require that a suitable interface is defined to allow
+		the functionality defined in CCDR Section 28 
+		to be employed by a suitably authorized user at a remote site.\\ \hline
+CCDR32.1	& Control Interface & An engineering control interface that is accessible locally 
+		and remotely should be provided.\\ \hline
+CCDR32.2.1	& Status Monitoring & Access to the engineering interface for collection of Status and
+		Diagnostic information should be possible without authorization.\\ \hline
+CCDR32.2.2	& System Adjustments & Access to the engineering interface in order to make
+		adjustments to any of the system parameters should be only granted to
+		suitably authorized users at suitably authorized sites.\\ \hline
+CCDR32.3	& Bias and Clock Voltages & The facility to alter the bias and clock voltages supplied 
+		to the detector should be provided by the engineering interface.\\ \hline
+CCDR32.4	& Clock Timing & The facility to alter the timing of the clock pulses should be provided by the
+		engineering interface.\\ \hline
+CCDR32.5	& Detector Temperature &The facility to monitor and alter the detector temperature should be provided 
+		by the engineering interface.
+		The temperature should be monitored to an accuracy of 1$^\circ$ C.\\ \hline
+CCDR32.6	& Filter Wheel Configuration & The ability to alter the mapping of the filter wheel contents to 
+		filter wheel positions should be provided by the engineering interface.\\ \hline
+\end{tabular}
+\end{center}
+\caption{\em Requirements (continued).}
+\label{tab:requirements2}
+\end{table}
+
+Most of the user requirements will be able to be met with this interface. Those that cannot will
+be met using alternative methods. Configuration options that are not controlable by the user are currently
+stored in configuration files that are read by the CCS. The requirements that will not be met with the
+ interface are shown in Table \ref{tab:nireq}.
+
+\begin{table}[!h]
+\begin{center}
+\begin{tabular}{|l|l|p{25em}|}
+\hline
+{\bf Requirement} & {\bf Name} & {\bf Problem/Workaround} \\ \hline
+CCDR28.3.1	& Independant Wheel Control & Currently there is nothing in the command set to enable us to set
+		filter wheel positions. This has to be set using Filter descriptions instead, as we are trying to
+		abstract away from physical positions of filters.\\ \hline
+CCDR28.5	& Readout Speed Configuration & This configuration is held in the CCS configuration file, and can be
+		edited by an authorised user.\\ \hline
+CCDR32.2.2	& System Adjustments & These parameters are modified by editing configuration files.\\ \hline
+CCDR32.3	& Bias and Clock Voltages & 
+		These values are currently set in the DSP code downloaded to the SDSU CCD Controller.\\ \hline
+CCDR32.4	& Clock Timing & 
+		These values are currently set in the DSP code downloaded to the SDSU CCD Controller.\\ \hline
+CCDR32.6	& Filter Wheel Configuration & The ability to alter the mapping of the filter wheel contents to 
+		filter wheel positions is done by editing a configuration file.\\ \hline
+\end{tabular}
+\end{center}
+\caption{\em Requirements not in the interface.}
+\label{tab:nireq}
+\end{table}
+
+Most of these requirements are only needed for the engineering interface. The current thinking is that the
+{\em ccdtool} program supplied by SDSU will form the basis of the engineering interface. The 
+Readout Speed Configuration and System Adjustments can be done using {\em ccdtool}. The Bias and Clock Voltages
+can be changed using the SBV SDSU DSP comamnd, calls to this need putting in {\em libccd} and in the CCS
+configuration file. {\em ccdtool} can modify these numbers by typing in the SBN and SBV command manually.
+
+The Clock Timing configuration can only be edited by changing the DSP code that is downloaded to the
+controller. SDSU supply a tool to help you do this called {\em wvp} (Waveform Visualisation Program)
+that provides a graphical interface.
+
+\section{Communication}
+The CCS interface will communicate with teh SDSU CCD Controller electronics via the CCS process
+itself. This will allow us to test the CCS as well as the underlying electronics. SDSU will be supplying
+{\em ccdtool}, which has a user interface but which communicates with the camera electronics directly. This will
+allow us to use the SDSU CCD Controller independantly of the CCS if required.
+
+This basically means the interface will be communicating with the CCS rather than the camera electronics
+directly. It can use the ISS command set to communicate with the CCS. This means the interface will
+be written in Java, to make use of the {\em ngat.message} message classes and the {\em ngat.net} network
+communication classes.
+
+\section{User Interface}
+The user interface will be written in Java, using the Swing widget set.
+
+\subsection{Main Screen}
+The main screen will contain graphical elements showing the current status of the camera electronics.
+The precise data shown is given in CCDR28.9. They will be a mechanism for updating this information
+(an {\em update} button) possibly with extra graphical elements giving the option of an auto-update every
+{\em n} seconds. There will be a log area, with the returned status from the commands being run being displayed. 
+This may be replaced by a single Log Window program, so all GUI's can log to the same log window.
+There will be a menu system allowing the user to quit the program, and also to bring up
+a dialog to invoke a command.
+
+Figure \ref{fig:uimainscreen} shows the layout of the main screen.
+\setlength{\unitlength}{1in}
+\begin{figure}[!h]
+	\begin{center}
+		\begin{picture}(8.0,3.1)(0.0,0.0)
+			\put(0,0){\special{psfile=ccs_gui_ui_main.ps   hscale=70 vscale=75}}
+		\end{picture}
+	\end{center}
+	\caption{\em User interface main screen layout.}
+	\label{fig:uimainscreen} 
+\end{figure}
+
+An example of the menu structure is shown in Figure \ref{fig:uimenu}.
+
+\setlength{\unitlength}{1in}
+\begin{figure}[!h]
+	\begin{center}
+		\begin{picture}(8.0,3.1)(0.0,0.0)
+			\put(0,0){\special{psfile=ccs_gui_ui_menu.ps   hscale=70 vscale=75}}
+		\end{picture}
+	\end{center}
+	\caption{\em User interface menu layout.}
+	\label{fig:uimenu} 
+\end{figure}
+
+\subsection{Command Dialogs}
+There shall be a separate dialog for each command to be invoked. Only one of these dialogs should be
+display-able at once (except for dialogs for INTERRUPT commands). Each of these dialogs will contain fields
+suitable for inputing the data that makes up the parameters for each command. Hopefully, it may be possible to
+write a program to automatically generate the dialog source files from the command source files. This will enable
+us to keep the dialogs up to date with respect to the ISS command set easier.
+
+An example dialog is presented in Figure \ref{fig:uirunatscreen}.
+\setlength{\unitlength}{1in}
+\begin{figure}[!h]
+	\begin{center}
+		\begin{picture}(8.0,3.1)(0.0,0.0)
+			\put(0,0){\special{psfile=ccs_gui_ui_runat.ps   hscale=70 vscale=75}}
+		\end{picture}
+	\end{center}
+	\caption{\em User interface Runat Dialog layout.}
+	\label{fig:uirunatscreen} 
+\end{figure}
+
+The command dialogs should verify their input before proceeding to send the command. If input
+verification fails, the input dialog should remain managed until the relevant field has a correct
+value and the {\em Ok} or {\em Cancel} button has been pressed. The GUI should display a helpful error
+message, as seen in Figure \ref{fig:uierrorscreen}.
+\setlength{\unitlength}{1in}
+\begin{figure}[!h]
+	\begin{center}
+		\begin{picture}(8.0,3.1)(0.0,0.0)
+			\put(0,0){\special{psfile=ccs_gui_ui_error.ps   hscale=70 vscale=75}}
+		\end{picture}
+	\end{center}
+	\caption{\em User interface error dialog layout.}
+	\label{fig:uierrorscreen} 
+\end{figure}
+
+\subsection{FITS image display}
+The interface will also be able to display the FITS data saved to disc. This will only work
+when the interface is running on the local machine where the FITS images are stored. The
+interface will use an external image viewer such as {\em ximtool}, which contains a programatical interface for
+sending images for it to display. There may be a configuration dialog associated with this communication
+mechanism.
+
+\section{Conventions/Abbreviations}
+\begin{itemize}
+\item API - Application Programming Interface - a series of functions/procedures that implements some 
+functionality.
+\item CCD - Charge Coupled Device. The first detector used by the telescope.
+\item CCS - CCD Control System. This is the camera control process.
+\item GUI - Graphical User Interface.
+\item ISS - The Instrument Support System - the generic instrument control process.
+\item SDSU - San Diego State University.
+\end{itemize}
+
+\begin{thebibliography}{99}
+\addcontentsline{toc}{section}{Bibliography}
+\bibitem{bib:ccdr}{\bf Liverpool Telescope: CCD Camera Requirements}
+I. A. Steele, D. Carter. {\em http://ltccd1.livjm.ac.uk/\verb'~'dev/latex/ccdr.ps}
+\bibitem{bib:messissinst}{\bf package ngat.message.ISS\_INST}
+LJMU {\em http://ltccd1.livjm.ac.uk/\verb'~'dev/mess/ISS\_INST.html}
+\bibitem{bib:messageclasses}{\bf package ngat.message Class Hierarchy}
+LJMU {\em http://ltccd1.livjm.ac.uk/\verb'~'dev/mess/tree.html}
+\bibitem{bib:ccstop}{\bf CCD Control System (CCS) Documentation}
+LJMU {\em http://ltccd1.livjm.ac.uk/\verb'~'dev/ccs/index.html}
+\bibitem{bib:ngatnet}{\bf Java Message System: ngat.net package}
+C. J. Mottram {\em http://ltccd1.livjm.ac.uk/\verb'~'dev/ngat/latex/ngat.net.ps}
+\end{thebibliography}
+
+\end{document}
