@@ -1,26 +1,28 @@
 // IcsGUICCDConfigAADialog.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUICCDConfigAADialog.java,v 1.1 2003-08-21 14:29:04 cjm Exp $
-import java.lang.*;
-import java.util.*;
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUICCDConfigAADialog.java,v 1.2 2003-08-22 14:05:18 cjm Exp $
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
+import java.lang.*;
+import java.util.*;
 
 import javax.swing.*;
 import javax.swing.event.*;
 
 import ngat.swing.*;
+import ngat.util.*;
 
 /**
  * This class provides an Add and Amend facility for CCD Configurations.
  * @author Chris Mottram
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class IcsGUICCDConfigAADialog extends JDialog implements ActionListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUICCDConfigAADialog.java,v 1.1 2003-08-21 14:29:04 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUICCDConfigAADialog.java,v 1.2 2003-08-22 14:05:18 cjm Exp $");
 	/**
 	 * Button height.
 	 */
@@ -44,21 +46,25 @@ public class IcsGUICCDConfigAADialog extends JDialog implements ActionListener
 	/**
 	 * The data to be displayed in the list.
 	 */
-	IcsGUIConfigProperties configProperties = null;
+	protected IcsGUIConfigProperties configProperties = null;
 	/**
 	 * The id of the configuration we are modifying.
 	 */
-	int configId = 0;
+	protected int configId = 0;
 	/**
 	 * The listener for this dialog.
 	 */
-	CcsConfigAADialogListener listener = null;
+	protected CcsConfigAADialogListener listener = null;
+	/**
+	 * A copy of the reference to the instance of CcsGUIStatus.
+	 */
+	protected CcsGUIStatus icsGUIStatus = null;
 
 	JTextField nameTextField = null;
 	JCheckBox calibrateBeforeCheckBox = null;
 	JCheckBox calibrateAfterCheckBox = null;
-	JTextField lowerFilterWheelTextField = null;
-	JTextField upperFilterWheelTextField = null;
+	JComboBox lowerFilterWheelComboBox = null;
+	JComboBox upperFilterWheelComboBox = null;
 	JTextField xBinTextField = null;
 	JTextField yBinTextField = null;
 	JCheckBox windowFlagCheckBox[] = null;
@@ -114,8 +120,9 @@ public class IcsGUICCDConfigAADialog extends JDialog implements ActionListener
 	// lower filter wheel
 		label = new JLabel("Lower Filter Wheel");
 		subPanel.add(label);
-		lowerFilterWheelTextField = new JTextField();
-		subPanel.add(lowerFilterWheelTextField);
+		lowerFilterWheelComboBox = new JComboBox();
+		lowerFilterWheelComboBox.setEditable(true);
+		subPanel.add(lowerFilterWheelComboBox);
 	// sub panel
 		subPanel = new JPanel();
 		getContentPane().add(subPanel);
@@ -123,8 +130,9 @@ public class IcsGUICCDConfigAADialog extends JDialog implements ActionListener
 	// upper filter wheel
 		label = new JLabel("Upper Filter Wheel");
 		subPanel.add(label);
-		upperFilterWheelTextField = new JTextField();
-		subPanel.add(upperFilterWheelTextField);
+		upperFilterWheelComboBox = new JComboBox();
+		upperFilterWheelComboBox.setEditable(true);
+		subPanel.add(upperFilterWheelComboBox);
 	// sub panel
 		subPanel = new JPanel();
 		getContentPane().add(subPanel);
@@ -205,7 +213,17 @@ public class IcsGUICCDConfigAADialog extends JDialog implements ActionListener
 	}
 
 	/**
+	 * Set the IcsGUIStatus reference. Used to get a list of valid filters for the combo boxs.
+	 * @param s The instance of CcsGUIStatus to use.
+	 */
+	public void setIcsGUIStatus(CcsGUIStatus s)
+	{
+		icsGUIStatus = s;
+	}
+
+	/**
 	 * Method to manage the config Add/Amend dialog in add mode.
+	 * @see #setFilterWheelComboBox
 	 */
 	public void add()
 	{
@@ -216,8 +234,17 @@ public class IcsGUICCDConfigAADialog extends JDialog implements ActionListener
 		nameTextField.setText("Configuration "+configId);
 		calibrateBeforeCheckBox.setSelected(false);
 		calibrateAfterCheckBox.setSelected(false);
-		lowerFilterWheelTextField.setText("None");
-		upperFilterWheelTextField.setText("None");
+		try
+		{
+			setFilterWheelComboBox();
+		}
+		catch(Exception e)
+		{
+			System.err.println(this.getClass().getName()+":add:"+e);
+			e.printStackTrace(System.err);
+		}
+		lowerFilterWheelComboBox.setSelectedItem("None");
+		upperFilterWheelComboBox.setSelectedItem("None");
 		xBinTextField.setText("1");
 		yBinTextField.setText("1");
 		for(i=0;i<WINDOW_COUNT;i++)
@@ -235,6 +262,7 @@ public class IcsGUICCDConfigAADialog extends JDialog implements ActionListener
 	/**
 	 * Method to manage the config Add/Amend dialog in amend mode.
 	 * @param id The id to amend
+	 * @see #setFilterWheelComboBox
 	 */
 	public void amend(int id)
 	{
@@ -243,8 +271,17 @@ public class IcsGUICCDConfigAADialog extends JDialog implements ActionListener
 		nameTextField.setText(configProperties.getConfigName(id));
 		calibrateBeforeCheckBox.setSelected(configProperties.getConfigCalibrateBefore(id));
 		calibrateAfterCheckBox.setSelected(configProperties.getConfigCalibrateAfter(id));
-		lowerFilterWheelTextField.setText(configProperties.getConfigLowerFilterWheel(id));
-		upperFilterWheelTextField.setText(configProperties.getConfigUpperFilterWheel(id));
+		try
+		{
+			setFilterWheelComboBox();
+		}
+		catch(Exception e)
+		{
+			System.err.println(this.getClass().getName()+":add:"+e);
+			e.printStackTrace(System.err);
+		}
+		lowerFilterWheelComboBox.setSelectedItem(configProperties.getConfigLowerFilterWheel(id));
+		upperFilterWheelComboBox.setSelectedItem(configProperties.getConfigUpperFilterWheel(id));
 		xBinTextField.setText(configProperties.getConfigXBinString(id));
 		yBinTextField.setText(configProperties.getConfigYBinString(id));
 		for(int i=0;i<WINDOW_COUNT;i++)
@@ -342,8 +379,10 @@ public class IcsGUICCDConfigAADialog extends JDialog implements ActionListener
 			configProperties.setConfigType(configId,IcsGUIConfigProperties.CONFIG_TYPE_CCD_RATCAM);
 			configProperties.setConfigCalibrateBefore(configId,calibrateBeforeCheckBox.isSelected());
 			configProperties.setConfigCalibrateAfter(configId,calibrateAfterCheckBox.isSelected());
-			configProperties.setConfigLowerFilterWheel(configId,lowerFilterWheelTextField.getText());
-			configProperties.setConfigUpperFilterWheel(configId,upperFilterWheelTextField.getText());
+			configProperties.setConfigLowerFilterWheel(configId,
+					 (String)(lowerFilterWheelComboBox.getSelectedItem()));
+			configProperties.setConfigUpperFilterWheel(configId,
+					 (String)(upperFilterWheelComboBox.getSelectedItem()));
 			configProperties.setConfigXBin(configId,xBin);
 			configProperties.setConfigYBin(configId,yBin);
 			configProperties.setConfigWindowFlags(configId,windowFlags);
@@ -365,9 +404,75 @@ public class IcsGUICCDConfigAADialog extends JDialog implements ActionListener
 	//unmanage dialog
 		this.setVisible(false);
 	}
+
+	/**
+	 * Method to populate the filter wheel combo boxs with filters loaded from a property file specified
+	 * in the main set of properties.
+	 * @see #lowerFilterWheelComboBox
+	 * @see #upperFilterWheelComboBox
+	 * @see #icsGUIStatus
+	 * @exception FileNotFoundException Thrown if the current filter properties cannot be found.
+	 * @exception IOException Thrown if an IO error occurs whilst loading the filter properties.
+	 * @exception NGATPropertyException Thrown if a property has an illegal value.
+	 * @exception IllegalArgumentException Thrown if the filter index is an unexpected value.
+	 */
+	protected void setFilterWheelComboBox() throws FileNotFoundException,IOException,NGATPropertyException,
+						       IllegalArgumentException
+	{
+		NGATProperties filterProperties = null;
+		FileInputStream fileInputStream = null;
+		String filterPropertiesFilename = null;
+		String filterName = null;
+		int filterWheelCount,filterCount;
+
+		if(icsGUIStatus == null)
+			return;
+		// get filter property filename
+		filterPropertiesFilename = icsGUIStatus.getProperty("ics_gui.filter.property.filename.ccd");
+		if((filterPropertiesFilename == null)||(filterPropertiesFilename.equals("")))
+			return;
+		// load filterProperties
+		filterProperties = new NGATProperties();
+		fileInputStream = new FileInputStream(filterPropertiesFilename);
+		filterProperties.load(fileInputStream);
+		fileInputStream.close();
+		// clear current combo box list, ready for latest one.
+		// Note must check items are in list first, as old JVMs(1.2.1) throw IndexOutOfBoundsException
+		if(lowerFilterWheelComboBox.getItemCount() > 0)
+			lowerFilterWheelComboBox.removeAllItems();
+		if(upperFilterWheelComboBox.getItemCount() > 0)
+			upperFilterWheelComboBox.removeAllItems();
+		// for each filter wheel
+		filterWheelCount = filterProperties.getInt("filterwheel.count");
+		for(int filterWheelIndex = 0; filterWheelIndex < filterWheelCount; filterWheelIndex++)
+		{
+			// loop over number of filters in wheel
+			filterCount = filterProperties.getInt("filterwheel."+filterWheelIndex+".count");
+			for(int i  = 0; i < filterCount; i++)
+			{
+				// get filter type name
+				filterName = filterProperties.getProperty("filterwheel."+filterWheelIndex+"."+
+									  i+".type");
+				// add to relevant combobox
+				if(filterWheelIndex == 0)
+					lowerFilterWheelComboBox.addItem(filterName);
+				else if(filterWheelIndex == 1)
+					upperFilterWheelComboBox.addItem(filterName);
+				else
+				{
+					throw new IllegalArgumentException(this.getClass().getName()+
+									   ":setFilterWheelComboBox:filterWheelIndex "+
+									   filterWheelIndex+" out of expected range.");
+				}
+			}
+		}
+	}
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2003/08/21 14:29:04  cjm
+// Initial revision
+//
 // Revision 0.6  2001/07/10 18:21:28  cjm
 // Added calibrateBefore and calibrateAfter flags.
 //
