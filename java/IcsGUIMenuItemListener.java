@@ -1,5 +1,5 @@
 // CcsGUIMenuItemListener.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIMenuItemListener.java,v 0.4 2002-05-23 12:44:53 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIMenuItemListener.java,v 0.5 2003-08-22 14:05:18 cjm Exp $
 import java.lang.*;
 import java.lang.reflect.*;
 import java.io.*;
@@ -19,7 +19,7 @@ public class CcsGUIMenuItemListener implements ActionListener
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIMenuItemListener.java,v 0.4 2002-05-23 12:44:53 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIMenuItemListener.java,v 0.5 2003-08-22 14:05:18 cjm Exp $");
 	/**
 	 * The parent to the menu item listener. The instance of the main program.
 	 */
@@ -132,6 +132,7 @@ public class CcsGUIMenuItemListener implements ActionListener
 						configDialog.addConfigButtonActionListener(configButtonListener);
 						configDialog.setConfigProperties(parent.getStatus().
 							getInstrumentConfigProperties());
+						configDialog.setIcsGUIStatus(parent.getStatus());
 					}
 				// add dialog to dialogClassNameList hashtable, with menu name as key.
 					dialogClassNameList.put(menuName,dialog);
@@ -331,6 +332,10 @@ public class CcsGUIMenuItemListener implements ActionListener
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.4  2002/05/23 12:44:53  cjm
+// Moved dialog to command name mapping to config file.
+// Re-wrote mechanism for constructing dialogs.
+//
 // Revision 0.3  2000/11/30 18:47:44  cjm
 // Made generic for other instruments.
 //
