@@ -1,5 +1,5 @@
 // CcsGUIClientConnectionThread.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.4 2000-02-22 15:42:15 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.5 2000-02-28 19:14:40 cjm Exp $
 
 import java.lang.*;
 import java.io.*;
@@ -20,14 +20,14 @@ import ngat.message.ISS_INST.GET_STATUS_DONE;
  * It implements the generic ISS instrument command protocol.
  * It is used to send commands from the CcsGUI to the Ccs.
  * @author Chris Mottram
- * @version $Revision: 0.4 $
+ * @version $Revision: 0.5 $
  */
 public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.4 2000-02-22 15:42:15 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.5 2000-02-28 19:14:40 cjm Exp $");
 	/**
 	 * The CcsGUI object.
 	 */
@@ -158,7 +158,9 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	{
 		Hashtable displayInfo = null;
 		Integer integer = null;
-		int exposureCount,exposureNumber;
+		Long l = null;
+		long exposureStartTime,currentTime,timeElapsed;
+		int exposureCount,exposureNumber,exposureLength;
 
 	// current mode
 		parent.log("The current mode:"+getStatusDone.getCurrentMode()+".");
@@ -191,6 +193,19 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 			parent.setRemainingExposuresLabel(0);
 		else
 			parent.setRemainingExposuresLabel(exposureCount-exposureNumber);
+	// set remaining exposure time label
+		if(getStatusDone.getCurrentMode() == 3)
+		{
+			l = (Long)(displayInfo.get("Exposure Start Time"));
+			exposureStartTime = l.longValue();
+			integer = (Integer)(displayInfo.get("Exposure Length"));
+			exposureLength = integer.intValue();
+			currentTime = System.currentTimeMillis();
+			timeElapsed = currentTime-exposureStartTime;
+			parent.setRemainingExposureTimeLabel(((long)exposureLength)-timeElapsed);
+		}
+		else
+			parent.setRemainingExposureTimeLabel(0L);
 	}
 
 	/**
@@ -219,6 +234,9 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.4  2000/02/22 15:42:15  cjm
+// DONE subclass prints only occur on successful is true.
+//
 // Revision 0.3  2000/02/21 10:46:48  cjm
 // Added more prints for EXPOSE/CALIBRATE_DONE and MULTRUN_DP_ACK.
 //

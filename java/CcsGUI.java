@@ -1,5 +1,5 @@
 // CcsGUI.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.6 2000-02-04 16:13:05 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.7 2000-02-28 19:14:40 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -18,14 +18,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ccs GUI.
  * @author Chris Mottram
- * @version $Revision: 0.6 $
+ * @version $Revision: 0.7 $
  */
 public class CcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.6 2000-02-04 16:13:05 cjm Exp $");
+	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.7 2000-02-28 19:14:40 cjm Exp $");
 	/**
 	 * The stream to write error messages to - defaults to System.err.
 	 */
@@ -39,23 +39,27 @@ public class CcsGUI
 	 */
 	private JFrame frame = null;
 	/**
-	 * Label for last command sent.
+	 * Label for current Ccs status.
 	 */
 	private JLabel ccdStatusLabel = null;
 	/**
-	 * Label for last acknowledge received.
+	 * Label for last command sent.
+	 */
+	private JLabel currentCommandLabel = null;
+	/**
+	 * Label for remaining exposure time.
 	 */
 	private JLabel remainingExposureTimeLabel = null;
 	/**
-	 * Label for last DONE message recieved: successful field.
+	 * Label for remaining exposures.
 	 */
 	private JLabel remainingExposuresLabel = null;
 	/**
-	 * Label for last DONE message recieved: errorNum field.
+	 * Label for filters selected.
 	 */
 	private JLabel filterSelectedLabel = null;
 	/**
-	 * Label for last DONE message recieved: errorString field.
+	 * Label for CCD temperature.
 	 */
 	private JLabel ccdTemperatureLabel = null;
 	/**
@@ -172,7 +176,7 @@ public class CcsGUI
 		GridBagLayout gridBagLayout = new GridBagLayout();
         	GridBagConstraints gridBagCon = new GridBagConstraints();
 	// Create the top-level container.
-		frame = new MinimumSizeFrame("CCS Interface",new Dimension(400,250));
+		frame = new MinimumSizeFrame("CCS Interface",new Dimension(400,275));
 
 		frame.getContentPane().setLayout(gridBagLayout);
 		initMenuBar();
@@ -209,7 +213,7 @@ public class CcsGUI
 		panel.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
 		panel.setLayout(gridBagLayout);
 		panel.setMinimumSize(new Dimension(450,400));
-		panel.setPreferredSize(new Dimension(450,300));
+		panel.setPreferredSize(new Dimension(450,400));
 		panel.setMaximumSize(new Dimension(1024,1024));
 	//  status labels
 		initStatusPanel(panel,gridBagLayout);
@@ -229,20 +233,26 @@ public class CcsGUI
 		JLabel label = null;
         	GridBagConstraints gridBagCon = new GridBagConstraints();
 		String ccdStatusLabelString = new String("CCD Status:");
+		String currentCommandLabelString = new String("Current Command:");
 		String remainingExposureTimeLabelString = new String("Remaining Exposure Time:");
 		String remainingExposuresLabelString = new String("Remaining Exposures:");
 		String filterSelectedLabelString = new String("Filters Selected:");
 		String ccdTemperatureLabelString = new String("CCD Temperature:");
 
 		lastStatusPanel.setLayout(new GridLayout(0,2));
-		lastStatusPanel.setMinimumSize(new Dimension(250,125));
-		lastStatusPanel.setPreferredSize(new Dimension(1024,125));
-		lastStatusPanel.setMaximumSize(new Dimension(1024,125));
+		lastStatusPanel.setMinimumSize(new Dimension(250,150));
+		lastStatusPanel.setPreferredSize(new Dimension(1024,150));
+		lastStatusPanel.setMaximumSize(new Dimension(1024,150));
 	// ccd status
 		label = new JLabel(ccdStatusLabelString);
 		lastStatusPanel.add(label);
 		ccdStatusLabel = new JLabel("Unknown");
 		lastStatusPanel.add(ccdStatusLabel);
+	// current Command
+		label = new JLabel(currentCommandLabelString);
+		lastStatusPanel.add(label);
+		currentCommandLabel = new JLabel("None");
+		lastStatusPanel.add(currentCommandLabel);
 	// remaining exposure time
 		label = new JLabel(remainingExposureTimeLabelString);
 		lastStatusPanel.add(label);
@@ -699,14 +709,84 @@ public class CcsGUI
 	}
 
 	/**
-	 * Method to set the ccd status label.
-	 * @param s The string to set the label to.
+	 * Method to set the ccd status label. The mode number is translated into an equivalent string.
+	 * Note, the list of strings in this method should be kept up to date with the 
+	 * currentMode number returned by GET_STATUSImplementation in the Ccs process.
+	 * @param currentMode The mode number from the get status command.
 	 */
-	public void setCCDStatus(String s)
+	public void setCCDStatusLabel(int currentMode)
 	{
+		String currentModeList[] = {"Idle","Config","Clearing","Exposure","Readout","Error"};
+		String s = null;
+
+		if((currentMode < 0)||(currentMode >= currentModeList.length))
+			currentMode = currentModeList.length-1;
 		if(ccdStatusLabel != null)
 		{
-			SwingUtilities.invokeLater(new GUILabelSetter(ccdStatusLabel,s));
+			SwingUtilities.invokeLater(new GUILabelSetter(ccdStatusLabel,currentModeList[currentMode]));
+		}
+	}
+
+	/**
+	 * Method to set the current command label.
+	 * @param commandString The string to set the label to. If it is null, 'None' is used instead.
+	 */
+	public void setCurrentCommandLabel(String commandString)
+	{
+		if(commandString == null)
+			commandString = new String("None");
+		if(currentCommandLabel != null)
+		{
+			SwingUtilities.invokeLater(new GUILabelSetter(currentCommandLabel,commandString));
+		}
+	}
+
+	/**
+	 * Method to set the remaining exposures label.
+	 * @param remainingExposures The number of exposures remaining to complete the current command.
+	 */
+	public void setRemainingExposuresLabel(int remainingExposures)
+	{
+		String s = null;
+
+		s = Integer.toString(remainingExposures);
+		if(remainingExposuresLabel != null)
+		{
+			SwingUtilities.invokeLater(new GUILabelSetter(remainingExposuresLabel,s));
+		}
+	}
+
+	/**
+	 * Method to set the remaining exposure time label.
+	 * @param remainingExposureTime The time to complete the exposure, in milliseconds.
+	 */
+	public void setRemainingExposureTimeLabel(long remainingExposureTime)
+	{
+		String s = null;
+
+		s = Double.toString(((double)remainingExposureTime)/1000.0);
+		if(remainingExposureTimeLabel != null)
+		{
+			SwingUtilities.invokeLater(new GUILabelSetter(remainingExposureTimeLabel,s));
+		}
+	}
+
+	/**
+	 * Method to set the selected filters label. If one of the parameters is null, the String
+	 * 'Unknown' is used instead.
+	 * @param lowerFilterString The name of the lower filter wheel's selected filter.
+	 * @param upperFilterString The name of the lower filter wheel's selected filter.
+	 */
+	public void setFiltersSelectedLabel(String lowerFilterString,String upperFilterString)
+	{
+		if(lowerFilterString == null)
+			lowerFilterString = new String("Unknown");
+		if(upperFilterString == null)
+			upperFilterString = new String("Unknown");
+		if(filterSelectedLabel != null)
+		{
+			SwingUtilities.invokeLater(new GUILabelSetter(filterSelectedLabel,"lower:"+
+				lowerFilterString+" upper:"+upperFilterString));
 		}
 	}
 
@@ -908,6 +988,9 @@ public class CcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.6  2000/02/04 16:13:05  cjm
+// Changed splash screen size.
+//
 // Revision 0.5  1999/12/14 15:17:50  cjm
 // Changed calls to GUITextAppender to reflect new scroll option.
 //
