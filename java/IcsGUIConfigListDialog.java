@@ -1,5 +1,5 @@
-// CcsCCDConfigListDialog.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigListDialog.java,v 0.1 2000-11-29 11:30:25 cjm Exp $
+// IcsGUIConfigListDialog.java -*- mode: Fundamental;-*-
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigListDialog.java,v 0.2 2000-11-30 18:47:44 cjm Exp $
 import java.lang.*;
 import java.util.*;
 import java.awt.*;
@@ -13,20 +13,63 @@ import ngat.swing.*;
 /**
  * This class provides a list of configurations for the Ccs. 
  */
-public class CcsCCDConfigListDialog extends JDialog implements ActionListener, CcsConfigAADialogListener
+public class IcsGUIConfigListDialog extends JDialog implements ActionListener, CcsConfigAADialogListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIConfigListDialog.java,v 0.1 2000-11-29 11:30:25 cjm Exp $");
+	public static String RCSID = new String("$Id: IcsGUIConfigListDialog.java,v 0.2 2000-11-30 18:47:44 cjm Exp $");
+	/**
+	 * String to go on buttons.
+	 */
+	protected final static String CCD_RATCAM_BUTTON_STRING = "CCD Camera (RATCam)";
+	/**
+	 * String to go on buttons.
+	 */
+	protected final static String SPECTROGRAPH_MES_BUTTON_STRING = "Spectrograph (MES)";
+	/**
+	 * String to go on buttons.
+	 */
+	protected final static String SPECTROGRAPH_NUVIEW_BUTTON_STRING = "Spectrograph (NuView)";
+	/**
+	 * String to go on buttons.
+	 */
+	protected final static String INFRA_RED_SUPIRCAM_BUTTON_STRING = "Infra Red Camera (SupIRCam)";
+	/**
+	 * List of strings that describe instruments. Note, make sure in the same order as 
+	 * IcsGUIConfigProperties.CONFIG_TYPE_LIST.
+	 * @see IcsGUIConfigProperties#CONFIG_TYPE_LIST
+	 * @see #CCD_RATCAM_BUTTON_STRING
+	 * @see #SPECTROGRAPH_MES_BUTTON_STRING
+	 * @see #SPECTROGRAPH_NUVIEW_BUTTON_STRING
+	 * @see #INFRA_RED_SUPIRCAM_BUTTON_STRING
+	 */
+	protected final static String INSTRUMENT_STRING_ARRAY[] = {CCD_RATCAM_BUTTON_STRING,
+		SPECTROGRAPH_MES_BUTTON_STRING,SPECTROGRAPH_NUVIEW_BUTTON_STRING,INFRA_RED_SUPIRCAM_BUTTON_STRING};
+	/**
+	 * String to pre-pend to add menu instrument entries.
+	 */
+	protected final static String ADD_STRING = "Add ";
+	/**
+	 * String to pre-pend to filter menu instrument entries.
+	 */
+	protected final static String FILTER_STRING = "By ";
+	/**
+	 * String used to specify no filtering buttons.
+	 */
+	protected final static String NONE_STRING = "None";
+	/**
+	 * Number used to specify no filtering of the list.
+	 */
+	protected final static int NONE_FILTER_NUMBER = -1;
 	/**
 	 * The data to be displayed in the list.
 	 */
 	private IcsGUIConfigProperties configProperties = null;
 	/**
-	 * The Add/Amend dialog to use when Add or Amend is selected.
+	 * The Add/Amend dialog to use when Add or Amend is selected for a CCD configuration.
 	 */
-	private CcsCCDConfigAADialog addAmendDialog = null;
+	private CcsCCDConfigAADialog addAmendCCDDialog = null;
 	/**
 	 * The config dialog that caused this dialog to be managed.
 	 */
@@ -35,6 +78,12 @@ public class CcsCCDConfigListDialog extends JDialog implements ActionListener, C
 	 * Internal JList that actually displays the Instrument Configurations.
 	 */
 	private JList list = null;
+	/**
+	 * Number representing which type of instrument configuration to filter the list by.
+	 * Defaults to NONE_FILTER_NUMBER, which means no filtering takes place.
+	 * @see #NONE_FILTER_NUMBER
+	 */
+	private int filterTypeNumber = NONE_FILTER_NUMBER;
 
 	/**
 	 * Constructor. Calls the JDialog constructor. Creates the components in the dialog.
@@ -42,8 +91,10 @@ public class CcsCCDConfigListDialog extends JDialog implements ActionListener, C
 	 * @param owner The parent frame of this dialog. Used in calling Dialog's constructor.
 	 * @param c A reference to the object holding the instrument Configuration data. Used to fill the list,
 	 *	and for updating purposes.
+	 * @see #constructFileMenu
+	 * @see #constructFilterMenu
 	 */
-	public CcsCCDConfigListDialog(Frame owner,IcsGUIConfigProperties c)
+	public IcsGUIConfigListDialog(Frame owner,IcsGUIConfigProperties c)
 	{
 		super(owner,"Instrument Configuration List");
 
@@ -58,42 +109,9 @@ public class CcsCCDConfigListDialog extends JDialog implements ActionListener, C
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 	// setup file menu
-		menu = new JMenu("File");
-		menu.setMnemonic(KeyEvent.VK_F);
-		menu.getAccessibleContext().setAccessibleDescription("The File Menu");
-		menuBar.add(menu);
-	// select
-		menuItem = new JMenuItem("Select",KeyEvent.VK_S);
-		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,ActionEvent.CTRL_MASK));
-		menuItem.getAccessibleContext().setAccessibleDescription("Selects the item");
-		menuItem.addActionListener(this);
-		menu.add(menuItem);
-		menu.addSeparator();
-	// add
-		menuItem = new JMenuItem("Add",KeyEvent.VK_A);
-		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A,ActionEvent.CTRL_MASK));
-		menuItem.getAccessibleContext().setAccessibleDescription("Adds a configuration");
-		menuItem.addActionListener(this);
-		menu.add(menuItem);
-	// amend
-		menuItem = new JMenuItem("Amend",KeyEvent.VK_M);
-		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M,ActionEvent.CTRL_MASK));
-		menuItem.getAccessibleContext().setAccessibleDescription("Amends a configuration");
-		menuItem.addActionListener(this);
-		menu.add(menuItem);
-	// delete
-		menuItem = new JMenuItem("Delete",KeyEvent.VK_D);
-		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D,ActionEvent.CTRL_MASK));
-		menuItem.getAccessibleContext().setAccessibleDescription("Delete a configuration");
-		menuItem.addActionListener(this);
-		menu.add(menuItem);
-		menu.addSeparator();
-	// quit
-		menuItem = new JMenuItem("Quit",KeyEvent.VK_Q);
-		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q,ActionEvent.CTRL_MASK));
-		menuItem.getAccessibleContext().setAccessibleDescription("Quits the list");
-		menuItem.addActionListener(this);
-		menu.add(menuItem);
+		constructFileMenu(menuBar);
+	// setup filter menu
+		constructFilterMenu(menuBar);
 	// create the panel
 		JPanel panel = new JPanel();
 		panel.setMinimumSize(new Dimension(250,250));
@@ -110,8 +128,8 @@ public class CcsCCDConfigListDialog extends JDialog implements ActionListener, C
 		scrollPane.getViewport().setView(list);
 		panel.add(scrollPane);
 	// create an add/amend dialog
-		addAmendDialog = new CcsCCDConfigAADialog(owner,c);
-		addAmendDialog.addCcsConfigAADialogListener(this);
+		addAmendCCDDialog = new CcsCCDConfigAADialog(owner,c);
+		addAmendCCDDialog.addCcsConfigAADialogListener(this);
 	}
 
 	/**
@@ -121,13 +139,18 @@ public class CcsCCDConfigListDialog extends JDialog implements ActionListener, C
 	 * @see #configProperties
 	 * @see IcsGUIConfigProperties#getConfigNameList
 	 * @see #list
+	 * @see #filterTypeNumber
+	 * @see #NONE_FILTER_NUMBER
 	 */
 	public void setData()
 	{
 		Vector l = null;
 		int i;
 
-		l = configProperties.getConfigNameList();
+		if(filterTypeNumber == NONE_FILTER_NUMBER)
+			l = configProperties.getConfigNameList();
+		else
+			l = configProperties.getConfigNameList(filterTypeNumber);
 		list.setListData(l);
 	}
 
@@ -148,6 +171,10 @@ public class CcsCCDConfigListDialog extends JDialog implements ActionListener, C
 
 	/**
 	 * ActionListener method. Called when a menu item is selected.
+	 * @see #INSTRUMENT_STRING_ARRAY
+	 * @see IcsGUIConfigProperties#CONFIG_TYPE_LIST
+	 * @see #NONE_STRING
+	 * @see #NONE_FILTER_NUMBER
 	 */
 	public void actionPerformed(ActionEvent event)
 	{
@@ -155,6 +182,7 @@ public class CcsCCDConfigListDialog extends JDialog implements ActionListener, C
 		String s = null;
 		Object o = null;
 		int id = 0;
+		int type = 0;
 		int retval = 0;
 
 		if(commandString.equals("Select"))
@@ -179,20 +207,53 @@ public class CcsCCDConfigListDialog extends JDialog implements ActionListener, C
 				}
 			}
 		}
-		if(commandString.equals("Add"))
+	// check for add sub-menu
+		for(int i = 0; i < INSTRUMENT_STRING_ARRAY.length; i++)
 		{
-			addAmendDialog.setLocation(getX()+getWidth(),getY());
-			addAmendDialog.pack();
-			addAmendDialog.add();
-		}
+			if(commandString.equals(ADD_STRING+INSTRUMENT_STRING_ARRAY[i]))
+			{
+			// This assumes INSTRUMENT_STRING_ARRAY[i] is the string description for the instrument
+			// IcsGUIConfigProperties.CONFIG_TYPE_LIST[i].
+				switch(i)
+				{
+					case IcsGUIConfigProperties.CONFIG_TYPE_CCD_RATCAM:
+						addAmendCCDDialog.setLocation(getX()+getWidth(),getY());
+						addAmendCCDDialog.pack();
+						addAmendCCDDialog.add();
+						break;
+					case IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_MES:
+					case IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_NUVIEW:
+					case IcsGUIConfigProperties.CONFIG_TYPE_INFRA_RED_SUPIRCAM:
+					default:
+						JOptionPane.showMessageDialog((Component)null,
+							(Object)("Add operation not supported yet"),
+							" Operation failed ",JOptionPane.ERROR_MESSAGE);
+						break;
+				}// end switch
+			}// end if
+		}// end for
 		if(commandString.equals("Amend"))
 		{
 			try
 			{
 				id = getSelectedConfigId();
-				addAmendDialog.setLocation(getX()+getWidth(),getY());
-				addAmendDialog.pack();
-				addAmendDialog.amend(id);
+				type = configProperties.getConfigType(id);
+				switch(type)
+				{
+					case IcsGUIConfigProperties.CONFIG_TYPE_CCD_RATCAM:
+						addAmendCCDDialog.setLocation(getX()+getWidth(),getY());
+						addAmendCCDDialog.pack();
+						addAmendCCDDialog.amend(id);
+						break;
+					case IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_MES:
+					case IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_NUVIEW:
+					case IcsGUIConfigProperties.CONFIG_TYPE_INFRA_RED_SUPIRCAM:
+					default:
+						JOptionPane.showMessageDialog((Component)null,
+							(Object)("Amend type not supported"),
+							" Operation failed ",JOptionPane.ERROR_MESSAGE);
+						break;
+				}// end switch
 			}
 			catch(IllegalArgumentException e)
 			{
@@ -224,6 +285,22 @@ public class CcsCCDConfigListDialog extends JDialog implements ActionListener, C
 				setData();
 			}
 		}
+	// check for filter sub-menu
+		for(int i = 0; i < INSTRUMENT_STRING_ARRAY.length; i++)
+		{
+			if(commandString.equals(FILTER_STRING+INSTRUMENT_STRING_ARRAY[i]))
+			{
+			// This assumes INSTRUMENT_STRING_ARRAY[i] is the string description for the instrument
+			// IcsGUIConfigProperties.CONFIG_TYPE_LIST[i].
+				filterTypeNumber = IcsGUIConfigProperties.CONFIG_TYPE_LIST[i];
+				setData();
+			}// end if
+		}// end for
+		if(commandString.equals(FILTER_STRING+NONE_STRING))
+		{
+			filterTypeNumber = NONE_FILTER_NUMBER;
+			setData();
+		}
 		if(commandString.equals("Quit"))
 		{
 			SwingUtilities.invokeLater(new GUIDialogUnmanager(this));
@@ -232,9 +309,10 @@ public class CcsCCDConfigListDialog extends JDialog implements ActionListener, C
 
 	/**
 	 * Method implementing the CcsConfigAADialogListener interface. Called when an
-	 * Instrument Configuration is added/amended.
+	 * Instrument Configuration is added/amended. Calls setData, to reset the list.
 	 * @param ok Boolean, true if the Ok button was pressed on the dialog.
 	 * @param id The id of the Instrument Configuration if ok was true.
+	 * @see #setData
 	 */
 	public void actionPerformed(boolean ok,int id)
 	{
@@ -261,9 +339,120 @@ public class CcsCCDConfigListDialog extends JDialog implements ActionListener, C
 		s = (String)o;
 		return configProperties.getIdFromName(s);
 	}
+
+	/**
+	 * Internal method to create the file menu and add it to the menu-bar.
+	 * @param menuBar The menu-bar to add it to.
+	 * @see #constructAddSubMenu
+	 */
+	private void constructFileMenu(JMenuBar menuBar)
+	{
+		JMenu menu = null;
+		JMenuItem menuItem = null;
+
+		menu = new JMenu("File");
+		menu.setMnemonic(KeyEvent.VK_F);
+		menu.getAccessibleContext().setAccessibleDescription("The File Menu");
+		menuBar.add(menu);
+	// select
+		menuItem = new JMenuItem("Select",KeyEvent.VK_S);
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,ActionEvent.CTRL_MASK));
+		menuItem.getAccessibleContext().setAccessibleDescription("Selects the item");
+		menuItem.addActionListener(this);
+		menu.add(menuItem);
+		menu.addSeparator();
+	// add
+		constructAddSubMenu(menu);
+	// amend
+		menuItem = new JMenuItem("Amend",KeyEvent.VK_M);
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M,ActionEvent.CTRL_MASK));
+		menuItem.getAccessibleContext().setAccessibleDescription("Amends a configuration");
+		menuItem.addActionListener(this);
+		menu.add(menuItem);
+	// delete
+		menuItem = new JMenuItem("Delete",KeyEvent.VK_D);
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D,ActionEvent.CTRL_MASK));
+		menuItem.getAccessibleContext().setAccessibleDescription("Delete a configuration");
+		menuItem.addActionListener(this);
+		menu.add(menuItem);
+		menu.addSeparator();
+	// quit
+		menuItem = new JMenuItem("Quit",KeyEvent.VK_Q);
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q,ActionEvent.CTRL_MASK));
+		menuItem.getAccessibleContext().setAccessibleDescription("Quits the list");
+		menuItem.addActionListener(this);
+		menu.add(menuItem);
+	}
+
+	/**
+	 * Internal method to create the file menu and add it to the menu-bar.
+	 * @param parentMenu The parent menu to add it to.
+	 * @see #INSTRUMENT_STRING_ARRAY
+	 * @see #ADD_STRING
+	 */
+	private void constructAddSubMenu(JMenu parentMenu)
+	{
+		JMenu menu = null;
+		JMenuItem menuItem = null;
+
+		menu = new JMenu("Add");
+		menu.setMnemonic(KeyEvent.VK_A);
+		menu.getAccessibleContext().setAccessibleDescription("Add Configuration Menu");
+		parentMenu.add(menu);
+		for(int i=0;i < INSTRUMENT_STRING_ARRAY.length;i++)
+		{
+			menuItem = new JMenuItem(ADD_STRING+INSTRUMENT_STRING_ARRAY[i]);
+//diddly			menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,ActionEvent.CTRL_MASK));
+			menuItem.getAccessibleContext().setAccessibleDescription("Adds a "+
+				INSTRUMENT_STRING_ARRAY[i]+" configuration");
+			menuItem.addActionListener(this);
+			menu.add(menuItem);
+		}
+	}
+
+	/**
+	 * Internal method to create the filter menu and add it to the menu-bar.
+	 * @param menuBar The menu-bar to add it to.
+	 * @see #INSTRUMENT_STRING_ARRAY
+	 */
+	private void constructFilterMenu(JMenuBar menuBar)
+	{
+		JMenu menu = null;
+		ButtonGroup filterButtonGroup = null;
+		JRadioButtonMenuItem radioButton = null;
+
+		menu = new JMenu("Filter");
+		menu.setMnemonic(KeyEvent.VK_L);
+		menu.getAccessibleContext().setAccessibleDescription("The Filter Menu");
+		menuBar.add(menu);
+	// button group
+		filterButtonGroup = new ButtonGroup();
+	// none
+		radioButton = new JRadioButtonMenuItem(FILTER_STRING+NONE_STRING,true);
+		radioButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,ActionEvent.CTRL_MASK));
+		radioButton.getAccessibleContext().setAccessibleDescription("Removes all filters");
+		radioButton.addActionListener(this);
+		filterButtonGroup.add(radioButton);
+		menu.add(radioButton);
+		menu.addSeparator();
+	// instrument buttons
+		for(int i=0;i < INSTRUMENT_STRING_ARRAY.length;i++)
+		{
+			radioButton = new JRadioButtonMenuItem(FILTER_STRING+INSTRUMENT_STRING_ARRAY[i]);
+//diddly		radioButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,ActionEvent.CTRL_MASK));
+			radioButton.getAccessibleContext().
+				setAccessibleDescription("Filter by "+INSTRUMENT_STRING_ARRAY[i]);
+			radioButton.addActionListener(this);
+			filterButtonGroup.add(radioButton);
+			menu.add(radioButton);
+		}
+	}
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.1  2000/11/29 11:30:25  cjm
+// initial revision.
+//
 // Revision 0.3  2000/11/29 11:29:26  cjm
 // Made more generic, for any kind of instrument.
 //

@@ -1,5 +1,5 @@
 // CcsGUI.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.12 2000-07-11 09:23:07 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.13 2000-11-30 18:47:44 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -19,14 +19,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ccs GUI.
  * @author Chris Mottram
- * @version $Revision: 0.12 $
+ * @version $Revision: 0.13 $
  */
 public class CcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.12 2000-07-11 09:23:07 cjm Exp $");
+	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.13 2000-11-30 18:47:44 cjm Exp $");
 	/**
 	 * The stream to write error messages to - defaults to System.err.
 	 */
@@ -178,7 +178,7 @@ public class CcsGUI
 	 * @exception IOException Thrown if a configuration file has an IO error during reading.
 	 * @see #status
 	 * @see CcsGUIStatus#load
-	 * @see CcsGUIStatus#loadCCDConfig
+	 * @see CcsGUIStatus#loadInstrumentConfig
 	 * @see #errorStream
 	 * @see #logStream
 	 */
@@ -189,7 +189,7 @@ public class CcsGUI
 
 		status = new CcsGUIStatus();
 		status.load();
-		status.loadCCDConfig();
+		status.loadInstrumentConfig();
 	// change errorStream to files defined in loaded properties
 		filename = status.getProperty("ccs_gui.file.error");
 		if((filename != null)&&(filename.length()>0))
@@ -662,6 +662,12 @@ public class CcsGUI
 	 * Main program exit routine. Waits for command to complete before exiting, if n is zero,
 	 * otherwise just terminates.
 	 * @param n The return exit value to return to the calling shell/program.
+	 * @see CcsStatus#clientThreadListCount
+	 * @see CcsStatus#clientThreadAt
+	 * @see CcsStatus#removeClientThread
+	 * @see CcsStatus#saveInstrumentConfig
+	 * @see #stopISSServer
+	 * @see #log
 	 */
 	public void exit(int n)
 	{
@@ -704,7 +710,7 @@ public class CcsGUI
 		}
 		try
 		{
-			status.saveCCDConfig();
+			status.saveInstrumentConfig();
 		}
 		catch(IOException e)
 		{
@@ -1116,6 +1122,10 @@ public class CcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.12  2000/07/11 09:23:07  cjm
+// More descriptive title string.
+// log and error filename configuration now supported.
+//
 // Revision 0.11  2000/06/27 11:30:34  cjm
 // Limited number of lines in logTextArea, using a GUITextLengthLimiter.
 //

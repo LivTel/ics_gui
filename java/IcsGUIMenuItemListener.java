@@ -1,5 +1,5 @@
 // CcsGUIMenuItemListener.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIMenuItemListener.java,v 0.2 1999-12-09 17:02:12 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIMenuItemListener.java,v 0.3 2000-11-30 18:47:44 cjm Exp $
 import java.lang.*;
 import java.lang.reflect.*;
 import java.io.*;
@@ -19,7 +19,7 @@ public class CcsGUIMenuItemListener implements ActionListener
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIMenuItemListener.java,v 0.2 1999-12-09 17:02:12 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIMenuItemListener.java,v 0.3 2000-11-30 18:47:44 cjm Exp $");
 	/**
 	 * The parent to the menu item listener. The instance of the main program.
 	 */
@@ -124,7 +124,8 @@ public class CcsGUIMenuItemListener implements ActionListener
 
 					configButtonListener = new CcsGUIConfigButtonListener(parent,configDialog);
 					configDialog.addConfigButtonActionListener(configButtonListener);
-					configDialog.setConfigProperties(parent.getStatus().getCCDConfigProperties());
+					configDialog.setConfigProperties(parent.getStatus().
+						getInstrumentConfigProperties());
 				}
 				dialogClassNameList.put(menuName,dialog);
 			}
@@ -321,6 +322,9 @@ public class CcsGUIMenuItemListener implements ActionListener
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.2  1999/12/09 17:02:12  cjm
+// More functionality added.
+//
 // Revision 0.1  1999/11/22 09:53:49  cjm
 // initial revision.
 //

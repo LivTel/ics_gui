@@ -1,5 +1,5 @@
 // CcsCCDConfigAADialog.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/CcsCCDConfigAADialog.java,v 0.4 2000-09-11 09:09:49 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/CcsCCDConfigAADialog.java,v 0.5 2000-11-30 18:47:44 cjm Exp $
 import java.lang.*;
 import java.util.*;
 import java.awt.*;
@@ -13,14 +13,14 @@ import ngat.swing.*;
 /**
  * This class provides an Add and Amend facility for CCD Configurations.
  * @author Chris Mottram
- * @version $Revision: 0.4 $
+ * @version $Revision: 0.5 $
  */
 public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: CcsCCDConfigAADialog.java,v 0.4 2000-09-11 09:09:49 cjm Exp $");
+	public final static String RCSID = new String("$Id: CcsCCDConfigAADialog.java,v 0.5 2000-11-30 18:47:44 cjm Exp $");
 	/**
 	 * Button height.
 	 */
@@ -44,11 +44,11 @@ public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 	/**
 	 * The data to be displayed in the list.
 	 */
-	CcsCCDConfigProperties ccdConfigProperties = null;
+	IcsGUIConfigProperties configProperties = null;
 	/**
 	 * The id of the configuration we are modifying.
 	 */
-	int ccdConfigId = 0;
+	int configId = 0;
 	/**
 	 * The listener for this dialog.
 	 */
@@ -68,13 +68,13 @@ public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 	/**
 	 * Constructor.
 	 * @param owner The parent frame of this dialog. Used in calling Dialog's constructor.
-	 * @param c The ccd configuration properties.
+	 * @param c The configuration properties.
 	 */
-	public CcsCCDConfigAADialog(Frame owner,CcsCCDConfigProperties c)
+	public CcsCCDConfigAADialog(Frame owner,IcsGUIConfigProperties c)
 	{
 		super(owner,"Add/Amend CCD Configuration");
 //		setResizable(false);
-		ccdConfigProperties = c;
+		configProperties = c;
 	// there are 15 fields arranged vertically.
 	// there are 2 titled border height from 2 sets of titled border
 	// there is one set of buttons vertically 
@@ -199,9 +199,9 @@ public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 	{
 		int i;
 
-		ccdConfigId = ccdConfigProperties.getNewConfigId();
+		configId = configProperties.getNewConfigId();
 
-		nameTextField.setText("Configuration "+ccdConfigId);
+		nameTextField.setText("Configuration "+configId);
 		lowerFilterWheelTextField.setText("None");
 		upperFilterWheelTextField.setText("None");
 		xBinTextField.setText("1");
@@ -224,20 +224,20 @@ public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 	 */
 	public void amend(int id)
 	{
-		ccdConfigId = id;
+		configId = id;
 
-		nameTextField.setText(ccdConfigProperties.getConfigName(id));
-		lowerFilterWheelTextField.setText(ccdConfigProperties.getConfigLowerFilterWheel(id));
-		upperFilterWheelTextField.setText(ccdConfigProperties.getConfigUpperFilterWheel(id));
-		xBinTextField.setText(ccdConfigProperties.getConfigXBinString(id));
-		yBinTextField.setText(ccdConfigProperties.getConfigYBinString(id));
+		nameTextField.setText(configProperties.getConfigName(id));
+		lowerFilterWheelTextField.setText(configProperties.getConfigLowerFilterWheel(id));
+		upperFilterWheelTextField.setText(configProperties.getConfigUpperFilterWheel(id));
+		xBinTextField.setText(configProperties.getConfigXBinString(id));
+		yBinTextField.setText(configProperties.getConfigYBinString(id));
 		for(int i=0;i<WINDOW_COUNT;i++)
 		{
-			windowFlagCheckBox[i].setSelected((ccdConfigProperties.getConfigWindowFlags(id)&(1<<i))>0);
-			windowXStartTextField[i].setText(ccdConfigProperties.getConfigXStartString(id,i+1));
-			windowYStartTextField[i].setText(ccdConfigProperties.getConfigYStartString(id,i+1));
-			windowXEndTextField[i].setText(ccdConfigProperties.getConfigXEndString(id,i+1));
-			windowYEndTextField[i].setText(ccdConfigProperties.getConfigYEndString(id,i+1));
+			windowFlagCheckBox[i].setSelected((configProperties.getConfigWindowFlags(id)&(1<<i))>0);
+			windowXStartTextField[i].setText(configProperties.getConfigXStartString(id,i+1));
+			windowYStartTextField[i].setText(configProperties.getConfigYStartString(id,i+1));
+			windowXEndTextField[i].setText(configProperties.getConfigXEndString(id,i+1));
+			windowYEndTextField[i].setText(configProperties.getConfigYEndString(id,i+1));
 		}
 
 		this.setVisible(true);
@@ -279,8 +279,8 @@ public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 			s = nameTextField.getText();
 			try
 			{
-				testId = ccdConfigProperties.getIdFromName(s);
-				uniqueId = (testId == ccdConfigId);
+				testId = configProperties.getIdFromName(s);
+				uniqueId = (testId == configId);
 			}
 			catch(IllegalArgumentException e)
 			{
@@ -322,21 +322,22 @@ public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 				return;
 			}
 		// set data
-			ccdConfigProperties.setConfigName(ccdConfigId,s);
-			ccdConfigProperties.setConfigLowerFilterWheel(ccdConfigId,lowerFilterWheelTextField.getText());
-			ccdConfigProperties.setConfigUpperFilterWheel(ccdConfigId,upperFilterWheelTextField.getText());
-			ccdConfigProperties.setConfigXBin(ccdConfigId,xBin);
-			ccdConfigProperties.setConfigYBin(ccdConfigId,yBin);
-			ccdConfigProperties.setConfigWindowFlags(ccdConfigId,windowFlags);
+			configProperties.setConfigName(configId,s);
+			configProperties.setConfigType(configId,IcsGUIConfigProperties.CONFIG_TYPE_CCD_RATCAM);
+			configProperties.setConfigLowerFilterWheel(configId,lowerFilterWheelTextField.getText());
+			configProperties.setConfigUpperFilterWheel(configId,upperFilterWheelTextField.getText());
+			configProperties.setConfigXBin(configId,xBin);
+			configProperties.setConfigYBin(configId,yBin);
+			configProperties.setConfigWindowFlags(configId,windowFlags);
 			for(i=0;i<WINDOW_COUNT;i++)
 			{
-				ccdConfigProperties.setConfigXStart(ccdConfigId,i+1,xStart[i]);
-				ccdConfigProperties.setConfigYStart(ccdConfigId,i+1,yStart[i]);
-				ccdConfigProperties.setConfigXEnd(ccdConfigId,i+1,xEnd[i]);
-				ccdConfigProperties.setConfigYEnd(ccdConfigId,i+1,yEnd[i]);
+				configProperties.setConfigXStart(configId,i+1,xStart[i]);
+				configProperties.setConfigYStart(configId,i+1,yStart[i]);
+				configProperties.setConfigXEnd(configId,i+1,xEnd[i]);
+				configProperties.setConfigYEnd(configId,i+1,yEnd[i]);
 			}
 			if(listener != null)
-				listener.actionPerformed(true,ccdConfigId);
+				listener.actionPerformed(true,configId);
 		}
 		else
 		{
@@ -349,6 +350,9 @@ public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.4  2000/09/11 09:09:49  cjm
+// Switched off resizability, it causes the dialog not to appear under Gnome.
+//
 // Revision 0.3  2000/07/12 14:16:18  cjm
 // Added setResizable call.
 //

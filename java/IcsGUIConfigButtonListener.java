@@ -1,5 +1,5 @@
 // CcsGUIConfigButtonListener.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigButtonListener.java,v 0.1 1999-12-08 10:48:29 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigButtonListener.java,v 0.2 2000-11-30 18:47:44 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -10,32 +10,32 @@ import javax.swing.*;
 
 /**
  * This class is an ActionListener for the CcsGUI CONFIGDialog config button. It should bring up a 
- * CcsCCDConfigListDialog, and any selected configs should go back to the CONFIGDialog.
+ * IcsGUIConfigListDialog, and any selected configs should go back to the CONFIGDialog.
  * @author Chris Mottram
- * @version $Revision: 0.1 $
+ * @version $Revision: 0.2 $
  */
 public class CcsGUIConfigButtonListener implements ActionListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIConfigButtonListener.java,v 0.1 1999-12-08 10:48:29 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIConfigButtonListener.java,v 0.2 2000-11-30 18:47:44 cjm Exp $");
 	/**
 	 * The instance of the main program.
 	 */
 	private CcsGUI parent = null;
 	/**
-	 * The CONFIGDialog that wants to bring up the CcsCCDConfigListDialog.
+	 * The CONFIGDialog that wants to bring up the IcsGUIConfigListDialog.
 	 */
 	private CONFIGDialog configDialog = null;
 	/**
 	 * The list dialog to be brought up when the button is pressed.
 	 */
-	private CcsCCDConfigListDialog configListDialog = null;
+	private IcsGUIConfigListDialog configListDialog = null;
 
 	/**
 	 * Constructor. This sets the parent to be main program class.
-	 * It constructs the CcsCCDConfigListDialog to be made visible when the button is pressed.
+	 * It constructs the IcsGUIConfigListDialog to be made visible when the button is pressed.
 	 * @param p The parent object which owns the menu items.
 	 * @see #parent
 	 * @see #configListDialog
@@ -46,7 +46,8 @@ public class CcsGUIConfigButtonListener implements ActionListener
 
 		parent = p;
 		configDialog = cd;
-		configListDialog = new CcsCCDConfigListDialog(p.getFrame(),p.getStatus().getCCDConfigProperties());
+		configListDialog = new IcsGUIConfigListDialog(p.getFrame(),p.getStatus().
+								getInstrumentConfigProperties());
 	}
 
 
@@ -65,4 +66,7 @@ public class CcsGUIConfigButtonListener implements ActionListener
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.1  1999/12/08 10:48:29  cjm
+// initial revision.
+//
 //

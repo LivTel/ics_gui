@@ -1,5 +1,5 @@
 // IcsGUIConfigProperties.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.1 2000-11-28 15:45:41 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.2 2000-11-30 18:47:44 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -7,18 +7,18 @@ import java.util.*;
 import ngat.phase2.nonpersist.*;
 
 /**
- * This class holds the CCD Config information used by the CCS GUI. The information is held
+ * This class holds the Instrument Configuration information used by the CCS GUI. The information is held
  * in a Java properties file and this class extends java.util.Properties
  * @see java.util.Properties
  * @author Chris Mottram
- * @version $Revision: 0.1 $
+ * @version $Revision: 0.2 $
  */
 public class IcsGUIConfigProperties extends Properties
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.1 2000-11-28 15:45:41 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.2 2000-11-30 18:47:44 cjm Exp $");
 	/**
 	 * Configuration type specifier:CCD (RATCam).
 	 */
@@ -77,15 +77,15 @@ public class IcsGUIConfigProperties extends Properties
 
 		fos = new FileOutputStream(PROPERTIES_FILENAME);
 	// jdk 1.1.x
-		//super.save(fos,"#\n# CCS GUI CCD CONFIG configuration file\n#\n");
+		//super.save(fos,"#\n# ICS GUI Instrument CONFIG configuration file\n#\n");
 	// jdk 1.2.x
-		super.store(fos,"#\n# CCS GUI CCD CONFIG configuration file\n#\n");
+		super.store(fos,"#\n# ICS GUI Instrument CONFIG configuration file\n#\n");
 		fos.close();
 	}
 
 	/**
-	 * Method to get a list of CCD Configuration names.
-	 * @return A Vector, each element is a String with a CCD Configuration Name.
+	 * Method to get a list of Instrument Configuration names.
+	 * @return A Vector, each element is a String with a Instrument Configuration Name.
 	 */
 	public Vector getConfigNameList()
 	{
@@ -112,9 +112,9 @@ public class IcsGUIConfigProperties extends Properties
 	 * @see #getConfigType
 	 * @see #CONFIG_TYPE_LIST
 	 */
-	public List getConfigNameList(int type)
+	public Vector getConfigNameList(int type)
 	{
-		List list = null;
+		Vector list = null;
 		String s = null;
 		int i;
 
@@ -146,63 +146,32 @@ public class IcsGUIConfigProperties extends Properties
 	}
 
 	/**
-	 * Method to return a NPCCDConfig, constructed from the information against id id.
+	 * Method to return a NPInstrumentConfig, constructed from the information against id id.
 	 * @param id The Id number.
-	 * @return The constructed NPCCDConfig.
+	 * @return The constructed NPInstrumentConfig.
 	 * @exception NumberFormatException Thrown if a numeric parameter is not returned from the properties
 	 * 	file as a legal number.
-	 * @exception IllegalArgumentException Thrown if the config id specified is not a CCD type config.
+	 * @exception IllegalArgumentException Thrown if the config id specified does not have a legal type.
+	 * @see #getConfigType
 	 */
-	public NPCCDConfig getCCDConfigById(int id) throws NumberFormatException
+	public NPInstrumentConfig getConfigById(int id) throws NumberFormatException, IllegalArgumentException
 	{
-		NPCCDConfig c = null;
-		NPCCDDetector detector = null;
-		NPWindow windowArray[];
+		NPInstrumentConfig c = null;
+		int type;
 
 	// check type
-		if(getConfigType(id) != CONFIG_TYPE_CCD_RATCAM)
+		type = getConfigType(id);
+		switch(type)
 		{
-			throw new IllegalArgumentException(this.getClass().getName()+":getCCDConfigById:Id "
-			+id+" not a configuration of type CCD.");
+			case CONFIG_TYPE_CCD_RATCAM:
+				c = getCCDConfigById(id);
+				break;
+			default:
+				throw new IllegalArgumentException(this.getClass().getName()+":getConfigById:Id "
+					+id+" type "+type+" not a supported type of configuration.");
 		}
-	// construct NPCCDConfig
-		c = new NPCCDConfig(getConfigName(id));
-		c.setLowerFilterWheel(getConfigLowerFilterWheel(id));
-		c.setUpperFilterWheel(getConfigUpperFilterWheel(id));
-
-	// setup detector
-		detector = new NPCCDDetector();
-		detector.setXBin(getConfigXBin(id));
-		detector.setYBin(getConfigYBin(id));
-		// note, other NPDetector fields not set, as they are not used by the instrument.
-
-	// setup window list
-		windowArray = new NPWindow[detector.getMaxWindowCount()];
-		for(int i = 0; i < detector.getMaxWindowCount(); i++)
-		{
-		// Note, windows are only non-null if they are active in RCS created configs
-		// Lets re-create that effect here, we can use isActiveWindow as we set the window
-		// flags in the detector above.
-			if(detector.isActiveWindow(i))
-			{
-				windowArray[i] = new NPWindow();
-
-				windowArray[i].setXs(getConfigXStart(id,i));
-				windowArray[i].setYs(getConfigYStart(id,i));
-				windowArray[i].setXe(getConfigXEnd(id,i));
-				windowArray[i].setYe(getConfigYEnd(id,i));
-			}
-			else
-				windowArray[i] = null;
-		}// end for on windows
-	// set windows into detector
-		detector.setNPWindows(windowArray);
-	// Note flags are held IN the window list, so must setWindowFlags AFTER detector windows set
-		detector.setWindowFlags(getConfigWindowFlags(id));
-	// set detector into config
-		c.addNPDetector(detector);
 	// return config
-		return c;
+		return (NPInstrumentConfig)c;
 	}
 
 	/**
@@ -664,6 +633,66 @@ public class IcsGUIConfigProperties extends Properties
 		setProperty(configIdWindowStringYEnd(id,windowNumber),Integer.toString(yEnd));
 	}
 
+// methods to create an instance of an instrument config
+	/**
+	 * Method to return a NPCCDConfig, constructed from the information against id id.
+	 * @param id The Id number.
+	 * @return The constructed NPCCDConfig.
+	 * @exception NumberFormatException Thrown if a numeric parameter is not returned from the properties
+	 * 	file as a legal number.
+	 * @exception IllegalArgumentException Thrown if the config id specified does not have a legal type.
+	 */
+	private NPCCDConfig getCCDConfigById(int id) throws NumberFormatException, IllegalArgumentException
+	{
+		NPCCDConfig c = null;
+		NPCCDDetector detector = null;
+		NPWindow windowArray[];
+
+	// check type
+		if(getConfigType(id) != CONFIG_TYPE_CCD_RATCAM)
+		{
+			throw new IllegalArgumentException(this.getClass().getName()+":getCCDConfigById:Id "
+				+id+" not a configuration of type CCD.");
+		}
+	// construct NPCCDConfig
+		c = new NPCCDConfig(getConfigName(id));
+		c.setLowerFilterWheel(getConfigLowerFilterWheel(id));
+		c.setUpperFilterWheel(getConfigUpperFilterWheel(id));
+	// setup detector
+		detector = new NPCCDDetector();
+		detector.setXBin(getConfigXBin(id));
+		detector.setYBin(getConfigYBin(id));
+		// note, other NPDetector fields not set, as they are not used by the instrument.
+
+	// setup window list
+		windowArray = new NPWindow[detector.getMaxWindowCount()];
+		for(int i = 0; i < detector.getMaxWindowCount(); i++)
+		{
+		// Note, windows are only non-null if they are active in RCS created configs
+		// Lets re-create that effect here, we can use isActiveWindow as we set the window
+		// flags in the detector above.
+			if(detector.isActiveWindow(i))
+			{
+				windowArray[i] = new NPWindow();
+
+				windowArray[i].setXs(getConfigXStart(id,i));
+				windowArray[i].setYs(getConfigYStart(id,i));
+				windowArray[i].setXe(getConfigXEnd(id,i));
+				windowArray[i].setYe(getConfigYEnd(id,i));
+			}
+			else
+				windowArray[i] = null;
+		}// end for on windows
+	// set windows into detector
+		detector.setNPWindows(windowArray);
+	// Note flags are held IN the window list, so must setWindowFlags AFTER detector windows set
+		detector.setWindowFlags(getConfigWindowFlags(id));
+	// set detector into config
+		c.addNPDetector(detector);
+	// return config
+		return c;
+	}
+
 // method to check values in the property file.
 	/**
 	 * Method to check whether a number is a legal configuration type number.
@@ -863,6 +892,9 @@ public class IcsGUIConfigProperties extends Properties
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.1  2000/11/28 15:45:41  cjm
+// initial revision.
+//
 // Revision 0.1  2000/11/28 12:09:45  cjm
 // initial revision.
 //

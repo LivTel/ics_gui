@@ -1,5 +1,5 @@
 // CcsGUIStatus.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIStatus.java,v 0.2 1999-12-09 17:02:12 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIStatus.java,v 0.3 2000-11-30 18:47:44 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -7,14 +7,14 @@ import java.util.*;
 /**
  * This class holds status information for the CcsGUI program.
  * @author Chris Mottram
- * @version $Revision: 0.2 $
+ * @version $Revision: 0.3 $
  */
 public class CcsGUIStatus
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIStatus.java,v 0.2 1999-12-09 17:02:12 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIStatus.java,v 0.3 2000-11-30 18:47:44 cjm Exp $");
 	/**
 	 * File name containing properties for ccs gui.
 	 */
@@ -29,10 +29,10 @@ public class CcsGUIStatus
 	 */
 	private Properties properties = null;
 	/**
-	 * A list of CCD Configurations held in a properties file. These properties are used for selecting and 
-	 * filling CCD Configurations.
+	 * A list of Instrument Configurations held in a properties file. These properties are used for selecting and 
+	 * filling Instrument Configurations.
 	 */
-	private CcsCCDConfigProperties configProperties = null;
+	private IcsGUIConfigProperties configProperties = null;
 	/**
 	 * List of client threads running.
 	 */
@@ -49,7 +49,7 @@ public class CcsGUIStatus
 		super();
 		clientThreadList = new Vector();
 		properties = new Properties();
-		configProperties = new CcsCCDConfigProperties();
+		configProperties = new IcsGUIConfigProperties();
 	}
 
 	/**
@@ -66,23 +66,23 @@ public class CcsGUIStatus
 	}
 
 	/**
-	 * Method to load CCD Configurations.
+	 * Method to load Instrument Configurations.
 	 * Calls configProperties.load.
 	 * @see #configProperties
-	 * @see CcsCCDConfigProperties#load
+	 * @see IcsGUIConfigProperties#load
 	 */
-	public void loadCCDConfig() throws FileNotFoundException,IOException
+	public void loadInstrumentConfig() throws FileNotFoundException,IOException
 	{
 		configProperties.load();
 	}
 
 	/**
-	 * Method to save CCD Configurations.
+	 * Method to save Instrument Configurations.
 	 * Calls configProperties.load.
 	 * @see #configProperties
-	 * @see CcsCCDConfigProperties#save
+	 * @see IcsGUIConfigProperties#save
 	 */
-	public void saveCCDConfig() throws IOException
+	public void saveInstrumentConfig() throws IOException
 	{
 		configProperties.save();
 	}
@@ -141,11 +141,11 @@ public class CcsGUIStatus
 	}
 
 	/**
-	 * Get the CCD Configuration Property list.
+	 * Get the Instrument Configuration Property list.
 	 * @return The properties.
 	 * @see #configProperties
 	 */
-	public CcsCCDConfigProperties getCCDConfigProperties()
+	public IcsGUIConfigProperties getInstrumentConfigProperties()
 	{
 		return configProperties;
 	}
@@ -219,6 +219,9 @@ public class CcsGUIStatus
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.2  1999/12/09 17:02:12  cjm
+// More functionality added.
+//
 // Revision 0.1  1999/11/22 09:53:49  cjm
 // initial revision.
 //
