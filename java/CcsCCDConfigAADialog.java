@@ -1,5 +1,5 @@
 // CcsCCDConfigAADialog.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/CcsCCDConfigAADialog.java,v 0.1 1999-12-09 16:39:57 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/CcsCCDConfigAADialog.java,v 0.2 2000-02-08 17:39:56 cjm Exp $
 import java.lang.*;
 import java.util.*;
 import java.awt.*;
@@ -13,14 +13,14 @@ import ngat.swing.*;
 /**
  * This class provides an Add and Amend facility for CCD Configurations.
  * @author Chris Mottram
- * @version $Revision: 0.1 $
+ * @version $Revision: 0.2 $
  */
 public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: CcsCCDConfigAADialog.java,v 0.1 1999-12-09 16:39:57 cjm Exp $");
+	public final static String RCSID = new String("$Id: CcsCCDConfigAADialog.java,v 0.2 2000-02-08 17:39:56 cjm Exp $");
 	/**
 	 * Button height.
 	 */
@@ -34,7 +34,7 @@ public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 	 */
 	public final static int DIALOG_WIDTH = 250;
 	/**
-	 * Number of windows in a configuration
+	 * Number of windows in a configuration.
 	 */
 	public final static int WINDOW_COUNT = 4;
 	/**
@@ -59,6 +59,7 @@ public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 	JTextField upperFilterWheelTextField = null;
 	JTextField xBinTextField = null;
 	JTextField yBinTextField = null;
+	JCheckBox windowFlagCheckBox[] = null;
 	JTextField windowXStartTextField[] = null;
 	JTextField windowYStartTextField[] = null;
 	JTextField windowXEndTextField[] = null;
@@ -73,10 +74,10 @@ public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 	{
 		super(owner,"Add/Amend CCD Configuration");
 		ccdConfigProperties = c;
-	// there are 13 fields arranged vertically.
+	// there are 15 fields arranged vertically.
 	// there are 2 titled border height from 2 sets of titled border
 	// there is one set of buttons vertically 
-		int height = (13*FIELD_HEIGHT)+(2*TITLED_BORDER_HEIGHT)+BUTTON_HEIGHT;
+		int height = (15*FIELD_HEIGHT)+(2*TITLED_BORDER_HEIGHT)+BUTTON_HEIGHT;
 
 		getContentPane().setLayout(new SizedBoxLayout(getContentPane(),BoxLayout.Y_AXIS,
 			new Dimension(DIALOG_WIDTH,height)));
@@ -130,6 +131,7 @@ public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 		yBinTextField = new JTextField();
 		subPanel.add(yBinTextField);
 	// Windows
+		windowFlagCheckBox = new JCheckBox[WINDOW_COUNT];
 		windowXStartTextField = new JTextField[WINDOW_COUNT];
 		windowYStartTextField = new JTextField[WINDOW_COUNT];
 		windowXEndTextField = new JTextField[WINDOW_COUNT];
@@ -148,7 +150,12 @@ public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 			subPanel.add(windowPanel);
 			windowPanel.setBorder(new TitledSmallerBorder("Window "+(i+1)));
 			windowPanel.setLayout(new SizedGridLayout(0,2,
-				new Dimension(DIALOG_WIDTH,TITLED_BORDER_HEIGHT+(WINDOW_COUNT*FIELD_HEIGHT))));
+				new Dimension(DIALOG_WIDTH,TITLED_BORDER_HEIGHT+(5*FIELD_HEIGHT))));
+		// window flag
+			windowFlagCheckBox[i] = new JCheckBox("Use");
+			windowPanel.add(windowFlagCheckBox[i]);
+			label = new JLabel("");// for grid layout only
+			windowPanel.add(label);
 		// x start
 			label = new JLabel("X Start");
 			windowPanel.add(label);
@@ -200,6 +207,7 @@ public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 		yBinTextField.setText("1");
 		for(i=0;i<WINDOW_COUNT;i++)
 		{
+			windowFlagCheckBox[i].setSelected(false);
 			windowXStartTextField[i].setText("-1");
 			windowYStartTextField[i].setText("-1");
 			windowXEndTextField[i].setText("-1");
@@ -224,6 +232,7 @@ public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 		yBinTextField.setText(ccdConfigProperties.getConfigYBinString(id));
 		for(int i=0;i<WINDOW_COUNT;i++)
 		{
+			windowFlagCheckBox[i].setSelected((ccdConfigProperties.getConfigWindowFlags(id)&(1<<i))>0);
 			windowXStartTextField[i].setText(ccdConfigProperties.getConfigXStartString(id,i+1));
 			windowYStartTextField[i].setText(ccdConfigProperties.getConfigYStartString(id,i+1));
 			windowXEndTextField[i].setText(ccdConfigProperties.getConfigXEndString(id,i+1));
@@ -255,7 +264,7 @@ public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 		String s = null;
 		int testId = 0;
 		int i;
-		int xBin,yBin;
+		int xBin,yBin,windowFlags;
 		int xStart[] = new int[WINDOW_COUNT];
 		int yStart[] = new int[WINDOW_COUNT];
 		int xEnd[] = new int[WINDOW_COUNT];
@@ -293,8 +302,11 @@ public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 				yBin = Integer.parseInt(yBinTextField.getText());
 				if(yBin < 1)
 					throw new NumberFormatException("Y Binning is less than one");
+				windowFlags = 0;
 				for(i=0;i<WINDOW_COUNT;i++)
 				{
+					if(windowFlagCheckBox[i].isSelected())
+						windowFlags |= (1<<i);
 					xStart[i] = Integer.parseInt(windowXStartTextField[i].getText());
 					yStart[i] = Integer.parseInt(windowYStartTextField[i].getText());
 					xEnd[i] = Integer.parseInt(windowXEndTextField[i].getText());
@@ -314,6 +326,7 @@ public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 			ccdConfigProperties.setConfigUpperFilterWheel(ccdConfigId,upperFilterWheelTextField.getText());
 			ccdConfigProperties.setConfigXBin(ccdConfigId,xBin);
 			ccdConfigProperties.setConfigYBin(ccdConfigId,yBin);
+			ccdConfigProperties.setConfigWindowFlags(ccdConfigId,windowFlags);
 			for(i=0;i<WINDOW_COUNT;i++)
 			{
 				ccdConfigProperties.setConfigXStart(ccdConfigId,i+1,xStart[i]);
@@ -335,4 +348,7 @@ public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.1  1999/12/09 16:39:57  cjm
+// initial revision.
+//
 //
