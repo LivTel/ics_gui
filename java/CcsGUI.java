@@ -1,5 +1,5 @@
 // CcsGUI.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.9 2000-03-10 11:51:37 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.10 2000-06-19 08:50:28 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -19,14 +19,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ccs GUI.
  * @author Chris Mottram
- * @version $Revision: 0.9 $
+ * @version $Revision: 0.10 $
  */
 public class CcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.9 2000-03-10 11:51:37 cjm Exp $");
+	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.10 2000-06-19 08:50:28 cjm Exp $");
 	/**
 	 * The stream to write error messages to - defaults to System.err.
 	 */
@@ -130,7 +130,7 @@ public class CcsGUI
 			System.err.println("UIManager.setLookAndFeel failed:"+e);
 		}
 	// create and display a splash screen whilst we are initialising
-		SplashScreen splashScreen = new SplashScreen(350,200,"lt.gif",
+		ngat.swing.SplashScreen splashScreen = new ngat.swing.SplashScreen(350,200,"lt.gif",
 			"Liverpool John Moores University",null);
 		splashScreen.show(30000);
 	// construct gui main object
@@ -173,11 +173,16 @@ public class CcsGUI
 	 */
 	private void initGUI()
 	{
+		Image image = null;
+
 	// create the frame level layout manager
 		GridBagLayout gridBagLayout = new GridBagLayout();
         	GridBagConstraints gridBagCon = new GridBagConstraints();
 	// Create the top-level container.
 		frame = new MinimumSizeFrame("CCS Interface",new Dimension(400,275));
+	// set icon image
+		image = Toolkit.getDefaultToolkit().getImage("lt_icon.gif");
+		frame.setIconImage(image);
 
 		frame.getContentPane().setLayout(gridBagLayout);
 		initMenuBar();
@@ -885,7 +890,7 @@ public class CcsGUI
 			server.close();
 		}
 		server = null;
-		log("ISS Server stoped.");
+		log("ISS Server stopped.");
 		messageDialogMenuItem.setEnabled(false);
 	}
 
@@ -1011,6 +1016,9 @@ public class CcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.9  2000/03/10 11:51:37  cjm
+// Modified sendCommand to return the thread it starts.
+//
 // Revision 0.9  2000/03/10 11:44:09  cjm
 // Modified sendCommand to return the started thread.
 //

@@ -1,5 +1,5 @@
 # Makefile -*- mode: Fundamental;-*-
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.8 2000-06-13 17:26:12 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.9 2000-06-19 08:50:34 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -33,7 +33,7 @@ CONFIG_PROPERTY_SRCS	= ltccd1.livjm.ac.uk.ccs_gui.properties ltspec1.ccs_gui.pro
 CONFIG_OBJS	= $(CONFIG_PROPERTY_SRCS:%.properties=$(BINDIR)/%.properties)
 
 
-top: $(OBJS) config splash docs
+top: $(OBJS) config gifs docs
 
 $(BINDIR)/%.class:%.java
 	$(JAVAC) $(JAVAC_OPTIONS) -d $(BINDIR) $<
@@ -47,10 +47,10 @@ $(BINDIR)/%.properties: %.properties
 $(BINDIR)/ccs_gui.properties: $(HOST).ccs_gui.properties
 	$(CP) $(HOST).ccs_gui.properties $(BINDIR)/ccs_gui.properties
 
-splash: $(BINDIR)/lt.gif
+gifs: $(BINDIR)/lt.gif $(BINDIR)/lt_icon.gif
 
-$(BINDIR)/lt.gif: lt.gif
-	$(CP) lt.gif $(BINDIR)/lt.gif
+$(BINDIR)/%.gif: %.gif
+	$(CP) $< $@
 
 docs: $(DOCS)
 
@@ -74,6 +74,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.8  2000/06/13 17:26:12  cjm
+# Changes.
+#
 # Revision 0.7  1999/12/14 12:18:27  cjm
 # Added splash gif targets.
 #
