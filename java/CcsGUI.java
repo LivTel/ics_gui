@@ -1,5 +1,5 @@
 // CcsGUI.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.10 2000-06-19 08:50:28 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.11 2000-06-27 11:30:34 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -19,14 +19,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ccs GUI.
  * @author Chris Mottram
- * @version $Revision: 0.10 $
+ * @version $Revision: 0.11 $
  */
 public class CcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.10 2000-06-19 08:50:28 cjm Exp $");
+	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.11 2000-06-27 11:30:34 cjm Exp $");
 	/**
 	 * The stream to write error messages to - defaults to System.err.
 	 */
@@ -72,6 +72,13 @@ public class CcsGUI
 	 */
 	private JTextArea logTextArea = null;
 	/**
+	 * Field holding the maximum number of lines of text the log text area should have.
+	 * This field is used in the log method to stop the log text area getting so long CcsGUI runs
+	 * out of memory. A GUITextLengthLimiter is used to do this.
+	 * @see #log
+	 */
+	private int logTextAreaLineLimit = 500;
+	/**
 	 * CcsGUI status information.
 	 */
 	private CcsGUIStatus status = null;
@@ -112,6 +119,20 @@ public class CcsGUI
 
 	/**
 	 * The main routine, called when Ccs is executed.
+	 * This does the following:
+	 * <ul>
+	 * <li>Sets up the look and feel.
+	 * <li>Starts a splash screen.
+	 * <li>Constructs an instance of CcsGUI.
+	 * <li>Calls initStatus, to load the properties.
+	 * <li>Calls parseArguments, to look at command line arguments.
+	 * <li>Calls initGUI, to create the screens.
+	 * <li>Calls run.
+	 * </ul>
+	 * @see #initStatus
+	 * @see #parseArguments
+	 * @see #initGUI
+	 * @see #run
 	 */
 	public static void main(String[] args)
 	{
@@ -170,6 +191,8 @@ public class CcsGUI
 	 * Creates the frame and creates the widgets associated with it.
 	 * Creates the menu bar.
 	 * @see #frame
+	 * @see #initMenuBar
+	 * @see #initMainPanel
 	 */
 	private void initGUI()
 	{
@@ -211,6 +234,12 @@ public class CcsGUI
 		frame.addWindowListener(new CcsGUIWindowListener(this));
 	}
 
+	/**
+	 * Initialise the main panel. This consists of setting the panel layout, and then 
+	 * adding the status panel and the log panel.
+	 * @see #initStatusPanel
+	 * @see #initLogPanel
+	 */
 	private void initMainPanel(JPanel panel)
 	{
 	// create the frame level layout manager
@@ -302,9 +331,13 @@ public class CcsGUI
 
 	/**
 	 * Initialise log text area.
+	 * Also initialises logTextAreaLineLimit, the maximum number of lines we are allowing in
+	 * the log text area, by reading the number from the property file.
 	 * @param panel The panel to put the status panel in.
 	 * @param gridBagLayout The grid bag layout to set constraints for, before adding things
 	 * 	to the panel.
+	 * @see #logTextArea
+	 * @see #logTextAreaLineLimit
 	 */
 	private void initLogPanel(JPanel panel,GridBagLayout gridBagLayout)
 	{
@@ -331,7 +364,17 @@ public class CcsGUI
 		gridBagCon.weighty = 1.0;
 		gridBagLayout.setConstraints(areaScrollPane,gridBagCon);
 		panel.add(areaScrollPane);
+	// initialise logTextArea line limit from property file
+		try
+		{
+			logTextAreaLineLimit = status.getPropertyInteger("ccs_gui.log_text.max_length");
+		}
+		catch(NumberFormatException e)
+		{ // non-fatal error...
+			error(this.getClass().getName()+":initLogPanel:initialsing log text area line limit:"+e);
+		}
 	}
+
 	/**
 	 * Method to initialise the top-level menu bar.
 	 */
@@ -634,7 +677,10 @@ public class CcsGUI
 
 	/**
 	 * Routine to write the string, terminted with a new-line, to the current log-file.
-	 * Also written to the log text area
+	 * Also written to the log text area.
+	 * The actual appending is done in the swing thread, using an ngat.swing.GUITextAppender.
+	 * A ngat.swing.GUITextLengthLimiter is also invoked later, so that the logging text area
+	 * does not get so long it swallows all the memory.
 	 * @param s The string to write.
 	 * @see #logTextArea
 	 * @see #logStream
@@ -644,12 +690,17 @@ public class CcsGUI
 		if(logTextArea != null)
 		{
 			SwingUtilities.invokeLater(new GUITextAppender(logTextArea,s+"\n",true));
+			SwingUtilities.invokeLater(new GUITextLengthLimiter(logTextArea,logTextAreaLineLimit,false));
 		}
 		logStream.println(s);
 	}
 
 	/**
 	 * Routine to write the string, terminted with a new-line, to the current error-file.
+	 * The error is added to the log text area, the actual appending is done in the swing thread, 
+	 * using an ngat.swing.GUITextAppender.
+	 * A ngat.swing.GUITextLengthLimiter is also invoked later, so that the logging text area
+	 * does not get so long it swallows all the memory.
 	 * @param s The string to write.
 	 * @see #errorStream
 	 */
@@ -658,6 +709,7 @@ public class CcsGUI
 		if(logTextArea != null)
 		{
 			SwingUtilities.invokeLater(new GUITextAppender(logTextArea,s+"\n",true));
+			SwingUtilities.invokeLater(new GUITextLengthLimiter(logTextArea,logTextAreaLineLimit,false));
 		}
 		errorStream.println(s);
 	}
@@ -1016,6 +1068,9 @@ public class CcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.10  2000/06/19 08:50:28  cjm
+// Backup.
+//
 // Revision 0.9  2000/03/10 11:51:37  cjm
 // Modified sendCommand to return the thread it starts.
 //
