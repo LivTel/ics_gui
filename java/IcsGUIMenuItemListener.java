@@ -1,5 +1,5 @@
 // CcsGUIMenuItemListener.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIMenuItemListener.java,v 0.3 2000-11-30 18:47:44 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIMenuItemListener.java,v 0.4 2002-05-23 12:44:53 cjm Exp $
 import java.lang.*;
 import java.lang.reflect.*;
 import java.io.*;
@@ -19,7 +19,7 @@ public class CcsGUIMenuItemListener implements ActionListener
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIMenuItemListener.java,v 0.3 2000-11-30 18:47:44 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIMenuItemListener.java,v 0.4 2002-05-23 12:44:53 cjm Exp $");
 	/**
 	 * The parent to the menu item listener. The instance of the main program.
 	 */
@@ -61,7 +61,16 @@ public class CcsGUIMenuItemListener implements ActionListener
 
 	/**
 	 * This fills the dialogClassNameList hashtable with
-	 * a mapping from menu item names to CcsCommandDialogs. The dialogs are created using the
+	 * a mapping from menu item names to CcsCommandDialogs. The mapping between menu item name and
+	 * command dialog class name is held in the properties file, which must have been loaded before
+	 * this method is invoked.
+	 * <ul>
+	 * <li>The <b>ics_gui.command_dialog_mapping.<i>&lt;N&gt;</i>.menu_name</b> property holds the 
+	 * 	<i>&lt;N&gt;</i>'th menu name (where <i>&lt;N&gt;</i> starts at zero).
+	 * <li>The <b>ics_gui.command_dialog_mapping.<i>&lt;N&gt;</i>.dialog_name</b> property holds the 
+	 * 	<i>&lt;N&gt;</i>'th dialog class name (where <i>&lt;N&gt;</i> starts at zero).
+	 * </ul>
+	 * The dialogs are created from the class name using the
 	 * createDialog method. The dialogListener is added as a dialog listener.
 	 * @see #dialogListener
 	 * @see #dialogClassNameList
@@ -69,67 +78,67 @@ public class CcsGUIMenuItemListener implements ActionListener
 	 */
 	public void createMapping()
 	{
-		String mappingList[][] = 
-		{
-			{"Acquire","ACQUIREDialog"},
-			{"Arc","ARCDialog"},
-			{"Bias","BIASDialog"},
-			{"Dark","DARKDialog"},
-			{"Lamp Flat","LAMPFLATDialog"},
-			{"Sky Flat","SKYFLATDialog"},
-			{"Glance","GLANCEDialog"},
-			{"Movie","MOVIEDialog"},
-			{"Multrun","MULTRUNDialog"},
-			{"Runat","RUNATDialog"},
-			{"Save","SAVEDialog"},
-			{"Abort","ABORTDialog"},
-			{"Get Status","GET_STATUSDialog"},
-			{"Pause","PAUSEDialog"},
-			{"Reboot","REBOOTDialog"},
-			{"Resume","RESUMEDialog"},
-			{"Stop","STOPDialog"},
-			{"Config","CONFIGDialog"},
-			{"Lamp Focus","LAMPFOCUSDialog"},
-			{"Set Logging","SET_LOGGINGDialog"},
-			{"Star Focus","STARFOCUSDialog"},
-			{"Telescope Focus","TELFOCUSDialog"},
-			{"Test","TESTDialog"},
-		};
 		CcsCommandDialog dialog = null;
+		CcsGUIStatus status = null;
 		String menuName = null;
 		String dialogClassName = null;
-		int i;
+		int index;
+		boolean done;
 
-		for(i=0;i<mappingList.length;i++)
+		status = parent.getStatus();
+		done = false;
+		index = 0;
+		while(!done)
 		{
-			menuName = mappingList[i][0];
-			dialogClassName = mappingList[i][1];
-			try
+		// get menu/dialog class name at index
+			menuName = status.getProperty("ics_gui.command_dialog_mapping."+index+".menu_name");
+			dialogClassName = status.getProperty("ics_gui.command_dialog_mapping."+index+".dialog_name");
+			if(menuName == null)
+				done = true;
+			if(dialogClassName == null)
 			{
-				dialog = createDialog(dialogClassName);
+				parent.error("createMapping:Got menu name "+menuName+" at index "+index+
+						" but failed to find associated dialogClassName.");
+				done = true;
 			}
-			catch(Exception e)// from createDialog
+		// if we haven't reached the end of the list, try to create the dialog and add it to the hashtable.
+			if(done == false)
 			{
-				parent.error("Failed to create dialog class "+dialogClassName+" for menu:"+
-					menuName+" : "+e);
-				dialog = null;
-			}
-			if(dialog != null)
-			{
-				dialog.addGUIDialogListener(dialogListener);
-				if(dialog instanceof CONFIGDialog)
+			// try to create dialog
+				try
 				{
-					CONFIGDialog configDialog = (CONFIGDialog)dialog;
-					CcsGUIConfigButtonListener configButtonListener = null;
-
-					configButtonListener = new CcsGUIConfigButtonListener(parent,configDialog);
-					configDialog.addConfigButtonActionListener(configButtonListener);
-					configDialog.setConfigProperties(parent.getStatus().
-						getInstrumentConfigProperties());
+					dialog = createDialog(dialogClassName);
 				}
-				dialogClassNameList.put(menuName,dialog);
-			}
-		}// end for on list
+				catch(Exception e)// from createDialog
+				{
+					parent.error("Failed to create dialog class "+dialogClassName+" for menu:"+
+						menuName+" : "+e);
+					dialog = null;
+				}
+			// if dialog was created successfully...
+				if(dialog != null)
+				{
+				// add dialog listener
+					dialog.addGUIDialogListener(dialogListener);
+				// special case for the config dialog, add config button listener
+				// tell config dialog about config properties.
+					if(dialog instanceof CONFIGDialog)
+					{
+						CONFIGDialog configDialog = (CONFIGDialog)dialog;
+						CcsGUIConfigButtonListener configButtonListener = null;
+	
+						configButtonListener = new CcsGUIConfigButtonListener(parent,
+							configDialog);
+						configDialog.addConfigButtonActionListener(configButtonListener);
+						configDialog.setConfigProperties(parent.getStatus().
+							getInstrumentConfigProperties());
+					}
+				// add dialog to dialogClassNameList hashtable, with menu name as key.
+					dialogClassNameList.put(menuName,dialog);
+				}// end if dialog was not null
+				index++;
+			}// end if not done
+		}// end while on list
 	}
 
 	/**
@@ -322,6 +331,9 @@ public class CcsGUIMenuItemListener implements ActionListener
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.3  2000/11/30 18:47:44  cjm
+// Made generic for other instruments.
+//
 // Revision 0.2  1999/12/09 17:02:12  cjm
 // More functionality added.
 //
