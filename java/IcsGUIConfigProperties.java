@@ -1,5 +1,5 @@
 // IcsGUIConfigProperties.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.3 2000-12-20 17:56:02 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.4 2001-02-27 13:45:03 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -11,14 +11,14 @@ import ngat.phase2.nonpersist.*;
  * in a Java properties file and this class extends java.util.Properties
  * @see java.util.Properties
  * @author Chris Mottram
- * @version $Revision: 0.3 $
+ * @version $Revision: 0.4 $
  */
 public class IcsGUIConfigProperties extends Properties
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.3 2000-12-20 17:56:02 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.4 2001-02-27 13:45:03 cjm Exp $");
 	/**
 	 * Configuration type specifier:CCD (RATCam).
 	 */
@@ -687,7 +687,7 @@ public class IcsGUIConfigProperties extends Properties
 	// Note flags are held IN the window list, so must setWindowFlags AFTER detector windows set
 		detector.setWindowFlags(getConfigWindowFlags(id));
 	// set detector into config
-		c.addNPDetector(detector);
+		c.setNPDetector(0,detector);
 	// return config
 		return c;
 	}
@@ -891,6 +891,9 @@ public class IcsGUIConfigProperties extends Properties
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.3  2000/12/20 17:56:02  cjm
+// Fixed window code.
+//
 // Revision 0.2  2000/11/30 18:47:44  cjm
 // Made generic for other instruments.
 //
