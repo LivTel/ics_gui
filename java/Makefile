@@ -1,5 +1,5 @@
 # Makefile
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.25 2004-03-23 14:30:20 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.26 2004-04-19 18:15:51 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -40,15 +40,15 @@ CCS_GUI_PROPERTY_SRCS	= ltccd1.ccs_gui.properties \
 	spectrograph.scs_gui.properties \
 	ltobs9.ratcam.ccs_gui.properties ltobs9.fartcam.ccs_gui.properties ltobs9.supircam.ccs_gui.properties \
 	ltobs9.spectrograph.scs_gui.properties supircam1.ccs_gui.properties \
-	ftspec1.ccs_gui.properties ltobs9.ftspec.ics_gui.properties \
+	ftspec1.ccs_gui.properties spectrograph.ccs_gui.properties ltobs9.ftspec.ics_gui.properties \
 	lttmc.ccs_gui.properties ftntmc.ccs_gui.properties
 CCS_GUI_CONFIG_PROPERTY_SRCS = ltccd1.ccs_gui_config.properties ltccd2.ccs_gui_config.properties \
 	ltccd3.ccs_gui_config.properties ftccd1.ccs_gui_config.properties supircam1.ccs_gui_config.properties \
-	ftspec1.ccs_gui_config.properties \
+	ftspec1.ccs_gui_config.properties spectrograph.ccs_gui_config.properties \
 	lttmc.ccs_gui_config.properties ftntmc.ccs_gui_config.properties
 CCS_GUI_FITS_PROPERTY_SRCS = ltccd1.ccs_gui.fits.properties ltccd2.ccs_gui.fits.properties \
 	ltccd3.ccs_gui.fits.properties ftccd1.ccs_gui.fits.properties \
-	ftspec1.ccs_gui.fits.properties \
+	ftspec1.ccs_gui.fits.properties spectrograph.ccs_gui.fits.properties \
 	lttmc.ccs_gui.fits.properties ftntmc.ccs_gui.fits.properties  
 PROPERTY_OBJS	= $(PROPERTY_SRCS:%.properties=$(BINDIR)/%.properties)
 
@@ -141,6 +141,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.25  2004/03/23 14:30:20  cjm
+# Added ftspec gif.
+#
 # Revision 0.24  2004/03/23 13:56:49  cjm
 # Added ftspec1 configs.
 #
