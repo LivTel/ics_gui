@@ -1,5 +1,5 @@
 // CcsGUIClientConnectionThread.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.11 2001-07-10 18:21:28 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.12 2001-08-15 08:41:36 cjm Exp $
 
 import java.lang.*;
 import java.io.*;
@@ -9,20 +9,21 @@ import java.util.*;
 import ngat.net.*;
 import ngat.message.base.*;
 import ngat.message.ISS_INST.*;
+import ngat.util.StringUtilities;
 
 /**
  * The CcsGUIClientConnectionThread extends TCPClientConnectionThread. 
  * It implements the generic ISS instrument command protocol.
  * It is used to send commands from the CcsGUI to the Ccs.
  * @author Chris Mottram
- * @version $Revision: 0.11 $
+ * @version $Revision: 0.12 $
  */
 public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.11 2001-07-10 18:21:28 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.12 2001-08-15 08:41:36 cjm Exp $");
 	/**
 	 * The CcsGUI object.
 	 */
@@ -48,6 +49,9 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	/**
 	 * This routine processes the acknowledge object returned by the server. Currently
 	 * prints out a message, giving the time to completion if the acknowledge was not null.
+	 * @see #printFilenameAck
+	 * @see #printCalibrateDpAck
+	 * @see #printExposeDpAck
 	 */
 	protected void processAcknowledge()
 	{
@@ -58,47 +62,71 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 		}
 		parent.log("Acknowledgment received for command:"+command.getClass().getName()+
 			" with time to complete:"+acknowledge.getTimeToComplete()+".");
-		if(acknowledge instanceof MOVIE_ACK)
-			printMovieAck((MOVIE_ACK)acknowledge);
-		if(acknowledge instanceof MULTRUN_ACK)
-			printMultrunAck((MULTRUN_ACK)acknowledge);
-		if(acknowledge instanceof MULTRUN_DP_ACK)
-			printMultrunDpAck((MULTRUN_DP_ACK)acknowledge);
+		if(acknowledge instanceof FILENAME_ACK)
+			printFilenameAck((FILENAME_ACK)acknowledge);
+		if(acknowledge instanceof CALIBRATE_DP_ACK)
+			printCalibrateDpAck((CALIBRATE_DP_ACK)acknowledge);
+		if(acknowledge instanceof EXPOSE_DP_ACK)
+			printExposeDpAck((EXPOSE_DP_ACK)acknowledge);
 	}
 
 	/**
-	 * Routine to print out more details if the acknowledge was a MOVIE_ACK. This is currently the
-	 * returned filename. The filename label is also updated.
-	 * @param movieAck The acknowledge object passed back to the client.
+	 * Routine to print out more details if the acknowledge was a (subclass of) FILENAME_ACK. 
+	 * This prints out the returned filename. The filename label is also updated.
+	 * @param filenameAck The acknowledge object passed back to the client.
 	 * @see CcsGUI#setFilenameLabel
 	 */
-	private void printMovieAck(MOVIE_ACK movieAck)
+	private void printFilenameAck(FILENAME_ACK filenameAck)
 	{
-		parent.log("The current movie frame is:"+movieAck.getFilename()+".");
-		parent.setFilenameLabel(movieAck.getFilename());
+		String commandName = null;
+
+	// get command name from class of ACK
+		commandName = filenameAck.getClass().getName();
+		commandName = StringUtilities.replace(commandName,"_DP_ACK","");
+		commandName = StringUtilities.replace(commandName,"_ACK","");
+	// print filename to log
+		parent.log("The current "+commandName+" frame is:"+filenameAck.getFilename()+".");
+	// update filename label
+		parent.setFilenameLabel(filenameAck.getFilename());
 	}
 
 	/**
-	 * Routine to print out more details if the acknowledge was a MULTRUN_ACK. This is currently the
-	 * returned filename. The filename label is also updated.
-	 * @param multrunAck The acknowledge object passed back to the client.
-	 * @see CcsGUI#setFilenameLabel
+	 * Routine to print out more details if the acknowledge was a (subclass of) CALIBRATE_DP_ACK. 
+	 * Note the returned filename will have already been printed out by printFilenameAck, 
+	 * as CALIBRATE_DP_ACK is a sub-class of FILENAME_ACK.
+	 * @param calibrateDpAck The acknowledge object passed back to the client.
+	 * @see #printFilenameAck
 	 */
-	private void printMultrunAck(MULTRUN_ACK multrunAck)
+	private void printCalibrateDpAck(CALIBRATE_DP_ACK calibrateDpAck)
 	{
-		parent.log("The current Multrun frame is:"+multrunAck.getFilename()+".");
-		parent.setFilenameLabel(multrunAck.getFilename());
+		String commandName = null;
+
+	// get command name from class of ACK
+		commandName = calibrateDpAck.getClass().getName();
+		commandName = StringUtilities.replace(commandName,"_DP_ACK","");
+	// print data pipeline values to log.
+		parent.log(commandName+":Mean Counts:"+calibrateDpAck.getMeanCounts()+
+			":Peak Counts:"+calibrateDpAck.getPeakCounts());
 	}
 
 	/**
-	 * Routine to print out more details if the acknowledge was a MULTRUN_DP_ACK. Note the returned filename
-	 * will have already been printed out by printMultrunAck, as MULTRUN_DP_ACK is a sub-class of MULTRUN_ACK.
-	 * @param multrunDpAck The acknowledge object passed back to the client.
+	 * Routine to print out more details if the acknowledge was a (subclass of) EXPOSE_DP_ACK. 
+	 * Note the returned filename will have already been printed out by printFilenameAck, 
+	 * as EXPOSE_DP_ACK is a sub-class of FILENAME_ACK.
+	 * @param exposeDpAck The acknowledge object passed back to the client.
+	 * @see #printFilenameAck
 	 */
-	private void printMultrunDpAck(MULTRUN_DP_ACK multrunDpAck)
+	private void printExposeDpAck(EXPOSE_DP_ACK exposeDpAck)
 	{
-		parent.log("Seeing:"+multrunDpAck.getSeeing()+":Brightest Counts:"+multrunDpAck.getCounts()+
-			":Brightest X Pixel:"+multrunDpAck.getXpix()+":Brightest Y Pixel:"+multrunDpAck.getYpix());
+		String commandName = null;
+
+	// get command name from class of ACK
+		commandName = exposeDpAck.getClass().getName();
+		commandName = StringUtilities.replace(commandName,"_DP_ACK","");
+	// print data pipeline values to log.
+		parent.log(commandName+" Seeing:"+exposeDpAck.getSeeing()+
+			":Brightest Counts:"+exposeDpAck.getCounts()+
+			":Brightest X Pixel:"+exposeDpAck.getXpix()+":Brightest Y Pixel:"+exposeDpAck.getYpix());
 	}
 
 	/**
@@ -299,17 +327,26 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 
 	/**
 	 * Method to print out parameters associated with a TELFOCUS_DONE (sub)class instance.
-	 * These parameters are <i>Seeing</i> and <i>Current Focus</i>.
+	 * These parameters are <i>Seeing</i> and <i>Current Focus</i>. The Chi-Squared fit parameters
+	 * are also printed:<i>A</i>,<i>B</i> and <i>C</i>, and also the best chi-squared found <i>chiSquared</i>.
 	 * @param telFocusDone The instance of the DONE message.
 	 */
 	private void printTelFocusDone(TELFOCUS_DONE telFocusDone)
 	{
 		parent.log("Seeing:"+telFocusDone.getSeeing()+
 			":Current Focus:"+telFocusDone.getCurrentFocus());
+		parent.log("Chi Squared "+telFocusDone.getChiSquared()+
+			":y = ("+telFocusDone.getA()+"x\u00B2) + ("+
+			telFocusDone.getB()+"x) + "+telFocusDone.getC());
 	}
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.11  2001/07/10 18:21:28  cjm
+// setFilenameLabel called for returned filenames.
+// stack trace added to error handler.
+// setFiltersSelectedLabel calls dependant of instrument.
+//
 // Revision 0.10  2000/08/29 11:41:38  cjm
 // Added printTelFocusDone to processDone.
 //
