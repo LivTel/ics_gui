@@ -1,5 +1,5 @@
 // IcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.7 2004-05-06 09:29:36 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.8 2004-06-15 19:15:39 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -13,6 +13,7 @@ import javax.swing.*;
 import javax.swing.plaf.metal.*;
 
 import ngat.message.base.*;
+import ngat.message.ISS_INST.GET_STATUS;
 import ngat.sound.*;
 import ngat.swing.*;
 import ngat.util.*;
@@ -20,14 +21,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class IcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.7 2004-05-06 09:29:36 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.8 2004-06-15 19:15:39 cjm Exp $");
 	/**
 	 * Internal constant used when converting temperatures in centigrade (from the CCD controller) to Kelvin.
 	 */
@@ -784,10 +785,7 @@ public class IcsGUI
 		}// end while
 		// call initial sample
 		if(audioFeedback)
-		{
-			sampleName = status.getProperty("ics_gui.audio.event.welcome");
-			audioThread.play(sampleName);
-		}
+			status.play(audioThread,"ics_gui.audio.event.welcome");
 	}
 
 	/**
@@ -1055,6 +1053,11 @@ public class IcsGUI
 		thread.setParent(this);
 		thread.start();
 		status.addClientThread(thread);
+		// audio feedback - only if not GET_STATUS
+		if(audioFeedback&&((command instanceof GET_STATUS) == false))
+		{
+			status.play(audioThread,"ics_gui.audio.event.command-sent");
+		}
 		return thread;
 	}
 
@@ -1497,6 +1500,9 @@ public class IcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2004/05/06 09:29:36  cjm
+// Swapped Ctrl-S shortcut from STOP to SKYFLAT.
+//
 // Revision 1.6  2004/03/16 15:10:16  cjm
 // Fixed remaining exposure time label.
 // Remaining exposure time label says (secs) rather then (ms),
