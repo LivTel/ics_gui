@@ -1,5 +1,5 @@
 // IcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.5 2004-03-03 16:08:57 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.6 2004-03-16 15:10:16 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -20,14 +20,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class IcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.5 2004-03-03 16:08:57 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.6 2004-03-16 15:10:16 cjm Exp $");
 	/**
 	 * Internal constant used when converting temperatures in centigrade (from the CCD controller) to Kelvin.
 	 */
@@ -388,7 +388,7 @@ public class IcsGUI
 		currentCommandLabel = new JLabel("None");
 		lastStatusPanel.add(currentCommandLabel);
 	// remaining exposure time
-		label = new JLabel("Remaining Exposure Time(ms):");
+		label = new JLabel("Remaining Exposure Time(secs):");
 		lastStatusPanel.add(label);
 		remainingExposureTimeLabel = new JLabel("0.000");
 		lastStatusPanel.add(remainingExposureTimeLabel);
@@ -1109,7 +1109,8 @@ public class IcsGUI
 	}
 
 	/**
-	 * Method to set the remaining exposure time label.
+	 * Method to set the remaining exposure time label. We divide the input by 1000, to display in
+	 * remaining seconds.
 	 * @param remainingExposureTime The time to complete the exposure, in milliseconds.
 	 */
 	public void setRemainingExposureTimeLabel(long remainingExposureTime)
@@ -1496,6 +1497,11 @@ public class IcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2004/03/03 16:08:57  cjm
+// Added CENTIGRADE_TO_KELVIN constant.
+// setCCDTemperatureLabel assumes input temperature is in degrees Kelvin, and converts
+// to degrees Centrigrade before printing out.
+//
 // Revision 1.4  2004/01/15 15:53:21  cjm
 // Commented out remoteX fix that won't compile on Solaris Java 1.2.
 //
