@@ -1,5 +1,5 @@
 // IcsGUIConfigListDialog.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigListDialog.java,v 0.6 2003-08-22 14:05:18 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigListDialog.java,v 0.7 2003-11-14 15:02:12 cjm Exp $
 import java.lang.*;
 import java.util.*;
 import java.awt.*;
@@ -18,7 +18,7 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public static String RCSID = new String("$Id: IcsGUIConfigListDialog.java,v 0.6 2003-08-22 14:05:18 cjm Exp $");
+	public static String RCSID = new String("$Id: IcsGUIConfigListDialog.java,v 0.7 2003-11-14 15:02:12 cjm Exp $");
 	/**
 	 * String to go on buttons.
 	 */
@@ -36,6 +36,10 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	 */
 	protected final static String INFRA_RED_SUPIRCAM_BUTTON_STRING = "Infra Red Camera (SupIRCam)";
 	/**
+	 * String to go on buttons.
+	 */
+	protected final static String SPECTROGRAPH_FTSPEC_BUTTON_STRING = "Spectrograph (FTSpec)";
+	/**
 	 * List of strings that describe instruments. Note, make sure in the same order as 
 	 * IcsGUIConfigProperties.CONFIG_TYPE_LIST.
 	 * @see IcsGUIConfigProperties#CONFIG_TYPE_LIST
@@ -43,9 +47,11 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	 * @see #SPECTROGRAPH_MES_BUTTON_STRING
 	 * @see #SPECTROGRAPH_NUVIEW_BUTTON_STRING
 	 * @see #INFRA_RED_SUPIRCAM_BUTTON_STRING
+	 * @see #SPECTROGRAPH_FTSPEC_BUTTON_STRING
 	 */
 	protected final static String INSTRUMENT_STRING_ARRAY[] = {CCD_RATCAM_BUTTON_STRING,
-		SPECTROGRAPH_MES_BUTTON_STRING,SPECTROGRAPH_NUVIEW_BUTTON_STRING,INFRA_RED_SUPIRCAM_BUTTON_STRING};
+		SPECTROGRAPH_MES_BUTTON_STRING,SPECTROGRAPH_NUVIEW_BUTTON_STRING,
+	        INFRA_RED_SUPIRCAM_BUTTON_STRING,SPECTROGRAPH_FTSPEC_BUTTON_STRING};
 	/**
 	 * String to pre-pend to add menu instrument entries.
 	 */
@@ -79,9 +85,17 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	 */
 	private IcsGUIIRCamConfigAADialog addAmendIRCamDialog = null;
 	/**
+	 * The Add/Amend dialog to use when Add or Amend is selected for a FTSpec configuration.
+	 */
+	private IcsGUIFixedFormatSpecConfigAADialog addAmendFTSpecDialog = null;
+	/**
 	 * The config dialog that caused this dialog to be managed.
 	 */
 	private CONFIGDialog configDialog = null;
+	/**
+	 * A copy of the reference to the instance of IcsGUI.
+	 */
+	private IcsGUI icsGUI = null;
 	/**
 	 * A copy of the reference to the instance of CcsGUIStatus.
 	 */
@@ -99,14 +113,17 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 
 	/**
 	 * Constructor. Calls the JDialog constructor. Creates the components in the dialog.
-	 * Creates the add/amend dialog.
+	 * Creates the add/amend dialogs.
+	 * Also copies IcsGUI reference (and associated icsGUIStatus) to pass on to Add/Amend boxs.
 	 * @param owner The parent frame of this dialog. Used in calling Dialog's constructor.
 	 * @param c A reference to the object holding the instrument Configuration data. Used to fill the list,
 	 *	and for updating purposes.
 	 * @see #constructFileMenu
 	 * @see #constructFilterMenu
+	 * @see #icsGUI
+	 * @see #icsGUIStatus
 	 */
-	public IcsGUIConfigListDialog(Frame owner,IcsGUIConfigProperties c)
+	public IcsGUIConfigListDialog(Frame owner,IcsGUIConfigProperties c,IcsGUI i)
 	{
 		super(owner,"Instrument Configuration List");
 
@@ -115,6 +132,8 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 		JMenuItem menuItem = null;
 
 		configProperties = c;
+		icsGUI = i;
+		icsGUIStatus = icsGUI.getStatus();
 		getContentPane().setLayout(new BorderLayout());
 		setResizable(true);
 	// setup menu bar
@@ -148,6 +167,9 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	// create a IRCam add/amend dialog
 		addAmendIRCamDialog = new IcsGUIIRCamConfigAADialog(owner,c);
 		addAmendIRCamDialog.addCcsConfigAADialogListener(this);
+	// create a FTSpec add/amend dialog
+		addAmendFTSpecDialog = new IcsGUIFixedFormatSpecConfigAADialog(owner,c);
+		addAmendFTSpecDialog.addCcsConfigAADialogListener(this);
 	}
 
 	/**
@@ -179,15 +201,12 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 
 	/**
 	 * Method to set the config dialog instance that has managed this dialog.
-	 * Also copies CONFIGDialog's saved copy of icsGUIStatus to pass on to Add/Amend boxs.
 	 * @param c The CONFIGDialog instance.
 	 * @see #configDialog
-	 * @see #icsGUIStatus
 	 */
 	public void setConfigDialog(CONFIGDialog c)
 	{
 		configDialog = c;
-		icsGUIStatus = configDialog.getIcsGUIStatus();
 	}
 
 	/**
@@ -253,6 +272,11 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 						addAmendIRCamDialog.pack();
 						addAmendIRCamDialog.add();
 						break;
+					case IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_FTSPEC:
+						addAmendFTSpecDialog.setLocation(getX()+getWidth(),getY());
+						addAmendFTSpecDialog.pack();
+						addAmendFTSpecDialog.add();
+						break;
 					case IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_MES:
 					default:
 						JOptionPane.showMessageDialog((Component)null,
@@ -285,6 +309,11 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 						addAmendIRCamDialog.setLocation(getX()+getWidth(),getY());
 						addAmendIRCamDialog.pack();
 						addAmendIRCamDialog.amend(id);
+						break;
+					case IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_FTSPEC:
+						addAmendFTSpecDialog.setLocation(getX()+getWidth(),getY());
+						addAmendFTSpecDialog.pack();
+						addAmendFTSpecDialog.amend(id);
 						break;
 					case IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_MES:
 					default:
@@ -428,11 +457,13 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	 * @param parentMenu The parent menu to add it to.
 	 * @see #INSTRUMENT_STRING_ARRAY
 	 * @see #ADD_STRING
+	 * @see #icsGUI
 	 */
 	private void constructAddSubMenu(JMenu parentMenu)
 	{
 		JMenu menu = null;
 		JMenuItem menuItem = null;
+		boolean showFilter;
 
 		menu = new JMenu("Add");
 		menu.setMnemonic(KeyEvent.VK_A);
@@ -440,34 +471,64 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 		parentMenu.add(menu);
 		for(int i=0;i < INSTRUMENT_STRING_ARRAY.length;i++)
 		{
-			menuItem = new JMenuItem(ADD_STRING+INSTRUMENT_STRING_ARRAY[i]);
+			try
+			{
+				showFilter = icsGUIStatus.getPropertyBoolean("ics_gui.config.filter."+i);
+			}
+			catch(Exception e)
+			{
+				showFilter = true;
+				icsGUI.error(this.getClass().getName()+":constructAddSubMenu:"+
+						   "Show Filter configuration for filter "+i+" not found.");
+			}
+			if(showFilter)
+			{
+				menuItem = new JMenuItem(ADD_STRING+INSTRUMENT_STRING_ARRAY[i]);
 //diddly			menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,ActionEvent.CTRL_MASK));
-			menuItem.getAccessibleContext().setAccessibleDescription("Adds a "+
-				INSTRUMENT_STRING_ARRAY[i]+" configuration");
-			menuItem.addActionListener(this);
-			menu.add(menuItem);
-		}
+				menuItem.getAccessibleContext().setAccessibleDescription("Adds a "+
+							       INSTRUMENT_STRING_ARRAY[i]+" configuration");
+				menuItem.addActionListener(this);
+				menu.add(menuItem);
+			}//end if showFilter
+		}// end for
 	}
 
 	/**
 	 * Internal method to create the filter menu and add it to the menu-bar.
 	 * @param menuBar The menu-bar to add it to.
 	 * @see #INSTRUMENT_STRING_ARRAY
+	 * @see #icsGUI
 	 */
 	private void constructFilterMenu(JMenuBar menuBar)
 	{
 		JMenu menu = null;
 		ButtonGroup filterButtonGroup = null;
 		JRadioButtonMenuItem radioButton = null;
+		int defaultFilterNumber;
+		boolean showFilter;
 
 		menu = new JMenu("Filter");
 		menu.setMnemonic(KeyEvent.VK_L);
 		menu.getAccessibleContext().setAccessibleDescription("The Filter Menu");
 		menuBar.add(menu);
+	// get default filter configuration from properties
+		try
+		{
+			defaultFilterNumber = icsGUIStatus.getPropertyInteger("ics_gui.config.filter.default");
+		}
+		catch(Exception e)
+		{
+			defaultFilterNumber = -1;
+			icsGUI.error(this.getClass().getName()+":constructFilterMenu:"+
+					   "Default filter number configuration not found.");
+		}
+	// set Filter type number to the default picked up from the config file.
+	// filterTypeNumber is used by setData to filter the list.
+		filterTypeNumber = defaultFilterNumber;
 	// button group
 		filterButtonGroup = new ButtonGroup();
 	// none
-		radioButton = new JRadioButtonMenuItem(FILTER_STRING+NONE_STRING,true);
+		radioButton = new JRadioButtonMenuItem(FILTER_STRING+NONE_STRING,(defaultFilterNumber == -1));
 		radioButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,ActionEvent.CTRL_MASK));
 		radioButton.getAccessibleContext().setAccessibleDescription("Removes all filters");
 		radioButton.addActionListener(this);
@@ -477,18 +538,36 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	// instrument buttons
 		for(int i=0;i < INSTRUMENT_STRING_ARRAY.length;i++)
 		{
-			radioButton = new JRadioButtonMenuItem(FILTER_STRING+INSTRUMENT_STRING_ARRAY[i]);
-//diddly		radioButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,ActionEvent.CTRL_MASK));
-			radioButton.getAccessibleContext().
-				setAccessibleDescription("Filter by "+INSTRUMENT_STRING_ARRAY[i]);
-			radioButton.addActionListener(this);
-			filterButtonGroup.add(radioButton);
-			menu.add(radioButton);
-		}
+			try
+			{
+				showFilter = icsGUIStatus.getPropertyBoolean("ics_gui.config.filter."+i);
+			}
+			catch(Exception e)
+			{
+				showFilter = true;
+				icsGUI.error(this.getClass().getName()+":constructFilterMenu:"+
+						   "Show Filter configuration for filter "+i+" not found.");
+			}
+			if(showFilter)
+			{
+				radioButton = new JRadioButtonMenuItem(FILTER_STRING+INSTRUMENT_STRING_ARRAY[i],
+							       (defaultFilterNumber == i));
+//diddly		       radioButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,ActionEvent.CTRL_MASK));
+				radioButton.getAccessibleContext().
+					setAccessibleDescription("Filter by "+INSTRUMENT_STRING_ARRAY[i]);
+				radioButton.addActionListener(this);
+				filterButtonGroup.add(radioButton);
+				menu.add(radioButton);
+			}// end if showFilter
+		}// end for
 	}
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.6  2003/08/22 14:05:18  cjm
+// Added reference to CcsGUIStatus to alow CONFIGDialog (and its subdialogs)
+// access to properties.
+//
 // Revision 0.5  2003/08/21 14:29:04  cjm
 // Changed CcsCCDConfigAADialog to IcsGUICCDConfigAADialog.
 //
