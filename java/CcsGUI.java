@@ -1,5 +1,5 @@
 // CcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.20 2003-08-21 14:24:04 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.21 2003-08-26 13:24:31 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -19,14 +19,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 0.20 $
+ * @version $Revision: 0.21 $
  */
 public class CcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.20 2003-08-21 14:24:04 cjm Exp $");
+	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.21 2003-08-26 13:24:31 cjm Exp $");
 	/**
 	 * The stream to write error messages to - defaults to System.err.
 	 */
@@ -434,7 +434,7 @@ public class CcsGUI
 		JScrollPane areaScrollPane = null;
         	GridBagConstraints gridBagCon = new GridBagConstraints();
 
-		logTextArea = new AttributedTextArea(" ");
+		logTextArea = new AttributedTextArea("");
 		logTextArea.setLineWrap(true);
 		logTextArea.setWrapStyleWord(false);
 		logTextArea.setEditable(false);
@@ -781,7 +781,7 @@ public class CcsGUI
 	 */
 	public void clearLog()
 	{
-		logTextArea.setText(null);
+		logTextArea.setText("");
 	}
 
 	/**
@@ -1356,6 +1356,11 @@ public class CcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.20  2003/08/21 14:24:04  cjm
+// Changed JTextArea to AttributedTextArea so logging in multiple colours.
+// Added (ms) qualifier to exposure time.
+// Added setFiltersSelectedLabel method with 1 string, for SupIRCam filters.
+//
 // Revision 0.19  2003/06/06 15:44:31  cjm
 // Changes toward Ccs -> Ics change.
 // CHanges on how/when property filenames are loaded.
