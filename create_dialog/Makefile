@@ -1,5 +1,5 @@
 # Makefile -*- mode: Fundamental;-*-
-# $Header: /home/cjm/cvs/ics_gui/create_dialog/Makefile,v 0.1 1999-11-22 09:51:30 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/create_dialog/Makefile,v 0.2 1999-12-10 11:52:54 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -43,11 +43,17 @@ checkin:
 	-$(CI) $(CI_OPTIONS) $(SRCS)
 
 clean: tidy
-	-$(RM) $(RM_OPTIONS) $(OBJS)
+	-$(RM) $(RM_OPTIONS) $(OBJS) $(DIALOG_OBJS)
 
 tidy:
 	-$(RM) $(RM_OPTIONS) $(TIDY_OPTIONS)
 
+backup: tidy
+	-$(RM) $(RM_OPTIONS) $(DIALOG_OBJS)
+
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.1  1999/11/22 09:51:30  cjm
+# initial revision.
+#
 #

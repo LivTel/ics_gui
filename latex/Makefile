@@ -1,4 +1,4 @@
-# $Header: /home/cjm/cvs/ics_gui/latex/Makefile,v 0.1 1999-11-22 09:50:53 cjm Exp $
+# $Header: /home/cjm/cvs/ics_gui/latex/Makefile,v 0.2 1999-12-10 11:59:44 cjm Exp $
 
 include ../../Makefile.common
 include ../Makefile.common
@@ -16,10 +16,6 @@ EPSOBJS		= $(FIGSRCS:%.fig=%.eps)
 DIRS 		= 
 
 top: $(PSOBJS)
-#	@for i in $(DIRS); \
-#	do \
-#		(echo making in $$i...; cd $$i; $(MAKE) ); \
-#	done;
 
 $(DOCSDIR)/%.ps: %.dvi
 	$(DVIPS) $< -o
@@ -40,34 +36,24 @@ depend:
 	echo "NO depend rule for latex files."
 
 clean:
-	$(RM) $(RM_OPTIONS) $(DVIOBJS) $(PSOBJS) $(EPSOBJS) $(LATEX_TIDY_OPTIONS) $(TIDY_OPTIONS)
-#	@for i in $(DIRS); \
-#	do \
-#		(echo cleaning in $$i...; cd $$i; $(MAKE) clean); \
-#	done;
+	-$(RM) $(RM_OPTIONS) $(DVIOBJS) $(PSOBJS) $(EPSOBJS) $(LATEX_TIDY_OPTIONS) $(TIDY_OPTIONS)
 
 tidy:
-	$(RM) $(RM_OPTIONS) $(LATEX_TIDY_OPTIONS) $(TIDY_OPTIONS)
-#	@for i in $(DIRS); \
-#	do \
-#		(echo tidying in $$i...; cd $$i; $(MAKE) tidy); \
-#	done;
+	-$(RM) $(RM_OPTIONS) $(LATEX_TIDY_OPTIONS) $(TIDY_OPTIONS)
+
+backup: tidy
+	-$(RM) $(RM_OPTIONS) $(DVIOBJS) $(EPSOBJS)
 
 checkin:
 	-$(CI) $(CI_OPTIONS) $(TEXSRCS) $(FIGSRCS)
-#	@for i in $(DIRS); \
-#	do \
-#		(echo checking in in $$i...; cd $$i; $(MAKE) checkin); \
-#	done;
 
 checkout:
 	-$(CO) $(CO_OPTIONS) $(TEXSRCS) $(FIGSRCS)
-#	@for i in $(DIRS); \
-#	do \
-#		(echo checking out in $$i...; cd $$i; $(MAKE) checkout); \
-#	done;
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.1  1999/11/22 09:50:53  cjm
+# initial revision.
+#
 #
 

@@ -1,5 +1,5 @@
 # Makefile -*- mode: Fundamental;-*-
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.5 1999-12-09 16:36:42 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.6 1999-12-10 11:57:06 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -55,8 +55,14 @@ clean: tidy
 tidy:
 	-$(RM) $(RM_OPTIONS) $(TIDY_OPTIONS)
 
+backup: tidy
+	-$(RM) $(RM_OPTIONS) $(DIALOG_SRCS)
+
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.5  1999/12/09 16:36:42  cjm
+# *** empty log message ***
+#
 # Revision 0.4  1999/12/07 17:50:45  cjm
 # Added auto-update sources.
 #
