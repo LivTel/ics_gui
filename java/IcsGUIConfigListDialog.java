@@ -1,5 +1,5 @@
 // IcsGUIConfigListDialog.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigListDialog.java,v 0.4 2003-07-15 16:20:01 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigListDialog.java,v 0.5 2003-08-21 14:29:04 cjm Exp $
 import java.lang.*;
 import java.util.*;
 import java.awt.*;
@@ -18,7 +18,7 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public static String RCSID = new String("$Id: IcsGUIConfigListDialog.java,v 0.4 2003-07-15 16:20:01 cjm Exp $");
+	public static String RCSID = new String("$Id: IcsGUIConfigListDialog.java,v 0.5 2003-08-21 14:29:04 cjm Exp $");
 	/**
 	 * String to go on buttons.
 	 */
@@ -69,7 +69,7 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	/**
 	 * The Add/Amend dialog to use when Add or Amend is selected for a CCD configuration.
 	 */
-	private CcsCCDConfigAADialog addAmendCCDDialog = null;
+	private IcsGUICCDConfigAADialog addAmendCCDDialog = null;
 	/**
 	 * The Add/Amend dialog to use when Add or Amend is selected for a NuView configuration.
 	 */
@@ -136,7 +136,7 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 		scrollPane.getViewport().setView(list);
 		panel.add(scrollPane);
 	// create a CCD add/amend dialog
-		addAmendCCDDialog = new CcsCCDConfigAADialog(owner,c);
+		addAmendCCDDialog = new IcsGUICCDConfigAADialog(owner,c);
 		addAmendCCDDialog.addCcsConfigAADialogListener(this);
 	// create a NuView add/amend dialog
 		addAmendNuViewDialog = new IcsGUILowResSpecConfigAADialog(owner,c);
@@ -480,6 +480,9 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.4  2003/07/15 16:20:01  cjm
+// Added IRCam property configuration.
+//
 // Revision 0.3  2001/07/10 18:21:28  cjm
 // Added ability to Add/Amend/Delete Nu-View and MES configurations.
 //
