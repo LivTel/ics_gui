@@ -1,5 +1,5 @@
 // CcsGUIClientConnectionThread.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.18 2004-01-13 20:15:03 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.19 2004-03-03 16:10:02 cjm Exp $
 
 import java.awt.*;
 import java.lang.*;
@@ -18,14 +18,14 @@ import ngat.util.StringUtilities;
  * It implements the generic ISS instrument command protocol.
  * It is used to send commands from the CcsGUI to the Ccs.
  * @author Chris Mottram
- * @version $Revision: 0.18 $
+ * @version $Revision: 0.19 $
  */
 public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.18 2004-01-13 20:15:03 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.19 2004-03-03 16:10:02 cjm Exp $");
 	/**
 	 * The CcsGUI object.
 	 */
@@ -147,10 +147,12 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 
 	/**
 	 * Routine to print out more details if the acknowledge was a (subclass of) TEMPERATURE_ACK. 
-	 * This prints out the ambient and current temperature of the instrument's CCD. 
+	 * This prints out the ambient and current temperature of the instrument's CCD, after converting them from 
+	 * degrees Kelvin to degrees Centigrade. 
 	 * The CCD Temperature label is also updated.
 	 * @param filenameAck The acknowledge object passed back to the client.
-	 * @see IcsGUI#setFilenameLabel
+	 * @see IcsGUI#setCCDTemperatureLabel
+	 * @see IcsGUI#CENTIGRADE_TO_KELVIN
 	 */
 	private void printTemperatureAck(TEMPERATURE_ACK temperatureAck)
 	{
@@ -163,8 +165,9 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 		commandName = StringUtilities.replace(commandName,"_ACK","");
 	// print temperatures to log
 		parent.log(commandName+":Ambient Temperature: "+
-			   decimalFormat.format(temperatureAck.getAmbientTemperature())+
-			   " :Current Temperature: "+decimalFormat.format(temperatureAck.getCurrentTemperature()));
+			   decimalFormat.format(temperatureAck.getAmbientTemperature()-IcsGUI.CENTIGRADE_TO_KELVIN)+
+			   " :Current Temperature: "+decimalFormat.format(temperatureAck.getCurrentTemperature()-
+									  IcsGUI.CENTIGRADE_TO_KELVIN));
 	// update CCD temperature label
 		parent.setCCDTemperatureLabel(temperatureAck.getCurrentTemperature());
 	}
@@ -411,6 +414,9 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.18  2004/01/13 20:15:03  cjm
+// Added printTemperatureAck TEMPERATURE_ACK handling routine.
+//
 // Revision 0.17  2003/11/14 15:02:12  cjm
 // Added DillCam and FTSpec tests for setting selected filters.
 //
