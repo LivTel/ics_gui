@@ -1,5 +1,5 @@
-// CcsGUIClientConnectionThread.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.13 2002-05-23 12:44:53 cjm Exp $
+// CcsGUIClientConnectionThread.java
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.14 2002-12-16 18:35:51 cjm Exp $
 
 import java.lang.*;
 import java.io.*;
@@ -16,14 +16,14 @@ import ngat.util.StringUtilities;
  * It implements the generic ISS instrument command protocol.
  * It is used to send commands from the CcsGUI to the Ccs.
  * @author Chris Mottram
- * @version $Revision: 0.13 $
+ * @version $Revision: 0.14 $
  */
 public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.13 2002-05-23 12:44:53 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.14 2002-12-16 18:35:51 cjm Exp $");
 	/**
 	 * The CcsGUI object.
 	 */
@@ -239,7 +239,7 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	// set current command status
 		parent.setCurrentCommandLabel((String)(displayInfo.get("currentCommand")));
 	// set filters selected status
-		if(instrumentString.equals("RATCam"))
+		if(instrumentString.equals("RATCam")||instrumentString.equals("FARTCam"))
 		{
 			parent.setFiltersSelectedLabel((String)(displayInfo.get("Filter Wheel:0")),
 				(String)(displayInfo.get("Filter Wheel:1")));
@@ -262,7 +262,7 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 		else
 			parent.setRemainingExposuresLabel(exposureCount-exposureNumber);
 	// set remaining exposure time label
-		if(getStatusDone.getCurrentMode() == 3)
+		if(getStatusDone.getCurrentMode() == GET_STATUS_DONE.MODE_EXPOSING)
 		{
 			integer = (Integer)(displayInfo.get("Exposure Length"));
 			exposureLength = integer.longValue();
@@ -348,6 +348,9 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.13  2002/05/23 12:44:53  cjm
+// Added prints for extra fields in EXPOSE_DONE.
+//
 // Revision 0.12  2001/08/15 08:41:36  cjm
 // Re-written ACK and TELFOCUS_DONE prints for new ACK hierarchy,
 // and new TELFOCUS_DONE fields.
