@@ -1,5 +1,5 @@
 // CcsGUI.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.13 2000-11-30 18:47:44 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.14 2001-02-27 13:45:40 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -19,14 +19,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ccs GUI.
  * @author Chris Mottram
- * @version $Revision: 0.13 $
+ * @version $Revision: 0.14 $
  */
 public class CcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.13 2000-11-30 18:47:44 cjm Exp $");
+	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.14 2001-02-27 13:45:40 cjm Exp $");
 	/**
 	 * The stream to write error messages to - defaults to System.err.
 	 */
@@ -566,13 +566,14 @@ public class CcsGUI
 		menuItem.addActionListener(menuItemListener);
 		submenu.add(menuItem);
         // REBOOT
-		menuItem = new JMenuItem("Reboot");
+		menuItem = new JMenuItem("Reboot",KeyEvent.VK_O);
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,ActionEvent.CTRL_MASK));
 		menuItem.getAccessibleContext().setAccessibleDescription("Send an Reboot command");
 		menuItem.addActionListener(menuItemListener);
 		submenu.add(menuItem);
         // RESUME
-		menuItem = new JMenuItem("Resume",KeyEvent.VK_R);
-		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R,ActionEvent.CTRL_MASK));
+		menuItem = new JMenuItem("Resume",KeyEvent.VK_U);
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U,ActionEvent.CTRL_MASK));
 		menuItem.getAccessibleContext().setAccessibleDescription("Send an Resume command");
 		menuItem.addActionListener(menuItemListener);
 		submenu.add(menuItem);
@@ -1122,6 +1123,9 @@ public class CcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.13  2000/11/30 18:47:44  cjm
+// Made generic for other instruments.
+//
 // Revision 0.12  2000/07/11 09:23:07  cjm
 // More descriptive title string.
 // log and error filename configuration now supported.
