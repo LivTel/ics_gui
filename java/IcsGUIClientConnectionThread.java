@@ -1,5 +1,5 @@
 // CcsGUIClientConnectionThread.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.20 2004-06-03 17:09:25 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.21 2004-06-15 19:15:22 cjm Exp $
 
 import java.awt.*;
 import java.lang.*;
@@ -18,14 +18,14 @@ import ngat.util.StringUtilities;
  * It implements the generic ISS instrument command protocol.
  * It is used to send commands from the CcsGUI to the Ccs.
  * @author Chris Mottram
- * @version $Revision: 0.20 $
+ * @version $Revision: 0.21 $
  */
 public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.20 2004-06-03 17:09:25 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.21 2004-06-15 19:15:22 cjm Exp $");
 	/**
 	 * The CcsGUI object.
 	 */
@@ -99,7 +99,7 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	// audio feedback
 		if(parent.getAudioFeedback())
 		{
-			parent.getAudioThread().play(parent.getStatus().getProperty("ics_gui.audio.event.filename"));
+			parent.getStatus().play(parent.getAudioThread(),"ics_gui.audio.event.filename");
 		}
 	}
 
@@ -205,8 +205,8 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 				// audio feedback - only if not GET_STATUS
 				if(parent.getAudioFeedback()&&((done instanceof GET_STATUS_DONE) == false))
 				{
-					parent.getAudioThread().play(parent.getStatus().
-					       getProperty("ics_gui.audio.event.command-completed"));
+					parent.getStatus().play(parent.getAudioThread(),
+								"ics_gui.audio.event.command-completed");
 				}
 			}
 			else
@@ -218,8 +218,8 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 				// audio feedback - only if not GET_STATUS
 				if(parent.getAudioFeedback()&&((done instanceof GET_STATUS_DONE) == false))
 				{
-					parent.getAudioThread().play(parent.getStatus().
-					       getProperty("ics_gui.audio.event.command-failed"));
+					parent.getStatus().play(parent.getAudioThread(),
+								"ics_gui.audio.event.command-failed");
 				}
 			}
 		}
@@ -236,6 +236,11 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	protected void processError(String errorString)
 	{
 		parent.error(errorString);
+	// audio feedback
+		if(parent.getAudioFeedback())
+		{
+			parent.getStatus().play(parent.getAudioThread(),"ics_gui.audio.event.command-error");
+		}
 	}
 
 	/**
@@ -252,6 +257,11 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	{
 		parent.error(errorString+exception);
 		exception.printStackTrace(parent.getErrorStream());
+	// audio feedback
+		if(parent.getAudioFeedback())
+		{
+			parent.getStatus().play(parent.getAudioThread(),"ics_gui.audio.event.command-error");
+		}
 	}
 
 	/**
@@ -414,6 +424,9 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.20  2004/06/03 17:09:25  cjm
+// Added DillCamSouth to instrument test.
+//
 // Revision 0.19  2004/03/03 16:10:02  cjm
 // printTemperatureAck assumes temperature in degrees Kelvin, and converts
 // to centigrade before printing out. The parameter to setCCDTemperatureLabel
