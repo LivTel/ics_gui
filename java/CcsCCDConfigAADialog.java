@@ -1,5 +1,5 @@
 // CcsCCDConfigAADialog.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/CcsCCDConfigAADialog.java,v 0.3 2000-07-12 14:16:18 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/CcsCCDConfigAADialog.java,v 0.4 2000-09-11 09:09:49 cjm Exp $
 import java.lang.*;
 import java.util.*;
 import java.awt.*;
@@ -13,14 +13,14 @@ import ngat.swing.*;
 /**
  * This class provides an Add and Amend facility for CCD Configurations.
  * @author Chris Mottram
- * @version $Revision: 0.3 $
+ * @version $Revision: 0.4 $
  */
 public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: CcsCCDConfigAADialog.java,v 0.3 2000-07-12 14:16:18 cjm Exp $");
+	public final static String RCSID = new String("$Id: CcsCCDConfigAADialog.java,v 0.4 2000-09-11 09:09:49 cjm Exp $");
 	/**
 	 * Button height.
 	 */
@@ -73,7 +73,7 @@ public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 	public CcsCCDConfigAADialog(Frame owner,CcsCCDConfigProperties c)
 	{
 		super(owner,"Add/Amend CCD Configuration");
-		setResizable(false);
+//		setResizable(false);
 		ccdConfigProperties = c;
 	// there are 15 fields arranged vertically.
 	// there are 2 titled border height from 2 sets of titled border
@@ -349,6 +349,9 @@ public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.3  2000/07/12 14:16:18  cjm
+// Added setResizable call.
+//
 // Revision 0.2  2000/02/08 17:39:56  cjm
 // Added window flags check-box.
 //
