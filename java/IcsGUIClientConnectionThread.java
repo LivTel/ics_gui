@@ -1,5 +1,5 @@
 // CcsGUIClientConnectionThread.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.15 2003-08-21 14:24:04 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.16 2003-09-19 14:08:45 cjm Exp $
 
 import java.awt.*;
 import java.lang.*;
@@ -17,18 +17,18 @@ import ngat.util.StringUtilities;
  * It implements the generic ISS instrument command protocol.
  * It is used to send commands from the CcsGUI to the Ccs.
  * @author Chris Mottram
- * @version $Revision: 0.15 $
+ * @version $Revision: 0.16 $
  */
 public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.15 2003-08-21 14:24:04 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.16 2003-09-19 14:08:45 cjm Exp $");
 	/**
 	 * The CcsGUI object.
 	 */
-	private CcsGUI parent = null;
+	private IcsGUI parent = null;
 
 	/**
 	 * A constructor for this class. Currently just calls the parent class's constructor.
@@ -42,7 +42,7 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	 * Routine to set this objects pointer to the parent object.
 	 * @param c The parent object.
 	 */
-	public void setParent(CcsGUI c)
+	public void setParent(IcsGUI c)
 	{
 		this.parent = c;
 	}
@@ -74,8 +74,11 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	/**
 	 * Routine to print out more details if the acknowledge was a (subclass of) FILENAME_ACK. 
 	 * This prints out the returned filename. The filename label is also updated.
+	 * Some audio feedback is performed, if required.
 	 * @param filenameAck The acknowledge object passed back to the client.
-	 * @see CcsGUI#setFilenameLabel
+	 * @see IcsGUI#setFilenameLabel
+	 * @see IcsGUI#getAudioFeedback
+	 * @see IcsGUI#getAudioThread
 	 */
 	private void printFilenameAck(FILENAME_ACK filenameAck)
 	{
@@ -89,6 +92,11 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 		parent.log("The current "+commandName+" frame is:"+filenameAck.getFilename()+".",Color.cyan);
 	// update filename label
 		parent.setFilenameLabel(filenameAck.getFilename());
+	// audio feedback
+		if(parent.getAudioFeedback())
+		{
+			parent.getAudioThread().play(parent.getStatus().getProperty("ics_gui.audio.event.filename"));
+		}
 	}
 
 	/**
@@ -163,6 +171,12 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 					printExposeDone((EXPOSE_DONE)done);
 				if(done instanceof TELFOCUS_DONE)
 					printTelFocusDone((TELFOCUS_DONE)done);
+				// audio feedback - only if not GET_STATUS
+				if(parent.getAudioFeedback()&&((done instanceof GET_STATUS_DONE) == false))
+				{
+					parent.getAudioThread().play(parent.getStatus().
+					       getProperty("ics_gui.audio.event.command-completed"));
+				}
 			}
 			else
 			{
@@ -170,6 +184,12 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 					   "successful:"+done.getSuccessful(),Color.red);
 				parent.log("Error:error Number:"+done.getErrorNum()+
 					"\nerror String:"+done.getErrorString(),Color.red);
+				// audio feedback - only if not GET_STATUS
+				if(parent.getAudioFeedback()&&((done instanceof GET_STATUS_DONE) == false))
+				{
+					parent.getAudioThread().play(parent.getStatus().
+					       getProperty("ics_gui.audio.event.command-failed"));
+				}
 			}
 		}
 		parent.getStatus().removeClientThread(this);
@@ -179,7 +199,7 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	 * This method is called when the thread generates an error.
 	 * Currently, this just prints the string using the parents error method.
 	 * @param errorString The error string.
-	 * @see CcsGUI#error
+	 * @see IcsGUI#error
 	 * @see #parent
 	 */
 	protected void processError(String errorString)
@@ -193,8 +213,8 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	 * to the parents error stream.
 	 * @param errorString The error string.
 	 * @param exception The exception that was thrown.
-	 * @see CcsGUI#error
-	 * @see CcsGUI#getErrorStream
+	 * @see IcsGUI#error
+	 * @see IcsGUI#getErrorStream
 	 * @see #parent
 	 */
 	protected void processError(String errorString,Exception exception)
@@ -312,7 +332,7 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	 * Method to print out parameters associated with a CALIBRATE_DONE (sub)class instance.
 	 * These parameters are <i>filename</i>, <i>peakCounts</i> and <i>meanCounts</i>.
 	 * @param calibrateDone The instance of the DONE message.
-	 * @see CcsGUI#setFilenameLabel
+	 * @see IcsGUI#setFilenameLabel
 	 */
 	private void printCalibrateDone(CALIBRATE_DONE calibrateDone)
 	{
@@ -326,7 +346,7 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	 * Method to print out parameters associated with a EXPOSE_DONE (sub)class instance.
 	 * These parameters are <i>Seeing</i>, <i>Counts</i>, <i>X_pix</i> and <i>Y_pix</i>.
 	 * @param exposeDone The instance of the DONE message.
-	 * @see CcsGUI#setFilenameLabel
+	 * @see IcsGUI#setFilenameLabel
 	 */
 	private void printExposeDone(EXPOSE_DONE exposeDone)
 	{
@@ -358,6 +378,11 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.15  2003/08/21 14:24:04  cjm
+// Added colouration of filename and COMMAND_DONE logging.
+// Added SupIRCam setFiltersSelectedLabel call.
+// Fixed exposure length when null.
+//
 // Revision 0.14  2002/12/16 18:35:51  cjm
 // Now uses GET_STATUS_DONE mode constants.
 //
