@@ -1,7 +1,9 @@
-# $Header: /home/cjm/cvs/ics_gui/latex/Makefile,v 0.4 2003-11-14 15:30:29 cjm Exp $
+# $Header: /home/cjm/cvs/ics_gui/latex/Makefile,v 0.5 2004-08-06 12:59:26 cjm Exp $
 
 include ../../Makefile.common
 include ../Makefile.common
+
+PDFLATEX	= pdflatex
 
 DOCSDIR 	= $(CCS_GUI_DOC_HOME)/latex
 
@@ -16,12 +18,23 @@ TIFFSRCS = icsgui_bias_dialog.tiff icsgui_config_aa_dialog.tiff icsgui_config_di
 
 DVIOBJS		= $(TEXSRCS:%.tex=%.dvi)
 PSOBJS		= $(TEXSRCS:%.tex=$(DOCSDIR)/%.ps)
+PDFOBJS		= $(TEXSRCS:%.tex=$(DOCSDIR)/%.pdf)
 
 EPSOBJS		= $(FIGSRCS:%.fig=%.eps) $(JPGSRCS:%.jpg=%.eps) $(TIFFSRCS:%.tiff=%.eps)
 
 DIRS 		= 
 
 top: $(PSOBJS)
+
+pdf: $(PDFOBJS)
+
+$(DOCSDIR)/%.pdf: %.tex
+	$(PDFLATEX) $<
+#	$(PDFLATEX) $<
+#	$(PDFLATEX) $<
+#	$(DVIPS) $< -o
+	$(MV) $*.pdf $(DOCSDIR)
+
 
 $(DOCSDIR)/%.ps: %.dvi
 	$(DVIPS) $< -o
@@ -71,6 +84,9 @@ checkout:
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.4  2003/11/14 15:30:29  cjm
+# Added icsgui_basic_user_guide.
+#
 # Revision 0.3  2000/10/03 16:40:43  cjm
 # Changed fig2dev options.
 #
