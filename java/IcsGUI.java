@@ -1,5 +1,5 @@
 // IcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.3 2004-01-13 20:34:37 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.4 2004-01-15 15:53:21 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -20,14 +20,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class IcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.3 2004-01-13 20:34:37 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.4 2004-01-15 15:53:21 cjm Exp $");
 	/**
 	 * The stream to write error messages to - defaults to System.err.
 	 */
@@ -469,10 +469,11 @@ public class IcsGUI
 		areaScrollPane.setMinimumSize(new Dimension(250,200));
 		areaScrollPane.setPreferredSize(new Dimension(1024,800));
 		areaScrollPane.setBorder(new TitledSmallerBorder("Log"));
-		if(remoteX)
-		{
-			areaScrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
-		}
+		// diddly Note, this remoteX fix will not compile on java 1.2 on the Solaris machines.
+     		//if(remoteX)
+		//{
+		//	areaScrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
+		//}
 		gridBagCon.gridx = 0;
 		gridBagCon.gridy = 1;
 		gridBagCon.gridwidth = GridBagConstraints.REMAINDER;
@@ -1490,6 +1491,9 @@ public class IcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2004/01/13 20:34:37  cjm
+// Added remote X option.
+//
 // Revision 1.2  2004/01/13 20:15:03  cjm
 // Added Wait to Start state.
 //
