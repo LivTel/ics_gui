@@ -1,5 +1,5 @@
 // CcsGUI.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.3 1999-12-09 17:02:12 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.4 1999-12-14 12:18:01 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -18,14 +18,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ccs GUI.
  * @author Chris Mottram
- * @version $Revision: 0.3 $
+ * @version $Revision: 0.4 $
  */
 public class CcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.3 1999-12-09 17:02:12 cjm Exp $");
+	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.4 1999-12-14 12:18:01 cjm Exp $");
 	/**
 	 * The stream to write error messages to - defaults to System.err.
 	 */
@@ -124,6 +124,10 @@ public class CcsGUI
 		{
 			System.err.println("UIManager.setLookAndFeel failed:"+e);
 		}
+	// create and display a splash screen whilst we are initialising
+		SplashScreen splashScreen = new SplashScreen(300,200,"lt.gif",
+			"Liverpool John Moores University",null);
+		splashScreen.show(30000);
 	// construct gui main object
 		CcsGUI ccsGUI = new CcsGUI();
 		try
@@ -904,6 +908,9 @@ public class CcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.3  1999/12/09 17:02:12  cjm
+// More functionality added.
+//
 // Revision 0.2  1999/11/24 12:51:28  cjm
 // Changed @see clause.
 //
