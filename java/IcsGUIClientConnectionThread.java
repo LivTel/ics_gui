@@ -1,10 +1,11 @@
 // CcsGUIClientConnectionThread.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.17 2003-11-14 15:02:12 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.18 2004-01-13 20:15:03 cjm Exp $
 
 import java.awt.*;
 import java.lang.*;
 import java.io.*;
 import java.net.*;
+import java.text.*;
 import java.util.*;
 
 import ngat.net.*;
@@ -17,14 +18,14 @@ import ngat.util.StringUtilities;
  * It implements the generic ISS instrument command protocol.
  * It is used to send commands from the CcsGUI to the Ccs.
  * @author Chris Mottram
- * @version $Revision: 0.17 $
+ * @version $Revision: 0.18 $
  */
 public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.17 2003-11-14 15:02:12 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.18 2004-01-13 20:15:03 cjm Exp $");
 	/**
 	 * The CcsGUI object.
 	 */
@@ -53,6 +54,7 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	 * @see #printFilenameAck
 	 * @see #printCalibrateDpAck
 	 * @see #printExposeDpAck
+	 * @see #printTemperatureAck
 	 */
 	protected void processAcknowledge()
 	{
@@ -69,6 +71,8 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 			printCalibrateDpAck((CALIBRATE_DP_ACK)acknowledge);
 		if(acknowledge instanceof EXPOSE_DP_ACK)
 			printExposeDpAck((EXPOSE_DP_ACK)acknowledge);
+		if(acknowledge instanceof TEMPERATURE_ACK)
+			printTemperatureAck((TEMPERATURE_ACK)acknowledge);
 	}
 
 	/**
@@ -139,6 +143,30 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 			":Photometricity:"+exposeDpAck.getPhotometricity()+
 			":Sky Brightness:"+exposeDpAck.getSkyBrightness()+
 			":Saturated:"+exposeDpAck.getSaturation());
+	}
+
+	/**
+	 * Routine to print out more details if the acknowledge was a (subclass of) TEMPERATURE_ACK. 
+	 * This prints out the ambient and current temperature of the instrument's CCD. 
+	 * The CCD Temperature label is also updated.
+	 * @param filenameAck The acknowledge object passed back to the client.
+	 * @see IcsGUI#setFilenameLabel
+	 */
+	private void printTemperatureAck(TEMPERATURE_ACK temperatureAck)
+	{
+		String commandName = null;
+		DecimalFormat decimalFormat = null;
+
+		decimalFormat = new DecimalFormat("###.00");
+	// get command name from class of ACK
+		commandName = temperatureAck.getClass().getName();
+		commandName = StringUtilities.replace(commandName,"_ACK","");
+	// print temperatures to log
+		parent.log(commandName+":Ambient Temperature: "+
+			   decimalFormat.format(temperatureAck.getAmbientTemperature())+
+			   " :Current Temperature: "+decimalFormat.format(temperatureAck.getCurrentTemperature()));
+	// update CCD temperature label
+		parent.setCCDTemperatureLabel(temperatureAck.getCurrentTemperature());
 	}
 
 	/**
@@ -383,6 +411,9 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.17  2003/11/14 15:02:12  cjm
+// Added DillCam and FTSpec tests for setting selected filters.
+//
 // Revision 0.16  2003/09/19 14:08:45  cjm
 // Changed CcsGUI to IcsGUI.
 // Added audio feedback for done messages.
