@@ -1,5 +1,5 @@
 // CcsCCDConfigProperties.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/CcsCCDConfigProperties.java,v 0.5 2000-11-24 15:40:54 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/CcsCCDConfigProperties.java,v 0.6 2000-11-28 11:58:04 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -8,17 +8,42 @@ import ngat.phase2.nonpersist.*;
 
 /**
  * This class holds the CCD Config information used by the CCS GUI. The information is held
- * in a Java proerties file and this class extends java.util.Properties
+ * in a Java properties file and this class extends java.util.Properties
  * @see java.util.Properties
  * @author Chris Mottram
- * @version $Revision: 0.5 $
+ * @version $Revision: 0.6 $
  */
 public class CcsCCDConfigProperties extends Properties
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: CcsCCDConfigProperties.java,v 0.5 2000-11-24 15:40:54 cjm Exp $");
+	public final static String RCSID = new String("$Id: CcsCCDConfigProperties.java,v 0.6 2000-11-28 11:58:04 cjm Exp $");
+	/**
+	 * Configuration type specifier:CCD (RATCam).
+	 */
+	public final static int CONFIG_TYPE_CCD_RATCAM 		= 0;
+	/**
+	 * Configuration type specifier:Spectrograph (MES).
+	 */
+	public final static int CONFIG_TYPE_SPECTROGRAPH_MES 	= 1;
+	/**
+	 * Configuration type specifier:Spectrograph (NuView).
+	 */
+	public final static int CONFIG_TYPE_SPECTROGRAPH_NUVIEW = 2;
+	/**
+	 * Configuration type specifier:Infra-Red camera (SupIRCam).
+	 */
+	public final static int CONFIG_TYPE_INFRA_RED_SUPIRCAM 	= 3;
+	/**
+	 * List of legal values that can be held in the config type field.
+	 * @see #CONFIG_TYPE_CCD_RATCAM
+	 * @see #CONFIG_TYPE_SPECTROGRAPH_MES
+	 * @see #CONFIG_TYPE_SPECTROGRAPH_NUVIEW
+	 * @see #CONFIG_TYPE_INFRA_RED_SUPIRCAM
+	 */
+	public final static int CONFIG_TYPE_LIST[] = {CONFIG_TYPE_CCD_RATCAM,CONFIG_TYPE_SPECTROGRAPH_MES,
+						CONFIG_TYPE_SPECTROGRAPH_NUVIEW,CONFIG_TYPE_INFRA_RED_SUPIRCAM};
 	/**
 	 * Filename for properties file.
 	 */
@@ -72,7 +97,33 @@ public class CcsCCDConfigProperties extends Properties
 		i = 0;
 		while((s = getConfigName(i)) != null)
 		{
-			list.addElement(s);
+			list.add(s);
+			i++;
+		}
+		return list;
+	}
+
+	/**
+	 * Method to get a list of Configuration names, filtered by a type.
+	 * @param type The type of configuration to filter the returned list by. See CONFIG_TYPE_LIST for a list
+	 * 	of valid types.
+	 * @return A List, each element is a String with a Configuration Name of the specified type.
+	 * @see #getConfigName
+	 * @see #getConfigType
+	 * @see #CONFIG_TYPE_LIST
+	 */
+	public List getConfigNameList(int type)
+	{
+		List list = null;
+		String s = null;
+		int i;
+
+		list = new Vector();
+		i = 0;
+		while((s = getConfigName(i)) != null)
+		{
+			if(getConfigType(i) == type)
+				list.add(s);
 			i++;
 		}
 		return list;
@@ -95,9 +146,12 @@ public class CcsCCDConfigProperties extends Properties
 	}
 
 	/**
-	 * Method to return a CCDConfig, constructed from the information against id id.
+	 * Method to return a NPCCDConfig, constructed from the information against id id.
 	 * @param id The Id number.
-	 * @return The constructed CCDConfig.
+	 * @return The constructed NPCCDConfig.
+	 * @exception NumberFormatException Thrown if a numeric parameter is not returned from the properties
+	 * 	file as a legal number.
+	 * @exception IllegalArgumentException Thrown if the config id specified is not a CCD type config.
 	 */
 	public NPCCDConfig getCCDConfigById(int id) throws NumberFormatException
 	{
@@ -105,6 +159,13 @@ public class CcsCCDConfigProperties extends Properties
 		NPCCDDetector detector = null;
 		NPWindow windowArray[];
 
+	// check type
+		if(getConfigType(id) != CONFIG_TYPE_CCD_RATCAM)
+		{
+			throw new IllegalArgumentException(this.getClass().getName()+":getCCDConfigById:Id "
+			+id+" not a configuration of type CCD.");
+		}
+	// construct NPCCDConfig
 		c = new NPCCDConfig(getConfigName(id));
 		c.setLowerFilterWheel(getConfigLowerFilterWheel(id));
 		c.setUpperFilterWheel(getConfigUpperFilterWheel(id));
@@ -178,6 +239,7 @@ public class CcsCCDConfigProperties extends Properties
 
 	// remove id id
 		remove(configIdStringName(id));
+		remove(configIdStringType(id));
 		remove(configIdStringLowerFilterWheel(id));
 		remove(configIdStringUpperFilterWheel(id));
 		remove(configIdStringXBin(id));
@@ -197,6 +259,8 @@ public class CcsCCDConfigProperties extends Properties
 		{
 			setConfigName(i-1,getConfigName(i));
 			remove(configIdStringName(i));
+			setConfigType(i-1,getConfigType(i));
+			remove(configIdStringType(i));
 			setConfigLowerFilterWheel(i-1,getConfigLowerFilterWheel(i));
 			remove(configIdStringLowerFilterWheel(i));
 			setConfigUpperFilterWheel(i-1,getConfigUpperFilterWheel(i));
@@ -223,6 +287,7 @@ public class CcsCCDConfigProperties extends Properties
 		}// while ids exist
 	}
 
+// set and get methods for each configuration field
 	/**
 	 * Method to get the name of configuration id id.
 	 * @param id The id of the configuration.
@@ -244,6 +309,44 @@ public class CcsCCDConfigProperties extends Properties
 		//put(configIdStringName(id),n);
 	// jdk 1.2.x
 		setProperty(configIdStringName(id),n);
+	}
+
+	/**
+	 * Method to get the configuration type of configuration id id.
+	 * @param id The id of the configuration.
+	 * @return The configuration type.
+	 * @exception NumberFormatException Thrown if the relevant property 
+	 * 	"ccs_gui_config."id".type" does not contain a numeric value.
+	 * @exception IllegalArgumentException Thrown if checkConfigType thinks the the type number is illegal.
+	 * @see #checkConfigType
+	 */
+	public int getConfigType(int id) throws NumberFormatException, IllegalArgumentException
+	{
+		int type;
+
+	// retrieve type number.
+		type = getPropertyInteger(configIdStringType(id));
+	// is the type number legal?
+		checkConfigType(type);
+	// return type number
+		return type;
+	}
+
+	/**
+	 * Method to set the type of configuration id id.
+	 * @param type The type of the configuration.
+	 * @param n The configuration name.
+	 * @exception IllegalArgumentException Thrown if checkConfigType thinks the the type number is illegal.
+	 * @see #checkConfigType
+	 */
+	public void setConfigType(int id,int type) throws IllegalArgumentException
+	{
+	// check against legal type
+		checkConfigType(type);
+	// jdk 1.1.x
+		//put(configIdStringType(id),Integer.toString(type));
+	// jdk 1.2.x
+		setProperty(configIdStringType(id),Integer.toString(type));
 	}
 
 	/**
@@ -561,6 +664,35 @@ public class CcsCCDConfigProperties extends Properties
 		setProperty(configIdWindowStringYEnd(id,windowNumber),Integer.toString(yEnd));
 	}
 
+// method to check values in the property file.
+	/**
+	 * Method to check whether a number is a legal configuration type number.
+	 * To be this it must exist in CONFIG_TYPE_LIST.
+	 * @param type The type number.
+	 * @exception IllegalArgumentException Thrown if the type number is not in CONFIG_TYPE_LIST 
+	 * 	e.g. the number is illegal.
+	 * @see #CONFIG_TYPE_LIST
+	 */
+	private void checkConfigType(int type) throws IllegalArgumentException
+	{
+		int index;
+		boolean found;
+
+		index = 0;
+		found = false;
+		while((found == false)&&(index < CONFIG_TYPE_LIST.length))
+		{
+			found = (type == CONFIG_TYPE_LIST[index]);
+			index++;
+		}
+		if(found == false)
+		{
+			throw new IllegalArgumentException(this.getClass().getName()+
+				"getConfigType:Illegal type:"+type+".");
+		}
+	}
+
+// methods to get property keys
 	/**
 	 * Method to return a key for the name string for a particular config id.
 	 * @param id The config id.
@@ -570,6 +702,17 @@ public class CcsCCDConfigProperties extends Properties
 	private String configIdStringName(int id)
 	{
 		return new String(configIdString(id)+"name");
+	}
+
+	/**
+	 * Method to return the type key string for a particular config id.
+	 * @param id The config id.
+	 * @return The key string.
+	 * @see #configIdString
+	 */
+	private String configIdStringType(int id)
+	{
+		return new String(configIdString(id)+"type");
 	}
 
 	/**
@@ -699,6 +842,7 @@ public class CcsCCDConfigProperties extends Properties
 		return new String(configIdString(id)+"window"+windowNumber+".");
 	}
 
+// method to get a property as a non-string data type
 	/**
 	 * Routine to get a properties value, given a key. The value must be a valid integer, else a 
 	 * NumberFormatException is thrown.
@@ -719,6 +863,9 @@ public class CcsCCDConfigProperties extends Properties
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.5  2000/11/24 15:40:54  cjm
+// Fixed null pointer problems with detectors.
+//
 // Revision 0.4  2000/11/24 11:38:15  cjm
 // Fixed for new CONFIG field ngat.phase2.nonpersist.NPInstrumentConfig.
 //
