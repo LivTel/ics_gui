@@ -1,0 +1,305 @@
+#!/bin/csh
+# $Header: /home/cjm/cvs/ics_gui/scripts/icsgui_make_deployment,v 1.1 2004-01-15 17:44:11 cjm Exp $
+# Version: $Revision: 1.1 $
+# By $Author: cjm $
+# Make a deployment tar file.
+# This contains:
+# 	The IcsGUI
+#	Associated libraries and test programs
+#	Appropriate configuration
+# Usage:
+#	icsgui_make_deployment <machine>
+if ( ${#argv} != 1 ) then
+	echo "Please specify a deployment machine."
+	echo "$0 <machine>"
+	exit 1
+endif
+set machine_name = "$1"
+if ( "${machine_name}" == "-help") then
+	echo "$0 <machine>"
+	exit 0
+endif
+switch ( ${machine_name} )
+    case "lttmc":
+	set camera_name = "ratcam"
+	breaksw
+    case "ftntmc":
+    case "ftstmc":
+	set camera_name = "fartcam"
+	breaksw
+    default:
+	echo "Unknown machine ${machine_name}."
+	exit 1
+endsw
+# check this script has been run on a Solaris box
+# It cannot be run on Linux.
+if("${HOSTTYPE}" != "i386-linux") then
+    echo "Deployment script running on ${HOSTTYPE}, must run on i386-linux."
+    exit 1
+endif
+set deployment_dir 	= "/tmp/icsgui_deployment"
+set deployment_tmp_dir 	= "/tmp/icsgui_deployment/tmp"
+set deployment_tmc_dir 	= "/tmp/icsgui_deployment/tmc"
+set deployment_bin_dir 	= "/tmp/icsgui_deployment/tmc/bin"
+set deployment_tar 	= "icsgui_deployment_${machine_name}.tar"
+set dev_dir 		= "/home/dev"
+set dev_bin_dir 	= "${dev_dir}/bin"
+set current_dir		= `pwd`
+
+if (-d ${deployment_dir}) then
+	echo "Deployment directory ${deployment_dir} already exists:clearing..."
+	rm -rf ${deployment_dir}
+endif
+#
+# Create directory structure
+#
+echo "Creating directory structure..."
+set dir_count = 0
+set dir_list = "${deployment_dir} ${deployment_bin_dir} ${deployment_dir}/tmc/tmp ${deployment_dir}/tmc/log ${deployment_dir}/tmc/tmp/ccs_gui ${deployment_tmc_dir}/config ${deployment_bin_dir}/ccs/test ${deployment_bin_dir}/javalib ${deployment_bin_dir}/lib/${HOSTTYPE} ${deployment_bin_dir}/dprt/test ${deployment_bin_dir}/ccd/misc/${HOSTTYPE} ${deployment_bin_dir}/ccs_gui/java ${deployment_bin_dir}/ccs_gui/java/wav ${deployment_bin_dir}/scripts"
+foreach dir ( ${dir_list} )
+	mkdir -p ${dir}
+	if ($status != 0) then
+	   echo "Failed to make directory ${dir}"
+	   exit 2
+	endif
+	@ dir_count ++
+end
+echo "${dir_count} directories created."
+#
+# Copy jars
+#
+echo "Copying jars..."
+#ngat_fits.jar ngat_math.jar ngat_math_test.jar 
+set jar_list = "ngat_message_base.jar ngat_message_inst_dp.jar ngat_message_iss_inst.jar ngat_net.jar ngat_phase2.jar ngat_sound.jar ngat_swing.jar ngat_util.jar ngat_util_logging.jar"
+set jar_count = 0
+foreach jar ( ${jar_list} )
+	echo "jar : ${jar}"
+# copy jar to deployment location
+	cp ${dev_bin_dir}/javalib/${jar} ${deployment_bin_dir}/javalib
+	set cp_status = $status
+	if( ${cp_status} != 0 ) then
+	    echo "Copy failed: ${dev_bin_dir}/javalib/${jar} to ${deployment_bin_dir}/javalib"
+	    exit 3
+	endif
+# ident contents of jar
+	cd ${deployment_dir}
+	rm -rf ${deployment_tmp_dir}
+	mkdir ${deployment_tmp_dir}
+	cp ${dev_bin_dir}/javalib/${jar} ${deployment_tmp_dir}
+	cd ${deployment_tmp_dir}
+	jar xvf ${jar} > ${deployment_tmp_dir}/jar_output.txt
+	find . -name '*.class' -print > ${deployment_tmp_dir}/class_list.txt
+	foreach class ( `cat ${deployment_tmp_dir}/class_list.txt` )
+		( ident ${class} > ${deployment_tmp_dir}/ident.txt ) >& ${deployment_tmp_dir}/ident_error.txt
+		set ident_string = `cat ${deployment_tmp_dir}/ident.txt`
+		echo "${ident_string}" >>! ${deployment_tmp_dir}/ident_list.txt
+	end
+	if ( -r ${deployment_tmp_dir}/ident_list.txt) then
+		cat ${deployment_tmp_dir}/ident_list.txt >>! ${deployment_tmc_dir}/ident_list.txt 
+	endif
+# keep track of number of jars processed
+	@ jar_count ++
+end
+echo "${jar_count} jars copied."
+#
+# Java classes
+#
+echo "Copying Java class directories..."
+set java_class_dir_list = "ccs/test dprt/test ccs_gui/java"
+set java_class_dir_count = 0
+foreach java_class_dir ( ${java_class_dir_list} )
+	echo "Java class directory : ${java_class_dir}"
+# copy java_class_dir to deployment location
+	cp ${dev_bin_dir}/${java_class_dir}/*.class ${deployment_bin_dir}/${java_class_dir}
+# ident each file in dir
+	cd ${deployment_dir}
+	rm -rf ${deployment_tmp_dir}
+	mkdir ${deployment_tmp_dir}
+	cd ${deployment_bin_dir}
+	find ${java_class_dir} -name '*.class' -print > ${deployment_tmp_dir}/class_list.txt
+	foreach class ( `cat ${deployment_tmp_dir}/class_list.txt` )
+		( ident ${class} > ${deployment_tmp_dir}/ident.txt ) >& ${deployment_tmp_dir}/ident_error.txt
+		set ident_string = `cat ${deployment_tmp_dir}/ident.txt`
+		echo "${ident_string}" >>! ${deployment_tmp_dir}/ident_list.txt
+	end
+	if ( -r ${deployment_tmp_dir}/ident_list.txt) then
+		cat ${deployment_tmp_dir}/ident_list.txt >>! ${deployment_tmc_dir}/ident_list.txt 
+	endif
+# keep track of number of java_class_dirs processed
+	@ java_class_dir_count ++
+end
+echo "${java_class_dir_count} Java class directories copied."
+#
+# C libraries
+#
+echo "Copying C libraries..."
+set clib_list = "libcfitsio.so libdprt.so libdprt_libfits.so liblt_filenames.so libngatastro.so libngatfits.so libngatutil.so librjs_dprt.so libtarga.so"
+# libsla.so only needed if libccd compiled with SLALIB 
+set clib_count = 0
+foreach clib ( ${clib_list} )
+	echo "C Library : ${clib}"
+# copy clib to deployment location
+	cp ${dev_bin_dir}/lib/${HOSTTYPE}/${clib} ${deployment_bin_dir}/lib/${HOSTTYPE}/
+# ident contents of lib
+	cd ${deployment_dir}
+	rm -rf ${deployment_tmp_dir}
+	mkdir ${deployment_tmp_dir}
+	cd ${deployment_bin_dir}
+	( ident lib/${HOSTTYPE}/${clib} > ${deployment_tmp_dir}/ident.txt ) >& ${deployment_tmp_dir}/ident_error.txt
+	set ident_string = `cat ${deployment_tmp_dir}/ident.txt`
+	echo "${ident_string}" >>! ${deployment_tmp_dir}/ident_list.txt
+	if ( -r ${deployment_tmp_dir}/ident_list.txt) then
+		cat ${deployment_tmp_dir}/ident_list.txt >>! ${deployment_tmc_dir}/ident_list.txt 
+	endif
+# keep track of number of clibs processed
+	@ clib_count ++
+end
+echo "${clib_count} C libraries copied."
+#
+# C test programs
+#
+echo "Copying C test program directories..."
+set dir_list = "ccd/misc/${HOSTTYPE} libdprt/test/${HOSTTYPE}"
+set dir_count = 0
+# clean out deployment_tmp_dir
+cd ${deployment_dir}
+rm -rf ${deployment_tmp_dir}
+mkdir ${deployment_tmp_dir}
+cd ${deployment_bin_dir}
+# go through directory list
+foreach dir ( ${dir_list} )
+	echo "C test program directory : ${dir}"
+# get file list
+	find ${dev_bin_dir}/${dir}/* > ${deployment_tmp_dir}/file_list.txt
+	foreach file ( `cat ${deployment_tmp_dir}/file_list.txt` )
+# check file is an executable
+#diddly solaris		file ${file} | /bin/grep -q "ELF 32-bit MSB executable"
+		file ${file} | /bin/grep -q "ELF 32-bit LSB executable"
+		set grep_status = $status
+		if ( ${grep_status} == 0 ) then
+			echo "Deploying ${file}."
+# copy file to deployment location
+			cp ${file} ${deployment_bin_dir}/${dir}
+# ident file and add to list
+			( ident ${dir}/${file:t} > ${deployment_tmp_dir}/ident.txt ) >& ${deployment_tmp_dir}/ident_error.txt
+			set ident_string = `cat ${deployment_tmp_dir}/ident.txt`
+			echo "${ident_string}" >>! ${deployment_tmp_dir}/ident_list.txt
+		else
+			echo "NOT Deploying ${file}."
+		endif
+	end
+	rm -f ${deployment_tmp_dir}/file_list.txt
+# keep track of number of dirs processed
+	@ dir_count ++
+end
+if ( -r ${deployment_tmp_dir}/ident_list.txt) then
+	cat ${deployment_tmp_dir}/ident_list.txt >>! ${deployment_tmc_dir}/ident_list.txt 
+endif
+cd ${deployment_dir}
+rm -rf ${deployment_tmp_dir}
+echo "${dir_count} C test program directories copied."
+#
+# Scripts
+#
+echo "Copying scripts..."
+set file_list = "bin/scripts/ccs_get_status.csh bin/scripts/ccs_get_status_cron bin/scripts/ccs_reboot.csh bin/scripts/xv_wrapper.csh bin/scripts/killhup.csh bin/scripts/fuser_check bin/scripts/kappa_make_mean_frame bin/ccs/test/test_config.csh bin/ccs/test/sendisscommands.csh bin/ccs/test/calibrate_ccd_dark.csh bin/ccs/test/calibrate_ccd_light.csh bin/ccs/test/test_ccd_stop.csh bin/ccs_gui/java/xv_wrapper.csh bin/ccs_gui/java/icsgui"
+set file_count = 0
+cd ${dev_dir}
+foreach file ( ${file_list} )
+    cp ${dev_dir}/${file} ${deployment_tmc_dir}/${file}
+    set cp_status = $status
+    if( ${cp_status} != 0 ) then
+	echo "Copy failed: ${dev_dir}/${file} to ${deployment_tmc_dir}/${file}"
+	exit 4
+    endif
+    @ file_count ++
+end
+echo "${file_count} scripts copied."
+#
+# Configs
+#
+# in bin sub-directories
+echo "Copying machine configuration files..."
+set file_list = "ccs_gui/java/${machine_name}.ccs_gui.properties ccs_gui/java/${machine_name}.ccs_gui_config.properties ccs_gui/java/${machine_name}.ccs_gui.fits.properties"
+set file_count = 0
+cd ${dev_dir}
+foreach file ( ${file_list} )
+    set new_file = `echo ${file} | sed "s#${machine_name}.livjm.ac.uk.##" | sed "s#${machine_name}.##"`
+    cp ${dev_bin_dir}/${file} ${deployment_bin_dir}/${new_file}
+    set cp_status = $status
+    if( ${cp_status} != 0 ) then
+	echo "Copy failed: ${dev_bin_dir}/${file} to ${deployment_bin_dir}/${new_file}"
+	exit 5
+    endif
+    @ file_count ++
+end
+echo "Copying camera configuration files..."
+set file_list = "config/${camera_name}.current.filter.properties config/${camera_name}.filter.properties"
+set file_count = 0
+cd ${dev_dir}
+foreach file ( ${file_list} )
+    set new_file = `echo ${file} | sed "s#${camera_name}.##"`
+    cp ${dev_bin_dir}/${file} ${deployment_tmc_dir}/${new_file}
+    set cp_status = $status
+    if( ${cp_status} != 0 ) then
+	echo "Copy failed: ${dev_bin_dir}/${file} to ${deployment_tmc_dir}/${new_file}"
+	exit 5
+    endif
+    @ file_count ++
+end
+echo "${file_count} camera configuration files copied."
+#
+# serialized Java message classes : .obj
+#
+echo "Copying serialized Java message files..."
+set dir = "ccs/test"
+set file_count = 0
+cd ${dev_bin_dir}/${dir}
+foreach file ( *.obj )
+    cp ${dev_bin_dir}/${dir}/${file} ${deployment_bin_dir}/${dir}/${file}
+    set cp_status = $status
+    if( ${cp_status} != 0 ) then
+	echo "Copy failed: ${dev_bin_dir}/${dir}/${file} to ${deployment_bin_dir}/${dir}/${file}"
+	exit 7
+    endif
+    @ file_count ++
+end
+echo "${file_count} serialized Java message files copied."
+#
+# gif files
+#
+echo "Copying gif/wav files..."
+set file_list = "ccs_gui/java/lt.gif ccs_gui/java/lt_icon.gif ccs_gui/java/ratcam.gif ccs_gui/java/wav/command_completed.wav ccs_gui/java/wav/command_failed.wav ccs_gui/java/wav/filename.wav ccs_gui/java/wav/iss_message.wav ccs_gui/java/wav/welcome.wav"
+set file_count = 0
+cd ${dev_dir}
+foreach file ( ${file_list} )
+    cp ${dev_bin_dir}/${file} ${deployment_bin_dir}/${file}
+    set cp_status = $status
+    if( ${cp_status} != 0 ) then
+	echo "Copy failed: ${dev_bin_dir}/${file} to ${deployment_bin_dir}/${file}"
+	exit 6
+    endif
+    @ file_count ++
+end
+echo "${file_count} gif/wav files copied."
+#
+# Tidy deployment temp
+#
+cd ${deployment_dir}
+rm -rf ${deployment_tmp_dir}
+#
+# Create deployment tar
+#
+echo "--------------------------"
+echo "Creating deployment tar..."
+cd ${deployment_dir}
+tar cvf ${current_dir}/${deployment_tar} .
+echo "GZipping deployment tar..."
+cd ${current_dir}
+rm -f ${deployment_tar}.gz
+gzip ${deployment_tar}
+echo "Deployment tar : ${current_dir}/${deployment_tar}.gz"
+echo "Installation script : ${current_dir}/icsgui_tar_install"
+rm -rf ${deployment_dir}
+echo "Download from http://ltccd1.livjm.ac.uk/~dev/ccs_gui/deployment/index.html."
+echo "Deployment ready."

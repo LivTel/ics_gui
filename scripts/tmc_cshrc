@@ -1,0 +1,32 @@
+# <icsgui_install:start>
+# Do not delete the above comment, it delimits the cshrc updated by the icsgui_install script.
+# part of lt_environment, so we can call scripts
+setenv LT_HOME /tmc
+setenv LT_BIN_HOME ${LT_HOME}/bin
+if ( $?CLASSPATH == 0 ) then
+    setenv CLASSPATH "."
+endif
+foreach jar ( ${LT_BIN_HOME}/javalib/*.jar )
+    echo ${CLASSPATH} | /bin/grep ${jar} > /dev/null
+    if( ${status} != 0 ) then
+	setenv CLASSPATH "${CLASSPATH}:${jar}"
+    endif
+end
+if ( $?LD_LIBRARY_PATH == 0 ) then
+    setenv LD_LIBRARY_PATH "."
+endif
+foreach dir ( ${LT_BIN_HOME}/lib/${HOSTTYPE} )
+    echo $LD_LIBRARY_PATH | /bin/grep $dir > /dev/null
+    if ( $status != 0 ) then
+	setenv LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${dir}
+    endif
+end
+
+# Useful command aliass
+alias ccs_reboot       		'/${LT_HOME}/bin/scripts/ccs_reboot.csh'
+alias icsgui           		'/${LT_HOME}/bin/ccs_gui/java/icsgui'
+alias myps             		'ps -e -o pid,pcpu,vsz,ruser,args'
+alias fits_add_keyword_value    '/${LT_HOME}/bin/ccd/misc/i386-linux/fits_add_keyword_value'
+alias fits_get_keyword_value    '/${LT_HOME}/bin/ccd/misc/i386-linux/fits_get_keyword_value'
+# Do not delete the next comment, it delimits the cshrc updated by the icsgui_install script.
+# <icsgui_install:end>

@@ -1,0 +1,17 @@
+README
+$Header: /home/cjm/cvs/ics_gui/scripts/README,v 1.1 2004-01-15 17:46:04 cjm Exp $
+Version: $Revision: 1.1 $
+By $Author: cjm $
+
+IcsGUI TMC Installation
+-----------------------
+To create an installation:
+--------------------------
+1. cd ~dev/src/ccs_gui/scripts
+2. ./icsgui_make_deployment <machine name>
+	(suitable machine names:lttmc,ftntmc)
+3. Wait for "Deployment ready." message.
+
+To install the IcsGUI onto a TMC machine:
+-----------------------------------------
+See README.DEPLOYMENT

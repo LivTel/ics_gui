@@ -1,0 +1,29 @@
+DEPLOYMENT README
+$Header: /home/cjm/cvs/ics_gui/scripts/README.DEPLOYMENT,v 1.1 2004-01-15 17:44:28 cjm Exp $
+Version: $Revision: 1.1 $
+By $Author: cjm $
+
+IcsGUI Installation on TMC machines
+-----------------------------------
+Note, all logs are deleted during installation. Any configuration changes from the default will
+also be lost as all properties file in the /tmc/bin tree are overwritten with the original version.
+To preserve changes, copy the properties files (*.properties) somewhere safe before installation.
+Better yet, update the originals on the ARI development account.
+
+Note the FITS images are no longer deleted. To remove all the data frames: 'rm -rf /tmc/tmp'
+before installation.
+
+To install the IcsGUI onto a TMC machine:
+-----------------------------------------
+1. Login as eng.
+2. cd /home/eng/tmp/
+3. Put the following files in /home/eng/tmp (either using wget or via an intermediate medium):
+	http://ltccd1.livjm.ac.uk/~dev/ccs_gui/deployment/icsgui_tar_install
+	http://ltccd1.livjm.ac.uk/~dev/ccs_gui/deployment/tmc_cshrc
+	http://ltccd1.livjm.ac.uk/~dev/ccs_gui/deployment/tmc_cshrc_edit.awk
+	http://ltccd1.livjm.ac.uk/~dev/ccs_gui/deployment/icsgui_deployment_<machine name>.tar.gz
+	where <machine name> is lttmc,ftntmc etc.
+4. Ensure icsgui_tar_install is executable:
+	chmod +x icsgui_tar_install
+5. su (become root).
+6. ./icsgui_tar_install <machine name>

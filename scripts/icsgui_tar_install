@@ -1,0 +1,91 @@
+#!/bin/csh
+# $Header: /home/cjm/cvs/ics_gui/scripts/icsgui_tar_install,v 1.1 2004-01-15 17:44:20 cjm Exp $
+# Version: $Revision: 1.1 $
+# By $Author: cjm $
+# install a deployment tar created by icsgui_make_deployment
+# Usage:
+#	icsgui_tar_install <machine>
+if ( ${#argv} != 1 ) then
+	echo "Please specify a deployment machine."
+	echo "$0 <machine>"
+	exit 1
+endif
+set machine_name = "$1"
+if ( "${machine_name}" == "-help") then
+	echo "$0 <machine>"
+	exit 0
+endif
+
+set current_dir		= `pwd`
+set icc                 = tmc
+set deployment_tar 	= "icsgui_deployment_${machine_name}.tar"
+#
+# Ensure new installation files are not under /tmc (which gets deleted)
+#
+echo "${current_dir}" | /bin/grep -q '/tmc'
+set grep_status = $status
+if( ${grep_status} == 0 ) then
+    echo "Installation files under /tmc. Move ALL file to ~eng/tmp and try again."
+    exit 1
+endif
+#
+# Check new installation is in current_dir
+#
+set file_list = "${deployment_tar}.gz tmc_cshrc tmc_cshrc_edit.awk"
+foreach file ( ${file_list} )
+    if( ! -e ${file} ) then
+	echo "Failed to find ${file}. New installation not ready to install."
+	exit 1
+    endif
+end
+#
+# Kill any running processes
+#
+if ( -x /tmc/bin/scripts/killhup.csh ) then
+    echo "Trying to kill IcsGUI."
+    /icc/bin/scripts/killhup.csh IcsGUI
+endif
+#
+# Delete old installation
+#
+if( -d /${icc}/bin ) then
+    echo "Deleting /${icc}/bin directory."
+    rm -rf /${icc}/bin/*
+endif
+if( -d /${icc}/log ) then
+    echo "Deleting /${icc}/log directory."
+    rm -rf /${icc}/log/*
+endif
+
+#
+# Create new top level directory (if it does not already exist
+# test for presence of /space, if it exists make /tmc -> /space/tmc
+# Otherwise assume one filesystem for whole disk
+#
+if( ! -d /${icc} ) then
+    if( -d /space ) then
+	mkdir /space/${icc}
+	ln -s /space/${icc} /${icc}
+    else
+	mkdir /${icc}
+    endif
+endif
+#
+# Extract new installation
+#
+echo "Copying deployment tar ${current_dir}/${deployment_tar}.gz to /."
+cp ${current_dir}/${deployment_tar}.gz /
+cd /
+echo "Gunziping deployment tar."
+gunzip ${deployment_tar}.gz
+echo "Extracting deployment tar."
+tar xvf ${deployment_tar}
+echo "Removing deployment tar."
+rm -f ${deployment_tar}
+echo "Setting up ${icc} ownership."
+chown -R eng:ltdev /${icc}/*
+echo "Editing eng .cshrc"
+cat ~eng/.cshrc | awk -f ${current_dir}/tmc_cshrc_edit.awk > ~eng/.cshrc.tmp
+cat ~eng/.cshrc.tmp ${current_dir}/tmc_cshrc > ~eng/.cshrc
+rm -f ~eng/.cshrc.tmp
+echo "Installation completed."
