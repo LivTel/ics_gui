@@ -1,5 +1,5 @@
 // CcsGUI.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.4 1999-12-14 12:18:01 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.5 1999-12-14 15:17:50 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -18,14 +18,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ccs GUI.
  * @author Chris Mottram
- * @version $Revision: 0.4 $
+ * @version $Revision: 0.5 $
  */
 public class CcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.4 1999-12-14 12:18:01 cjm Exp $");
+	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.5 1999-12-14 15:17:50 cjm Exp $");
 	/**
 	 * The stream to write error messages to - defaults to System.err.
 	 */
@@ -627,7 +627,7 @@ public class CcsGUI
 	{
 		if(logTextArea != null)
 		{
-			SwingUtilities.invokeLater(new GUITextAppender(logTextArea,s+"\n"));
+			SwingUtilities.invokeLater(new GUITextAppender(logTextArea,s+"\n",true));
 		}
 		logStream.println(s);
 	}
@@ -641,7 +641,7 @@ public class CcsGUI
 	{
 		if(logTextArea != null)
 		{
-			SwingUtilities.invokeLater(new GUITextAppender(logTextArea,s+"\n"));
+			SwingUtilities.invokeLater(new GUITextAppender(logTextArea,s+"\n",true));
 		}
 		errorStream.println(s);
 	}
@@ -908,6 +908,9 @@ public class CcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.4  1999/12/14 12:18:01  cjm
+// Added splash screen.
+//
 // Revision 0.3  1999/12/09 17:02:12  cjm
 // More functionality added.
 //
