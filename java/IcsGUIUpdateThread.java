@@ -1,5 +1,5 @@
 // CcsGUIUpdateThread.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIUpdateThread.java,v 0.3 2000-03-10 11:57:10 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIUpdateThread.java,v 0.4 2000-05-22 11:14:06 cjm Exp $
 
 import java.lang.*;
 /**
@@ -8,14 +8,14 @@ import java.lang.*;
  * It then calls parent.sendCommand(GET_STATUS) to update the GUI's status.
  * This continues until the thread is quit.
  * @author Chris Mottram
- * @version $Revision: 0.3 $
+ * @version $Revision: 0.4 $
  */
 public class CcsGUIUpdateThread extends Thread
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIUpdateThread.java,v 0.3 2000-03-10 11:57:10 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIUpdateThread.java,v 0.4 2000-05-22 11:14:06 cjm Exp $");
 	/**
 	 * The CcsGUI object.
 	 */
@@ -45,9 +45,9 @@ public class CcsGUIUpdateThread extends Thread
 
 	/**
 	 * Run method. 
-	 * This runs until quit is true. It sleeps for the autoUpdateTime, then uses parent.sendCommand
+	 * This thread runs in a loop until quit is true. It uses parent.sendCommand
 	 * to send a GET_STATUS command to the server. The associated client connection thread automatically
-	 * updates the relevant GUI elements.
+	 * updates the relevant GUI elements. The thread then sleeps for the autoUpdateTime,
 	 * @see #quit
 	 * @see #autoUpdateTime
 	 * @see CcsGUI#sendCommand
@@ -62,14 +62,7 @@ public class CcsGUIUpdateThread extends Thread
 		id = 0;
 		while(!quit)
 		{
-			try
-			{
-				Thread.sleep(autoUpdateTime);
-			}
-			catch(InterruptedException e)
-			{
-				parent.error("The auto update thread was interruped(1):"+e);
-			}
+		// send the command
 			idString = new String(this.getClass().getName()+":"+id);
 			command = new ngat.message.ISS_INST.GET_STATUS(idString);
 			command.setLevel(0);
@@ -87,6 +80,15 @@ public class CcsGUIUpdateThread extends Thread
 				}
 			}
 			id++;
+		// sleep for a bit
+			try
+			{
+				Thread.sleep(autoUpdateTime);
+			}
+			catch(InterruptedException e)
+			{
+				parent.error("The auto update thread was interruped(1):"+e);
+			}
 		}// end while
 	}
 
@@ -100,6 +102,11 @@ public class CcsGUIUpdateThread extends Thread
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.3  2000/03/10 11:57:10  cjm
+// The run method now waits for the currently spawned GET_STATUS client thread to terminate before
+// entering the sleep for the next one. This stops the GUI spawning lots of client threads
+// that the Ccs spends all it's time starting and not finishing.
+//
 // Revision 0.2  2000/02/15 16:15:27  cjm
 // Now sets level of GET_STATUS command.
 //
