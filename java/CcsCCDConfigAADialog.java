@@ -1,5 +1,5 @@
 // CcsCCDConfigAADialog.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/CcsCCDConfigAADialog.java,v 0.5 2000-11-30 18:47:44 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/CcsCCDConfigAADialog.java,v 0.6 2001-07-10 18:21:28 cjm Exp $
 import java.lang.*;
 import java.util.*;
 import java.awt.*;
@@ -13,14 +13,14 @@ import ngat.swing.*;
 /**
  * This class provides an Add and Amend facility for CCD Configurations.
  * @author Chris Mottram
- * @version $Revision: 0.5 $
+ * @version $Revision: 0.6 $
  */
 public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: CcsCCDConfigAADialog.java,v 0.5 2000-11-30 18:47:44 cjm Exp $");
+	public final static String RCSID = new String("$Id: CcsCCDConfigAADialog.java,v 0.6 2001-07-10 18:21:28 cjm Exp $");
 	/**
 	 * Button height.
 	 */
@@ -55,6 +55,8 @@ public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 	CcsConfigAADialogListener listener = null;
 
 	JTextField nameTextField = null;
+	JCheckBox calibrateBeforeCheckBox = null;
+	JCheckBox calibrateAfterCheckBox = null;
 	JTextField lowerFilterWheelTextField = null;
 	JTextField upperFilterWheelTextField = null;
 	JTextField xBinTextField = null;
@@ -75,10 +77,10 @@ public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 		super(owner,"Add/Amend CCD Configuration");
 //		setResizable(false);
 		configProperties = c;
-	// there are 15 fields arranged vertically.
+	// there are 16 fields arranged vertically.
 	// there are 2 titled border height from 2 sets of titled border
 	// there is one set of buttons vertically 
-		int height = (15*FIELD_HEIGHT)+(2*TITLED_BORDER_HEIGHT)+BUTTON_HEIGHT;
+		int height = (16*FIELD_HEIGHT)+(2*TITLED_BORDER_HEIGHT)+BUTTON_HEIGHT;
 
 		getContentPane().setLayout(new SizedBoxLayout(getContentPane(),BoxLayout.Y_AXIS,
 			new Dimension(DIALOG_WIDTH,height)));
@@ -95,6 +97,16 @@ public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 		subPanel.add(label);
 		nameTextField = new JTextField();
 		subPanel.add(nameTextField);
+	// sub panel
+		subPanel = new JPanel();
+		getContentPane().add(subPanel);
+		subPanel.setLayout(new SizedGridLayout(0,2,new Dimension(DIALOG_WIDTH,FIELD_HEIGHT)));
+	// calibrateBefore flag
+		calibrateBeforeCheckBox = new JCheckBox("Calibrate Before");
+		subPanel.add(calibrateBeforeCheckBox);
+	// calibrateAfter flag
+		calibrateAfterCheckBox = new JCheckBox("Calibrate After");
+		subPanel.add(calibrateAfterCheckBox);
 	// sub panel
 		subPanel = new JPanel();
 		getContentPane().add(subPanel);
@@ -202,6 +214,8 @@ public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 		configId = configProperties.getNewConfigId();
 
 		nameTextField.setText("Configuration "+configId);
+		calibrateBeforeCheckBox.setSelected(false);
+		calibrateAfterCheckBox.setSelected(false);
 		lowerFilterWheelTextField.setText("None");
 		upperFilterWheelTextField.setText("None");
 		xBinTextField.setText("1");
@@ -227,6 +241,8 @@ public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 		configId = id;
 
 		nameTextField.setText(configProperties.getConfigName(id));
+		calibrateBeforeCheckBox.setSelected(configProperties.getConfigCalibrateBefore(id));
+		calibrateAfterCheckBox.setSelected(configProperties.getConfigCalibrateAfter(id));
 		lowerFilterWheelTextField.setText(configProperties.getConfigLowerFilterWheel(id));
 		upperFilterWheelTextField.setText(configProperties.getConfigUpperFilterWheel(id));
 		xBinTextField.setText(configProperties.getConfigXBinString(id));
@@ -324,6 +340,8 @@ public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 		// set data
 			configProperties.setConfigName(configId,s);
 			configProperties.setConfigType(configId,IcsGUIConfigProperties.CONFIG_TYPE_CCD_RATCAM);
+			configProperties.setConfigCalibrateBefore(configId,calibrateBeforeCheckBox.isSelected());
+			configProperties.setConfigCalibrateAfter(configId,calibrateAfterCheckBox.isSelected());
 			configProperties.setConfigLowerFilterWheel(configId,lowerFilterWheelTextField.getText());
 			configProperties.setConfigUpperFilterWheel(configId,upperFilterWheelTextField.getText());
 			configProperties.setConfigXBin(configId,xBin);
@@ -350,6 +368,9 @@ public class CcsCCDConfigAADialog extends JDialog implements ActionListener
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.5  2000/11/30 18:47:44  cjm
+// Made generic for other instruments.
+//
 // Revision 0.4  2000/09/11 09:09:49  cjm
 // Switched off resizability, it causes the dialog not to appear under Gnome.
 //
