@@ -1,5 +1,5 @@
 # Makefile
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.30 2004-09-23 12:43:33 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.31 2004-10-13 19:53:40 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -41,12 +41,12 @@ CCS_GUI_PROPERTY_SRCS	= ltccd1.ccs_gui.properties \
 	ltobs9.ratcam.ccs_gui.properties ltobs9.fartcam.ccs_gui.properties ltobs9.dillcamsouth.ccs_gui.properties \
 	ltobs9.supircam.ccs_gui.properties \
 	ltobs9.spectrograph.scs_gui.properties ltobs9.ftspec.ics_gui.properties ltobs9.nuview1.ics_gui.properties \
-	supircam1.ccs_gui.properties ftspec1.ccs_gui.properties \
+	supircam1.ccs_gui.properties supircam2.ccs_gui.properties ftspec1.ccs_gui.properties \
 	spectrograph.ccs_gui.properties nuview1.ccs_gui.properties \
 	lttmc.ccs_gui.properties ftntmc.ccs_gui.properties ftstmc.ccs_gui.properties
 CCS_GUI_CONFIG_PROPERTY_SRCS = ltccd1.ccs_gui_config.properties ltccd2.ccs_gui_config.properties \
 	ltccd3.ccs_gui_config.properties ftccd1.ccs_gui_config.properties ftccd2.ccs_gui_config.properties \
-	supircam1.ccs_gui_config.properties \
+	supircam1.ccs_gui_config.properties supircam2.ccs_gui_config.properties \
 	ftspec1.ccs_gui_config.properties spectrograph.ccs_gui_config.properties nuview1.ccs_gui_config.properties \
 	lttmc.ccs_gui_config.properties ftntmc.ccs_gui_config.properties ftstmc.ccs_gui_config.properties
 CCS_GUI_FITS_PROPERTY_SRCS = ltccd1.ccs_gui.fits.properties ltccd2.ccs_gui.fits.properties \
@@ -144,6 +144,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.30  2004/09/23 12:43:33  cjm
+# Added fts configs.
+#
 # Revision 0.29  2004/07/30 12:47:10  cjm
 # Added ltobs9.nuview1.ics_gui.properties.
 #
