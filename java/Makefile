@@ -1,5 +1,5 @@
 # Makefile
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.19 2003-09-19 14:41:24 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.20 2003-11-14 15:07:01 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -20,7 +20,7 @@ MAIN_SRCS	= IcsGUI.java CcsGUIStatus.java CcsGUIWindowListener.java CcsGUIMenuIt
 SERVER_SRCS	= CcsGUIServer.java CcsGUIServerConnectionThread.java
 CONFIG_SRCS	= IcsGUIConfigProperties.java IcsGUIConfigListDialog.java CcsGUIConfigButtonListener.java \
 		IcsGUICCDConfigAADialog.java IcsGUILowResSpecConfigAADialog.java IcsGUIIRCamConfigAADialog.java \
-		CcsConfigAADialogListener.java 
+		IcsGUIFixedFormatSpecConfigAADialog.java CcsConfigAADialogListener.java 
 UPDATE_SRCS	= CcsGUIUpdateListener.java CcsGUIUpdateThread.java
 
 DIALOG_SRCS	= ACQUIREDialog.java $(CALIBRATE_DIALOG_SRCS) $(EXPOSE_DIALOG_SRCS) $(INTERRUPT_DIALOG_SRCS) $(SETUP_DIALOG_SRCS)
@@ -35,11 +35,13 @@ OBJS 		= $(SRCS:%.java=$(BINDIR)/%.class)
 DOCS 		= $(SRCS:%.java=$(DOCSDIR)/%.html)
 
 CONFIG_PROPERTY_SRCS	= ltccd1.ccs_gui.properties \
-	ltccd2.ccs_gui.properties ltccd3.ccs_gui.properties ftccd1.ccs_gui.properties ltobs5.ccs_gui.properties \
-	ltobs5.scs_gui.properties spectrograph.scs_gui.properties \
+	ltccd2.ccs_gui.properties ltccd3.ccs_gui.properties ftccd1.ccs_gui.properties \
+	spectrograph.scs_gui.properties \
 	ltobs9.ratcam.ccs_gui.properties ltobs9.fartcam.ccs_gui.properties ltobs9.supircam.ccs_gui.properties \
-	supircam1.ccs_gui.properties \
-	ccs_gui.fits.properties ccs_gui_config.properties
+	ltobs9.spectrograph.scs_gui.properties supircam1.ccs_gui.properties \
+	ccs_gui.fits.properties \
+	ltccd2.ccs_gui_config.properties ltccd3.ccs_gui_config.properties ftccd1.ccs_gui_config.properties \
+	supircam1.ccs_gui_config.properties ccs_gui_config.properties
 CONFIG_OBJS	= $(CONFIG_PROPERTY_SRCS:%.properties=$(BINDIR)/%.properties)
 
 SCRIPT_SRCS	= icsgui scsgui ccsgui xv_wrapper.csh
@@ -131,6 +133,11 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.19  2003/09/19 14:41:24  cjm
+# n
+# Changed some CcsGUI sources to IcsGUI.
+# Added sound make rules.
+#
 # Revision 0.18  2003/07/15 16:21:43  cjm
 # Added IcsGUIIRCamConfigAADialog source.
 #
