@@ -1,5 +1,5 @@
 // CcsCCDConfigProperties.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/CcsCCDConfigProperties.java,v 0.4 2000-11-24 11:38:15 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/CcsCCDConfigProperties.java,v 0.5 2000-11-24 15:40:54 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -11,14 +11,14 @@ import ngat.phase2.nonpersist.*;
  * in a Java proerties file and this class extends java.util.Properties
  * @see java.util.Properties
  * @author Chris Mottram
- * @version $Revision: 0.4 $
+ * @version $Revision: 0.5 $
  */
 public class CcsCCDConfigProperties extends Properties
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: CcsCCDConfigProperties.java,v 0.4 2000-11-24 11:38:15 cjm Exp $");
+	public final static String RCSID = new String("$Id: CcsCCDConfigProperties.java,v 0.5 2000-11-24 15:40:54 cjm Exp $");
 	/**
 	 * Filename for properties file.
 	 */
@@ -113,7 +113,6 @@ public class CcsCCDConfigProperties extends Properties
 		detector = new NPCCDDetector();
 		detector.setXBin(getConfigXBin(id));
 		detector.setYBin(getConfigYBin(id));
-		detector.setWindowFlags(getConfigWindowFlags(id));// diddly add setWindowFlags to NPDetector
 		// note, other NPDetector fields not set, as they are not used by the instrument.
 
 	// setup window list
@@ -137,6 +136,8 @@ public class CcsCCDConfigProperties extends Properties
 		}// end for on windows
 	// set windows into detector
 		detector.setNPWindows(windowArray);
+	// Note flags are held IN the window list, so must setWindowFlags AFTER detector windows set
+		detector.setWindowFlags(getConfigWindowFlags(id));
 	// set detector into config
 		c.addNPDetector(detector);
 	// return config
@@ -718,6 +719,9 @@ public class CcsCCDConfigProperties extends Properties
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.4  2000/11/24 11:38:15  cjm
+// Fixed for new CONFIG field ngat.phase2.nonpersist.NPInstrumentConfig.
+//
 // Revision 0.3  2000/02/08 16:34:21  cjm
 // Added window flags code.
 //
