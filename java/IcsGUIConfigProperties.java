@@ -1,24 +1,24 @@
-// IcsGUIConfigProperties.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.5 2001-07-10 18:21:28 cjm Exp $
+// IcsGUIConfigProperties.java
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.6 2002-12-16 18:35:51 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
 
-import ngat.phase2.nonpersist.*;
+import ngat.phase2.*;
 
 /**
  * This class holds the Instrument Configuration information used by the CCS GUI. The information is held
  * in a Java properties file and this class extends java.util.Properties
  * @see java.util.Properties
  * @author Chris Mottram
- * @version $Revision: 0.5 $
+ * @version $Revision: 0.6 $
  */
 public class IcsGUIConfigProperties extends Properties
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.5 2001-07-10 18:21:28 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.6 2002-12-16 18:35:51 cjm Exp $");
 	/**
 	 * Configuration type specifier:CCD (RATCam).
 	 */
@@ -146,9 +146,9 @@ public class IcsGUIConfigProperties extends Properties
 	}
 
 	/**
-	 * Method to return a NPInstrumentConfig, constructed from the information against id id.
+	 * Method to return a InstrumentConfig, constructed from the information against id id.
 	 * @param id The Id number.
-	 * @return The constructed NPInstrumentConfig.
+	 * @return The constructed InstrumentConfig.
 	 * @exception NumberFormatException Thrown if a numeric parameter is not returned from the properties
 	 * 	file as a legal number.
 	 * @exception IllegalArgumentException Thrown if the config id specified does not have a legal type.
@@ -157,9 +157,9 @@ public class IcsGUIConfigProperties extends Properties
 	 * @see #getMESConfigById
 	 * @see #getNuViewConfigById
 	 */
-	public NPInstrumentConfig getConfigById(int id) throws NumberFormatException, IllegalArgumentException
+	public InstrumentConfig getConfigById(int id) throws NumberFormatException, IllegalArgumentException
 	{
-		NPInstrumentConfig c = null;
+		InstrumentConfig c = null;
 		int type;
 
 	// check type
@@ -180,7 +180,7 @@ public class IcsGUIConfigProperties extends Properties
 					+id+" type "+type+" not a supported type of configuration.");
 		}
 	// return config
-		return (NPInstrumentConfig)c;
+		return (InstrumentConfig)c;
 	}
 
 	/**
@@ -816,18 +816,18 @@ public class IcsGUIConfigProperties extends Properties
 
 // methods to create an instance of an instrument config
 	/**
-	 * Method to return a NPCCDConfig, constructed from the information against id id.
+	 * Method to return a CCDConfig, constructed from the information against id id.
 	 * @param id The Id number.
-	 * @return The constructed NPCCDConfig.
+	 * @return The constructed CCDConfig.
 	 * @exception NumberFormatException Thrown if a numeric parameter is not returned from the properties
 	 * 	file as a legal number.
 	 * @exception IllegalArgumentException Thrown if the config id specified does not have a legal type.
 	 */
-	private NPCCDConfig getCCDConfigById(int id) throws NumberFormatException, IllegalArgumentException
+	private CCDConfig getCCDConfigById(int id) throws NumberFormatException, IllegalArgumentException
 	{
-		NPCCDConfig c = null;
-		NPCCDDetector detector = null;
-		NPWindow windowArray[];
+		CCDConfig c = null;
+		CCDDetector detector = null;
+		Window windowArray[];
 
 	// check type
 		if(getConfigType(id) != CONFIG_TYPE_CCD_RATCAM)
@@ -835,25 +835,25 @@ public class IcsGUIConfigProperties extends Properties
 			throw new IllegalArgumentException(this.getClass().getName()+":getCCDConfigById:Id "
 				+id+" not a configuration of type CCD.");
 		}
-	// construct NPCCDConfig
-		c = new NPCCDConfig(getConfigName(id));
+	// construct CCDConfig
+		c = new CCDConfig(getConfigName(id));
 		c.setLowerFilterWheel(getConfigLowerFilterWheel(id));
 		c.setUpperFilterWheel(getConfigUpperFilterWheel(id));
 	// setup detector
-		detector = new NPCCDDetector();
+		detector = new CCDDetector();
 		detector.setXBin(getConfigXBin(id));
 		detector.setYBin(getConfigYBin(id));
-		// note, other NPDetector fields not set, as they are not used by the instrument.
+		// note, other Detector fields not set, as they are not used by the instrument.
 
 	// setup window list
-		windowArray = new NPWindow[detector.getMaxWindowCount()];
+		windowArray = new Window[detector.getMaxWindowCount()];
 		for(int i = 0; i < detector.getMaxWindowCount(); i++)
 		{
 		// Note, windows are only non-null if they are active in RCS created configs
 		// Lets re-create that effect here, we can use the config window flags.
 			if((getConfigWindowFlags(id) & (1<<i))>0)
 			{
-				windowArray[i] = new NPWindow();
+				windowArray[i] = new Window();
 
 				windowArray[i].setXs(getConfigXStart(id,i+1));
 				windowArray[i].setYs(getConfigYStart(id,i+1));
@@ -864,27 +864,27 @@ public class IcsGUIConfigProperties extends Properties
 				windowArray[i] = null;
 		}// end for on windows
 	// set windows into detector
-		detector.setNPWindows(windowArray);
+		detector.setWindows(windowArray);
 	// Note flags are held IN the window list, so must setWindowFlags AFTER detector windows set
 		detector.setWindowFlags(getConfigWindowFlags(id));
 	// set detector into config
-		c.setNPDetector(0,detector);
+		c.setDetector(0,detector);
 	// return config
 		return c;
 	}
 
 	/**
-	 * Method to return a NPLowResSpecConfig, constructed from the information against id id.
+	 * Method to return a LowResSpecConfig, constructed from the information against id id.
 	 * @param id The Id number.
-	 * @return The constructed NPLowResSpecConfig.
+	 * @return The constructed LowResSpecConfig.
 	 * @exception NumberFormatException Thrown if a numeric parameter is not returned from the properties
 	 * 	file as a legal number.
 	 * @exception IllegalArgumentException Thrown if the config id specified does not have a legal type.
 	 */
-	private NPLowResSpecConfig getNuViewConfigById(int id) throws NumberFormatException, IllegalArgumentException
+	private LowResSpecConfig getNuViewConfigById(int id) throws NumberFormatException, IllegalArgumentException
 	{
-		NPLowResSpecConfig c = null;
-		NPLowResSpecDetector detector = null;
+		LowResSpecConfig c = null;
+		LowResSpecDetector detector = null;
 
 	// check type
 		if(getConfigType(id) != CONFIG_TYPE_SPECTROGRAPH_NUVIEW)
@@ -892,35 +892,35 @@ public class IcsGUIConfigProperties extends Properties
 			throw new IllegalArgumentException(this.getClass().getName()+":getCCDConfigById:Id "
 				+id+" not a configuration of type Nu-View.");
 		}
-	// construct NPLowResSpecConfig
-		c = new NPLowResSpecConfig(getConfigName(id));
+	// construct LowResSpecConfig
+		c = new LowResSpecConfig(getConfigName(id));
 		c.setWavelength(getConfigWavelength(id));
 	// setup detector
-		detector = new NPLowResSpecDetector();
+		detector = new LowResSpecDetector();
 		detector.setXBin(getConfigXBin(id));
 		detector.setYBin(getConfigYBin(id));
-		// note, other NPDetector fields not set, as they are not used by the instrument.
+		// note, other Detector fields not set, as they are not used by the instrument.
 	// don't set windows into detector, use default windows.
 	// Note flags are held IN the window list, so must setWindowFlags AFTER detector windows set
 		detector.setWindowFlags(0);
 	// set detector into config
-		c.setNPDetector(0,detector);
+		c.setDetector(0,detector);
 	// return config
 		return c;
 	}
 
 	/**
-	 * Method to return a NPHiResSpecConfig, constructed from the information against id id.
+	 * Method to return a HiResSpecConfig, constructed from the information against id id.
 	 * @param id The Id number.
-	 * @return The constructed NPHiResSpecConfig.
+	 * @return The constructed HiResSpecConfig.
 	 * @exception NumberFormatException Thrown if a numeric parameter is not returned from the properties
 	 * 	file as a legal number.
 	 * @exception IllegalArgumentException Thrown if the config id specified does not have a legal type.
 	 */
-	private NPHiResSpecConfig getMESConfigById(int id) throws NumberFormatException, IllegalArgumentException
+	private HiResSpecConfig getMESConfigById(int id) throws NumberFormatException, IllegalArgumentException
 	{
-		NPHiResSpecConfig c = null;
-		NPLowResSpecDetector detector = null;
+		HiResSpecConfig c = null;
+		LowResSpecDetector detector = null;
 
 	// check type
 		if(getConfigType(id) != CONFIG_TYPE_SPECTROGRAPH_MES)
@@ -928,21 +928,21 @@ public class IcsGUIConfigProperties extends Properties
 			throw new IllegalArgumentException(this.getClass().getName()+":getCCDConfigById:Id "
 				+id+" not a configuration of type MES.");
 		}
-	// construct NPHiResSpecConfig
-		c = new NPHiResSpecConfig(getConfigName(id));
+	// construct HiResSpecConfig
+		c = new HiResSpecConfig(getConfigName(id));
 		c.setFilterSlideName(getConfigFilterSlideName(id));
 	// setup detector
-		detector = new NPLowResSpecDetector();
+		detector = new LowResSpecDetector();
 		detector.setXBin(getConfigXBin(id));
 		detector.setYBin(getConfigYBin(id));
-		// note, other NPDetector fields not set, as they are not used by the instrument.
+		// note, other Detector fields not set, as they are not used by the instrument.
 
 	// set windows into detector
-		detector.setNPWindows(null);
+		detector.setWindows(null);
 	// Note flags are held IN the window list, so must setWindowFlags AFTER detector windows set
 		detector.setWindowFlags(0);
 	// set detector into config
-		c.setNPDetector(0,detector);
+		c.setDetector(0,detector);
 	// return config
 		return c;
 	}
@@ -1225,6 +1225,9 @@ public class IcsGUIConfigProperties extends Properties
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.5  2001/07/10 18:21:28  cjm
+// Added ability to save Nu_View and MES configurations.
+//
 // Revision 0.4  2001/02/27 13:45:03  cjm
 // Changed addNPDetector to setNPDetector to reflect changes
 // in ngat.phase2.nonpersist.NPCCDConfig.
