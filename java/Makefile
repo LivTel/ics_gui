@@ -1,5 +1,5 @@
 # Makefile -*- mode: Fundamental;-*-
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.6 1999-12-10 11:57:06 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.7 1999-12-14 12:18:27 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -28,7 +28,7 @@ SETUP_DIALOG_SRCS	= CONFIGDialog.java LAMPFOCUSDialog.java SET_LOGGINGDialog.jav
 OBJS 		= $(SRCS:%.java=$(BINDIR)/%.class)
 DOCS 		= $(SRCS:%.java=$(DOCSDIR)/%.html)
 
-top: $(OBJS) config docs
+top: $(OBJS) config splash docs
 
 $(BINDIR)/%.class:%.java
 	$(JAVAC) $(JAVAC_OPTIONS) -d $(BINDIR) $<
@@ -37,6 +37,11 @@ config: $(BINDIR)/ccs_gui.properties
 
 $(BINDIR)/ccs_gui.properties: $(HOST).ccs_gui.properties
 	$(CP) $(HOST).ccs_gui.properties $(BINDIR)/ccs_gui.properties
+
+splash: $(BINDIR)/lt.gif
+
+$(BINDIR)/lt.gif: lt.gif
+	$(CP) lt.gif $(BINDIR)/lt.gif
 
 docs: $(DOCS)
 
@@ -60,6 +65,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.6  1999/12/10 11:57:06  cjm
+# Added backup target.
+#
 # Revision 0.5  1999/12/09 16:36:42  cjm
 # *** empty log message ***
 #
