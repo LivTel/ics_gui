@@ -1,5 +1,5 @@
 # Makefile -*- mode: Fundamental;-*-
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.14 2002-05-23 12:49:27 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.15 2002-12-16 19:13:13 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -34,7 +34,7 @@ OBJS 		= $(SRCS:%.java=$(BINDIR)/%.class)
 DOCS 		= $(SRCS:%.java=$(DOCSDIR)/%.html)
 
 CONFIG_PROPERTY_SRCS	= ltccd1.ccs_gui.properties \
-	ltccd2.ccs_gui.properties ltobs5.ccs_gui.properties \
+	ltccd2.ccs_gui.properties ftccd1.ccs_gui.properties ltobs5.ccs_gui.properties \
 	ltobs5.scs_gui.properties spectrograph.scs_gui.properties \
 	ccs_gui.fits.properties ccs_gui_config.properties
 CONFIG_OBJS	= $(CONFIG_PROPERTY_SRCS:%.properties=$(BINDIR)/%.properties)
@@ -105,6 +105,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.14  2002/05/23 12:49:27  cjm
+# Added DAY_CALIBRATEDialog.java and TWILIGHT_CALIBRATEDialog.java dialogs.
+#
 # Revision 0.13  2001/07/11 10:24:45  cjm
 # Added IcsGUIFilenameShowListener and changes to configuration files.
 #
