@@ -1,5 +1,5 @@
 // IcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.4 2004-01-15 15:53:21 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.5 2004-03-03 16:08:57 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -20,14 +20,18 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class IcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.4 2004-01-15 15:53:21 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.5 2004-03-03 16:08:57 cjm Exp $");
+	/**
+	 * Internal constant used when converting temperatures in centigrade (from the CCD controller) to Kelvin.
+	 */
+	public final static double CENTIGRADE_TO_KELVIN = 273.15;
 	/**
 	 * The stream to write error messages to - defaults to System.err.
 	 */
@@ -1199,8 +1203,9 @@ public class IcsGUI
 	}
 
 	/**
-	 * Method to set the CCD Temperature label.
-	 * @param ccdTemperature The temperature in degrees C
+	 * Method to set the CCD Temperature label. The temperature in converted into degrees centigrade and displayed.
+	 * @param ccdTemperature The temperature in degrees Kelvin.
+	 * @see #CENTIGRADE_TO_KELVIN
 	 */
 	public void setCCDTemperatureLabel(double ccdTemperature)
 	{
@@ -1209,10 +1214,10 @@ public class IcsGUI
 
 	// format number to 2d.p.
 		decimalFormat = new DecimalFormat("###.00");
-		s = decimalFormat.format(ccdTemperature);
+		s = decimalFormat.format(ccdTemperature-CENTIGRADE_TO_KELVIN);
 		if(ccdTemperatureLabel != null)
 		{
-			SwingUtilities.invokeLater(new GUILabelSetter(ccdTemperatureLabel,s));
+			SwingUtilities.invokeLater(new GUILabelSetter(ccdTemperatureLabel,s+" C"));
 		}
 	}
 
@@ -1491,6 +1496,9 @@ public class IcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.4  2004/01/15 15:53:21  cjm
+// Commented out remoteX fix that won't compile on Solaris Java 1.2.
+//
 // Revision 1.3  2004/01/13 20:34:37  cjm
 // Added remote X option.
 //
