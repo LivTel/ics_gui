@@ -1,6 +1,7 @@
 // CcsGUIClientConnectionThread.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.14 2002-12-16 18:35:51 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.15 2003-08-21 14:24:04 cjm Exp $
 
+import java.awt.*;
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -16,14 +17,14 @@ import ngat.util.StringUtilities;
  * It implements the generic ISS instrument command protocol.
  * It is used to send commands from the CcsGUI to the Ccs.
  * @author Chris Mottram
- * @version $Revision: 0.14 $
+ * @version $Revision: 0.15 $
  */
 public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.14 2002-12-16 18:35:51 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.15 2003-08-21 14:24:04 cjm Exp $");
 	/**
 	 * The CcsGUI object.
 	 */
@@ -85,7 +86,7 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 		commandName = StringUtilities.replace(commandName,"_DP_ACK","");
 		commandName = StringUtilities.replace(commandName,"_ACK","");
 	// print filename to log
-		parent.log("The current "+commandName+" frame is:"+filenameAck.getFilename()+".");
+		parent.log("The current "+commandName+" frame is:"+filenameAck.getFilename()+".",Color.cyan);
 	// update filename label
 		parent.setFilenameLabel(filenameAck.getFilename());
 	}
@@ -146,14 +147,14 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 
 		if(done == null)
 		{
-			parent.log("Null done message received for:"+command.getClass().getName()+".");
+			parent.log("Null done message received for:"+command.getClass().getName()+".",Color.red);
 		}
 		else
 		{
-			parent.log("Done message received for:"+command.getClass().getName()+":"+
-				"successful:"+done.getSuccessful());
 			if(done.getSuccessful())
 			{
+				parent.log("Done message received for:"+command.getClass().getName()+":"+
+					   "successful:"+done.getSuccessful(),Color.green);
 				if(done instanceof GET_STATUS_DONE)
 					printGetStatusDone((GET_STATUS_DONE)done);
 				if(done instanceof CALIBRATE_DONE)
@@ -165,8 +166,10 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 			}
 			else
 			{
+				parent.log("Done message received for:"+command.getClass().getName()+":"+
+					   "successful:"+done.getSuccessful(),Color.red);
 				parent.log("Error:error Number:"+done.getErrorNum()+
-					"\nerror String:"+done.getErrorString());
+					"\nerror String:"+done.getErrorString(),Color.red);
 			}
 		}
 		parent.getStatus().removeClientThread(this);
@@ -252,6 +255,10 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 		{
 			parent.setFiltersSelectedLabel((Integer)(displayInfo.get("Filter Position")));
 		}
+		else if(instrumentString.equals("SupIRCam"))
+		{
+			parent.setFiltersSelectedLabel((String)(displayInfo.get("Filter Wheel:0")));
+		}
 	// set remaining exposures status
 		integer = (Integer)(displayInfo.get("Exposure Count"));
 		exposureCount = integer.intValue();
@@ -265,7 +272,10 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 		if(getStatusDone.getCurrentMode() == GET_STATUS_DONE.MODE_EXPOSING)
 		{
 			integer = (Integer)(displayInfo.get("Exposure Length"));
-			exposureLength = integer.longValue();
+			if(integer != null)
+				exposureLength = integer.longValue();
+			else
+				exposureLength = 0;
 		// If Elapsed Exposure Time was included, use this to calculate remaining exposure time
 			if(displayInfo.containsKey("Elapsed Exposure Time"))
 			{
@@ -348,6 +358,9 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.14  2002/12/16 18:35:51  cjm
+// Now uses GET_STATUS_DONE mode constants.
+//
 // Revision 0.13  2002/05/23 12:44:53  cjm
 // Added prints for extra fields in EXPOSE_DONE.
 //
