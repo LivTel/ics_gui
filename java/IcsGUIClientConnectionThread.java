@@ -1,5 +1,5 @@
 // CcsGUIClientConnectionThread.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.3 2000-02-21 10:46:48 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.4 2000-02-22 15:42:15 cjm Exp $
 
 import java.lang.*;
 import java.io.*;
@@ -20,14 +20,14 @@ import ngat.message.ISS_INST.GET_STATUS_DONE;
  * It implements the generic ISS instrument command protocol.
  * It is used to send commands from the CcsGUI to the Ccs.
  * @author Chris Mottram
- * @version $Revision: 0.3 $
+ * @version $Revision: 0.4 $
  */
 public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.3 2000-02-21 10:46:48 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.4 2000-02-22 15:42:15 cjm Exp $");
 	/**
 	 * The CcsGUI object.
 	 */
@@ -119,17 +119,20 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 		{
 			parent.log("Done message received for:"+command.getClass().getName()+":"+
 				"successful:"+done.getSuccessful());
-			if(done.getSuccessful() == false)
+			if(done.getSuccessful())
+			{
+				if(done instanceof GET_STATUS_DONE)
+					printGetStatusDone((GET_STATUS_DONE)done);
+				if(done instanceof CALIBRATE_DONE)
+					printCalibrateDone((CALIBRATE_DONE)done);
+				if(done instanceof EXPOSE_DONE)
+					printExposeDone((EXPOSE_DONE)done);
+			}
+			else
 			{
 				parent.log("Error:error Number:"+done.getErrorNum()+
 					"\nerror String:"+done.getErrorString());
 			}
-			if(done instanceof GET_STATUS_DONE)
-				printGetStatusDone((GET_STATUS_DONE)done);
-			if(done instanceof CALIBRATE_DONE)
-				printCalibrateDone((CALIBRATE_DONE)done);
-			if(done instanceof EXPOSE_DONE)
-				printExposeDone((EXPOSE_DONE)done);
 		}
 		parent.getStatus().removeClientThread(this);
 	}
@@ -216,6 +219,9 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.3  2000/02/21 10:46:48  cjm
+// Added more prints for EXPOSE/CALIBRATE_DONE and MULTRUN_DP_ACK.
+//
 // Revision 0.2  1999/12/09 17:02:12  cjm
 // More functionality added.
 //
