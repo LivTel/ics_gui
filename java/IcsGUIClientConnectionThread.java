@@ -1,5 +1,5 @@
 // CcsGUIClientConnectionThread.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.9 2000-07-03 10:34:08 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.10 2000-08-29 11:41:38 cjm Exp $
 
 import java.lang.*;
 import java.io.*;
@@ -8,26 +8,21 @@ import java.util.*;
 
 import ngat.net.*;
 import ngat.message.base.*;
-import ngat.message.ISS_INST.MOVIE_ACK;
-import ngat.message.ISS_INST.MULTRUN_ACK;
-import ngat.message.ISS_INST.MULTRUN_DP_ACK;
-import ngat.message.ISS_INST.CALIBRATE_DONE;
-import ngat.message.ISS_INST.EXPOSE_DONE;
-import ngat.message.ISS_INST.GET_STATUS_DONE;
+import ngat.message.ISS_INST.*;
 
 /**
  * The CcsGUIClientConnectionThread extends TCPClientConnectionThread. 
  * It implements the generic ISS instrument command protocol.
  * It is used to send commands from the CcsGUI to the Ccs.
  * @author Chris Mottram
- * @version $Revision: 0.9 $
+ * @version $Revision: 0.10 $
  */
 public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.9 2000-07-03 10:34:08 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.10 2000-08-29 11:41:38 cjm Exp $");
 	/**
 	 * The CcsGUI object.
 	 */
@@ -104,9 +99,12 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 
 	/**
 	 * This routine processes the done object returned by the server. Currently prints out
-	 * the basic return values in done. If done is an instance of GET_STATUS_DONE calls printGetStatus
-	 * to print out more informatiom.
-	 * @see #printGetStatus
+	 * the basic return values in done. If done is an instance of some sub-class
+	 * a <b>print...Done</b> method is called to print out more informatiom.
+	 * @see #printGetStatusDone
+	 * @see #printCalibrateDone
+	 * @see #printExposeDone
+	 * @see #printTelFocusDone
 	 */
 	protected void processDone()
 	{
@@ -127,6 +125,8 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 					printCalibrateDone((CALIBRATE_DONE)done);
 				if(done instanceof EXPOSE_DONE)
 					printExposeDone((EXPOSE_DONE)done);
+				if(done instanceof TELFOCUS_DONE)
+					printTelFocusDone((TELFOCUS_DONE)done);
 			}
 			else
 			{
@@ -256,9 +256,25 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 			":Brightest X Pixel:"+exposeDone.getXpix()+
 			":Brightest Y Pixel:"+exposeDone.getYpix());
 	}
+
+	/**
+	 * Method to print out parameters associated with a TELFOCUS_DONE (sub)class instance.
+	 * These parameters are <i>Seeing</i> and <i>Current Focus</i>.
+	 * @param telFocusDone The instance of the DONE message.
+	 */
+	private void printTelFocusDone(TELFOCUS_DONE telFocusDone)
+	{
+		parent.log("Seeing:"+telFocusDone.getSeeing()+
+			":Current Focus:"+telFocusDone.getCurrentFocus());
+	}
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.9  2000/07/03 10:34:08  cjm
+// Remaining exposure time implementation changed so when
+// Elapsed Exposure Time not returned by Ccs an approximation
+// is returned.
+//
 // Revision 0.8  2000/06/15 12:13:34  cjm
 // Test whether Temperature information returned.
 // Stops NullPointerException.
