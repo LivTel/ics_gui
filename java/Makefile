@@ -1,5 +1,5 @@
 # Makefile
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.16 2003-03-11 11:11:11 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.17 2003-06-06 15:46:29 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -36,11 +36,15 @@ DOCS 		= $(SRCS:%.java=$(DOCSDIR)/%.html)
 CONFIG_PROPERTY_SRCS	= ltccd1.ccs_gui.properties \
 	ltccd2.ccs_gui.properties ltccd3.ccs_gui.properties ftccd1.ccs_gui.properties ltobs5.ccs_gui.properties \
 	ltobs5.scs_gui.properties spectrograph.scs_gui.properties \
+	ltobs9.ratcam.ccs_gui.properties ltobs9.fartcam.ccs_gui.properties ltobs9.supircam.ccs_gui.properties \
 	ccs_gui.fits.properties ccs_gui_config.properties
 CONFIG_OBJS	= $(CONFIG_PROPERTY_SRCS:%.properties=$(BINDIR)/%.properties)
 
-SCRIPT_SRCS	= scsgui ccsgui xv_wrapper.csh
+SCRIPT_SRCS	= icsgui scsgui ccsgui xv_wrapper.csh
 SCRIPT_OBJS	= $(SCRIPT_SRCS:%=$(BINDIR)/%)
+
+GIF_SRCS	= lt.gif lt_icon.gif ratcam.gif ratcam_ltccd1.gif ratcam_ftccd1.gif ratcam_ltccd2.gif supircam.gif
+GIF_OBJS	= $(GIF_SRCS:%=$(BINDIR)/%)
 
 top: $(OBJS) config gifs scripts docs
 
@@ -63,6 +67,9 @@ $(BINDIR)/%.properties: %.properties
 #
 scripts: $(SCRIPT_OBJS)
 
+$(BINDIR)/icsgui: icsgui
+	$(CP) icsgui $@
+
 $(BINDIR)/ccsgui: ccsgui
 	$(CP) ccsgui $@
 
@@ -75,7 +82,7 @@ $(BINDIR)/xv_wrapper.csh: xv_wrapper.csh
 #
 # gifs
 #
-gifs: $(BINDIR)/lt.gif $(BINDIR)/lt_icon.gif
+gifs: $(GIF_OBJS) 
 
 $(BINDIR)/%.gif: %.gif
 	$(CP) $< $@
@@ -105,6 +112,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.16  2003/03/11 11:11:11  cjm
+# Added properties.
+#
 # Revision 0.15  2002/12/16 19:13:13  cjm
 # Added config properties.
 #
