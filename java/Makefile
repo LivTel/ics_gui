@@ -1,5 +1,5 @@
 # Makefile
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.18 2003-07-15 16:21:43 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.19 2003-09-19 14:41:24 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -12,14 +12,14 @@ DOCFLAGS 	= -version -author -private
 # note - DIALOG_SRCS are deleted on clean target to ensure they are re-built
 SRCS 		= $(MAIN_SRCS) $(DIALOG_SRCS)
 
-MAIN_SRCS	= CcsGUI.java CcsGUIStatus.java CcsGUIWindowListener.java CcsGUIMenuItemListener.java \
+MAIN_SRCS	= IcsGUI.java CcsGUIStatus.java CcsGUIWindowListener.java CcsGUIMenuItemListener.java \
 		GUIDialogListener.java CcsGUIDialogListener.java CcsCommandDialog.java \
 		CcsGUIClientConnectionThread.java IcsGUIFilenameShowListener.java \
 		$(SERVER_SRCS) $(CONFIG_SRCS) $(UPDATE_SRCS)
 
 SERVER_SRCS	= CcsGUIServer.java CcsGUIServerConnectionThread.java
 CONFIG_SRCS	= IcsGUIConfigProperties.java IcsGUIConfigListDialog.java CcsGUIConfigButtonListener.java \
-		CcsCCDConfigAADialog.java IcsGUILowResSpecConfigAADialog.java IcsGUIIRCamConfigAADialog.java \
+		IcsGUICCDConfigAADialog.java IcsGUILowResSpecConfigAADialog.java IcsGUIIRCamConfigAADialog.java \
 		CcsConfigAADialogListener.java 
 UPDATE_SRCS	= CcsGUIUpdateListener.java CcsGUIUpdateThread.java
 
@@ -45,10 +45,19 @@ CONFIG_OBJS	= $(CONFIG_PROPERTY_SRCS:%.properties=$(BINDIR)/%.properties)
 SCRIPT_SRCS	= icsgui scsgui ccsgui xv_wrapper.csh
 SCRIPT_OBJS	= $(SCRIPT_SRCS:%=$(BINDIR)/%)
 
-GIF_SRCS	= lt.gif lt_icon.gif ratcam.gif ratcam_ltccd1.gif ratcam_ftccd1.gif ratcam_ltccd2.gif supircam.gif
+GIF_SRCS	= lt.gif lt_icon.gif ratcam.gif ratcam_ltccd1.gif ratcam_ftccd1.gif ratcam_ltccd2.gif \
+		ratcam_ltccd3.gif supircam.gif
 GIF_OBJS	= $(GIF_SRCS:%=$(BINDIR)/%)
 
-top: $(OBJS) config gifs scripts docs
+SOUND_SRCS	= wav/command_completed.wav wav/command_failed.wav wav/filename.wav \
+		wav/welcome.wav wav/iss_message.wav \
+		wav/hal1moment.wav wav/halfault.wav wav/halfunctnl.wav wav/halgoodevening.wav wav/halmessage4u.wav \
+		wav/halopperational.wav wav/halquitelike.wav wav/halsmoothly.wav wav/halsorrydave.wav wav/halwell.wav
+SOUND_OBJS	= $(SOUND_SRCS:%=$(BINDIR)/%)
+
+
+
+top: $(OBJS) config gifs scripts sounds docs
 
 #
 # java sources
@@ -90,6 +99,14 @@ $(BINDIR)/%.gif: %.gif
 	$(CP) $< $@
 
 #
+# sounds
+#
+sounds: $(SOUND_OBJS) 
+
+$(BINDIR)/%.wav: %.wav
+	$(CP) $< $@
+
+#
 # documentation
 #
 docs: $(DOCS)
@@ -114,6 +131,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.18  2003/07/15 16:21:43  cjm
+# Added IcsGUIIRCamConfigAADialog source.
+#
 # Revision 0.17  2003/06/06 15:46:29  cjm
 # *** empty log message ***
 #
