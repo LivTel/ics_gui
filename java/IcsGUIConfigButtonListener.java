@@ -1,5 +1,5 @@
 // CcsGUIConfigButtonListener.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigButtonListener.java,v 0.3 2003-09-19 14:08:45 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigButtonListener.java,v 0.4 2003-11-14 15:02:12 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -12,14 +12,14 @@ import javax.swing.*;
  * This class is an ActionListener for the IcsGUI CONFIGDialog config button. It should bring up a 
  * IcsGUIConfigListDialog, and any selected configs should go back to the CONFIGDialog.
  * @author Chris Mottram
- * @version $Revision: 0.3 $
+ * @version $Revision: 0.4 $
  */
 public class CcsGUIConfigButtonListener implements ActionListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIConfigButtonListener.java,v 0.3 2003-09-19 14:08:45 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIConfigButtonListener.java,v 0.4 2003-11-14 15:02:12 cjm Exp $");
 	/**
 	 * The instance of the main program.
 	 */
@@ -47,7 +47,7 @@ public class CcsGUIConfigButtonListener implements ActionListener
 		parent = p;
 		configDialog = cd;
 		configListDialog = new IcsGUIConfigListDialog(p.getFrame(),p.getStatus().
-								getInstrumentConfigProperties());
+								getInstrumentConfigProperties(),p);
 	}
 
 
@@ -66,6 +66,9 @@ public class CcsGUIConfigButtonListener implements ActionListener
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.3  2003/09/19 14:08:45  cjm
+// Changed CcsGUI to IcsGUI.
+//
 // Revision 0.2  2000/11/30 18:47:44  cjm
 // Made generic for other instruments.
 //
