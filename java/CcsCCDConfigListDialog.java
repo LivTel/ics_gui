@@ -1,5 +1,5 @@
 // CcsCCDConfigListDialog.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/CcsCCDConfigListDialog.java,v 0.2 1999-12-09 17:02:12 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/CcsCCDConfigListDialog.java,v 0.3 2000-11-29 11:29:26 cjm Exp $
 import java.lang.*;
 import java.util.*;
 import java.awt.*;
@@ -18,11 +18,11 @@ public class CcsCCDConfigListDialog extends JDialog implements ActionListener, C
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: CcsCCDConfigListDialog.java,v 0.2 1999-12-09 17:02:12 cjm Exp $");
+	public final static String RCSID = new String("$Id: CcsCCDConfigListDialog.java,v 0.3 2000-11-29 11:29:26 cjm Exp $");
 	/**
 	 * The data to be displayed in the list.
 	 */
-	private CcsCCDConfigProperties ccdConfigProperties = null;
+	private IcsGUIConfigProperties configProperties = null;
 	/**
 	 * The Add/Amend dialog to use when Add or Amend is selected.
 	 */
@@ -32,7 +32,7 @@ public class CcsCCDConfigListDialog extends JDialog implements ActionListener, C
 	 */
 	private CONFIGDialog configDialog = null;
 	/**
-	 * Internal JList that actually displays the CCD Configurations.
+	 * Internal JList that actually displays the Instrument Configurations.
 	 */
 	private JList list = null;
 
@@ -40,18 +40,18 @@ public class CcsCCDConfigListDialog extends JDialog implements ActionListener, C
 	 * Constructor. Calls the JDialog constructor. Creates the components in the dialog.
 	 * Creates the add/amend dialog.
 	 * @param owner The parent frame of this dialog. Used in calling Dialog's constructor.
-	 * @param c A reference to the object holding the CCD Configuration data. Used to fill the list,
+	 * @param c A reference to the object holding the instrument Configuration data. Used to fill the list,
 	 *	and for updating purposes.
 	 */
-	public CcsCCDConfigListDialog(Frame owner,CcsCCDConfigProperties c)
+	public CcsCCDConfigListDialog(Frame owner,IcsGUIConfigProperties c)
 	{
-		super(owner,"CCD Configuration List");
+		super(owner,"Instrument Configuration List");
 
 		JScrollPane scrollPane = null;
 		JMenu menu = null;
 		JMenuItem menuItem = null;
 
-		ccdConfigProperties = c;
+		configProperties = c;
 		getContentPane().setLayout(new BorderLayout());
 		setResizable(true);
 	// setup menu bar
@@ -115,11 +115,11 @@ public class CcsCCDConfigListDialog extends JDialog implements ActionListener, C
 	}
 
 	/**
-	 * This method sets the list up with data in the CCD Config Prooperties.
+	 * This method sets the list up with data in the Instrument Config Prooperties.
 	 * This method should be called <b>just</b> before the dialog is managed, to ensure the
 	 * list is up to date with the properties.
-	 * @see #ccdConfigProperties
-	 * @see CcsCCDConfigProperties#getConfigNameList
+	 * @see #configProperties
+	 * @see IcsGUIConfigProperties#getConfigNameList
 	 * @see #list
 	 */
 	public void setData()
@@ -127,7 +127,7 @@ public class CcsCCDConfigListDialog extends JDialog implements ActionListener, C
 		Vector l = null;
 		int i;
 
-		l = ccdConfigProperties.getConfigNameList();
+		l = configProperties.getConfigNameList();
 		list.setListData(l);
 	}
 
@@ -189,7 +189,7 @@ public class CcsCCDConfigListDialog extends JDialog implements ActionListener, C
 		{
 			try
 			{
-				id = getSelectedCCDConfigId();
+				id = getSelectedConfigId();
 				addAmendDialog.setLocation(getX()+getWidth(),getY());
 				addAmendDialog.pack();
 				addAmendDialog.amend(id);
@@ -205,7 +205,7 @@ public class CcsCCDConfigListDialog extends JDialog implements ActionListener, C
 		{
 			try
 			{
-				id = getSelectedCCDConfigId();
+				id = getSelectedConfigId();
 			}
 			catch(IllegalArgumentException e)
 			{
@@ -215,12 +215,12 @@ public class CcsCCDConfigListDialog extends JDialog implements ActionListener, C
 				return;
 			}
 			retval = JOptionPane.showConfirmDialog((Component)null,
-				(Object)("Are you sure you want to delete:"+ccdConfigProperties.getConfigName(id)),
-				" Delete "+ccdConfigProperties.getConfigName(id),
+				(Object)("Are you sure you want to delete:"+configProperties.getConfigName(id)),
+				" Delete "+configProperties.getConfigName(id),
 				JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
 			if(retval == JOptionPane.YES_OPTION)
 			{
-				ccdConfigProperties.deleteId(id);
+				configProperties.deleteId(id);
 				setData();
 			}
 		}
@@ -232,9 +232,9 @@ public class CcsCCDConfigListDialog extends JDialog implements ActionListener, C
 
 	/**
 	 * Method implementing the CcsConfigAADialogListener interface. Called when an
-	 * CCD Configuration is added/amended.
+	 * Instrument Configuration is added/amended.
 	 * @param ok Boolean, true if the Ok button was pressed on the dialog.
-	 * @param id The id of the CCD Configuration if ok was true.
+	 * @param id The id of the Instrument Configuration if ok was true.
 	 */
 	public void actionPerformed(boolean ok,int id)
 	{
@@ -242,12 +242,12 @@ public class CcsCCDConfigListDialog extends JDialog implements ActionListener, C
 	}
 
 	/**
-	 * Method to get the id of the selected CCDConfig in the list.
+	 * Method to get the id of the selected Instrument Configuration in the list.
 	 * @return The id.
 	 * @exception IllegalArgumentException Thrown if no item is selected, the selected item is not a string,
 	 * 	or a configuration cannot be found with the correct name.
 	 */
-	private int getSelectedCCDConfigId() throws IllegalArgumentException
+	private int getSelectedConfigId() throws IllegalArgumentException
 	{
 		String s = null;
 		Object o = null;
@@ -259,11 +259,14 @@ public class CcsCCDConfigListDialog extends JDialog implements ActionListener, C
 		if((o instanceof String)==false)
 			throw new IllegalArgumentException("Selected Item wrong class:"+o.getClass().getName());
 		s = (String)o;
-		return ccdConfigProperties.getIdFromName(s);
+		return configProperties.getIdFromName(s);
 	}
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.2  1999/12/09 17:02:12  cjm
+// More functionality added.
+//
 // Revision 0.1  1999/12/08 10:41:12  cjm
 // initial revision.
 //
