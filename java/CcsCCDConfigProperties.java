@@ -1,5 +1,5 @@
 // CcsCCDConfigProperties.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/CcsCCDConfigProperties.java,v 0.2 1999-12-09 17:02:12 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/CcsCCDConfigProperties.java,v 0.3 2000-02-08 16:34:21 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -11,14 +11,14 @@ import ngat.phase2.*;
  * in a Java proerties file and this class extends java.util.Properties
  * @see java.util.Properties
  * @author Chris Mottram
- * @version $Revision: 0.2 $
+ * @version $Revision: 0.3 $
  */
 public class CcsCCDConfigProperties extends Properties
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: CcsCCDConfigProperties.java,v 0.2 1999-12-09 17:02:12 cjm Exp $");
+	public final static String RCSID = new String("$Id: CcsCCDConfigProperties.java,v 0.3 2000-02-08 16:34:21 cjm Exp $");
 	/**
 	 * Filename for properties file.
 	 */
@@ -110,6 +110,8 @@ public class CcsCCDConfigProperties extends Properties
 		c.setXbin(getConfigXBin(id));
 		c.setYbin(getConfigYBin(id));
 
+		c.setWindowFlags(getConfigWindowFlags(id));
+
 		c.setXs1(getConfigXStart(id,1));
 		c.setYs1(getConfigYStart(id,1));
 		c.setXe1(getConfigXEnd(id,1));
@@ -170,6 +172,7 @@ public class CcsCCDConfigProperties extends Properties
 		remove(configIdStringUpperFilterWheel(id));
 		remove(configIdStringXBin(id));
 		remove(configIdStringYBin(id));
+		remove(configIdStringWindowFlags(id));
 		for(j=1;j<5;j++)
 		{
 			remove(configIdWindowStringXStart(id,j));
@@ -192,6 +195,8 @@ public class CcsCCDConfigProperties extends Properties
 			remove(configIdStringXBin(i));
 			setConfigYBin(i-1,getConfigYBin(i));
 			remove(configIdStringYBin(i));
+			setConfigWindowFlags(i-1,getConfigWindowFlags(i));
+			remove(configIdStringWindowFlags(i));
 
 			for(j=1;j<5;j++)
 			{
@@ -345,6 +350,41 @@ public class CcsCCDConfigProperties extends Properties
 		//put(configIdStringYBin(id),Integer.toString(yBin));
 	// jdk 1.2.x
 		setProperty(configIdStringYBin(id),Integer.toString(yBin));
+	}
+
+	/**
+	 * Method to get the window flags of configuration id id.
+	 * @param id The id of the configuration.
+	 * @return The configuration window flags number.
+	 * @exception NumberFormatException Thrown if the relevant property 
+	 * 	"ccs_gui_config."id".windowFlags" does not contain a numeric value.
+	 */
+	public int getConfigWindowFlags(int id) throws NumberFormatException
+	{
+		return getPropertyInteger(configIdStringWindowFlags(id));
+	}
+
+	/**
+	 * Method to get the window flags of configuration id id as a string.
+	 * @param id The id of the configuration.
+	 * @return The configuration window flags number as a string.
+	 */
+	public String getConfigWindowFlagsString(int id)
+	{
+		return getProperty(configIdStringWindowFlags(id));
+	}
+
+	/**
+	 * Method to set the window flags of configuration id id.
+	 * @param id The id of the configuration.
+	 * @param windowFlags The configuration window flags number.
+	 */
+	public void setConfigWindowFlags(int id,int windowFlags)
+	{
+	// jdk 1.1.x
+		//put(configIdStringWindowFlags(id),Integer.toString(windowFlags));
+	// jdk 1.2.x
+		setProperty(configIdStringWindowFlags(id),Integer.toString(windowFlags));
 	}
 
 	/**
@@ -567,6 +607,17 @@ public class CcsCCDConfigProperties extends Properties
 	}
 
 	/**
+	 * Method to return a key for the window flags for a particular config id.
+	 * @param id The config id.
+	 * @return The key string.
+	 * @see #configIdString
+	 */
+	private String configIdStringWindowFlags(int id)
+	{
+		return new String(configIdString(id)+"windowFlags");
+	}
+
+	/**
 	 * Method to return a key for the x start position for a particular config id and window number.
 	 * @param id The config id.
 	 * @param windowNumber The number of the window, from 1 to 4.
@@ -658,6 +709,9 @@ public class CcsCCDConfigProperties extends Properties
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.2  1999/12/09 17:02:12  cjm
+// More functionality added.
+//
 // Revision 0.1  1999/11/25 13:33:39  cjm
 // initial revision.
 //
