@@ -1,6 +1,6 @@
 #!/bin/csh
-# $Header: /home/cjm/cvs/ics_gui/scripts/icsgui_make_deployment,v 1.3 2004-04-14 11:35:26 cjm Exp $
-# Version: $Revision: 1.3 $
+# $Header: /home/cjm/cvs/ics_gui/scripts/icsgui_make_deployment,v 1.4 2004-09-14 09:25:55 cjm Exp $
+# Version: $Revision: 1.4 $
 # By $Author: cjm $
 # Make a deployment tar file.
 # This contains:
@@ -24,8 +24,10 @@ switch ( ${machine_name} )
 	set camera_name = "ratcam"
 	breaksw
     case "ftntmc":
-    case "ftstmc":
 	set camera_name = "fartcam"
+	breaksw
+    case "ftstmc":
+	set camera_name = "dillcamsouth"
 	breaksw
     default:
 	echo "Unknown machine ${machine_name}."
