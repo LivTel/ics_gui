@@ -1,20 +1,22 @@
 // CcsGUIStatus.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIStatus.java,v 0.4 2003-06-06 15:44:31 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIStatus.java,v 0.5 2004-06-15 19:16:03 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
 
+import ngat.sound.*;
+
 /**
  * This class holds status information for the CcsGUI program.
  * @author Chris Mottram
- * @version $Revision: 0.4 $
+ * @version $Revision: 0.5 $
  */
 public class CcsGUIStatus
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIStatus.java,v 0.4 2003-06-06 15:44:31 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIStatus.java,v 0.5 2004-06-15 19:16:03 cjm Exp $");
 	/**
 	 * File name containing properties for ccs gui.
 	 */
@@ -162,6 +164,46 @@ public class CcsGUIStatus
 	}
 
 	/**
+	 * Play a sample specified by the property.
+	 * @param audioThread The audio thread to play the sample with.
+	 * @param propertyName The name of a property key. The value contains a sample "name",
+	 *      or a list of names is available from the property key (&lt;property key&gt;.&lt;N&gt),
+	 *      and a random name is selected.
+	 */
+	public void play(SoundThread audioThread,String propertyName)
+	{
+		Random random = null;
+		List sampleNameList = null;
+		String sampleName = null;
+		int index;
+		boolean done;
+
+		sampleName = getProperty(propertyName);
+		// if default property value does not exist, see if there is a list to select from.
+		if(sampleName == null)
+		{
+			sampleNameList = new Vector();
+			index = 0;
+			done = false;
+			while(done == false)
+			{
+				sampleName = getProperty(propertyName+"."+index);
+				if(sampleName != null)
+					sampleNameList.add(sampleName);
+				index++;
+				done = (sampleName == null);
+			}
+			if(sampleNameList.size() > 0)
+			{
+				random = new Random();
+				index = random.nextInt(sampleNameList.size());
+				sampleName = (String)(sampleNameList.get(index));
+			}
+		}
+		audioThread.play(sampleName);
+	}
+
+	/**
 	 * Routine to get a properties value, given a key. Just calls the properties object getProperty routine.
 	 * @param p The property key we want the value for.
 	 * @return The properties value, as a string object.
@@ -230,6 +272,9 @@ public class CcsGUIStatus
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.4  2003/06/06 15:44:31  cjm
+// Changes on which property filename is loaded.
+//
 // Revision 0.3  2000/11/30 18:47:44  cjm
 // Made generic for other instruments.
 //
