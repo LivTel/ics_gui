@@ -1,5 +1,5 @@
 // CcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.17 2002-12-16 18:35:51 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.18 2003-03-26 15:39:44 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -19,14 +19,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ccs GUI.
  * @author Chris Mottram
- * @version $Revision: 0.17 $
+ * @version $Revision: 0.18 $
  */
 public class CcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.17 2002-12-16 18:35:51 cjm Exp $");
+	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.18 2003-03-26 15:39:44 cjm Exp $");
 	/**
 	 * The stream to write error messages to - defaults to System.err.
 	 */
@@ -252,12 +252,17 @@ public class CcsGUI
         	GridBagConstraints gridBagCon = new GridBagConstraints();
 	// Create the top-level container.
 		if(ccsAddress != null)
-			titleString = new String("Ccs Interface:"+ccsAddress.getHostName());
+		{
+			titleString = new String("Ics:"+status.getProperty("ccs_gui.title")+
+						 ":"+ccsAddress.getHostName());
+		}
 		else
-			titleString = new String("Ccs Interface:None");
+		{
+			titleString = new String("Ics:"+status.getProperty("ccs_gui.title")+"None");
+		}
 		frame = new MinimumSizeFrame(titleString,new Dimension(400,300));
 	// set icon image
-		image = Toolkit.getDefaultToolkit().getImage("lt_icon.gif");
+		image = Toolkit.getDefaultToolkit().getImage(status.getProperty("ccs_gui.icon.filename"));
 		frame.setIconImage(image);
 
 		frame.getContentPane().setLayout(gridBagLayout);
@@ -1254,6 +1259,9 @@ public class CcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.17  2002/12/16 18:35:51  cjm
+// Added extra mode data returned from GET_STATUS.
+//
 // Revision 0.16  2002/05/23 12:44:53  cjm
 // Added DAY_CALIBRATE and TWILIGHT_CALIBRATE menus.
 //
