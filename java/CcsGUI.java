@@ -1,5 +1,5 @@
 // CcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.18 2003-03-26 15:39:44 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.19 2003-06-06 15:44:31 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -17,16 +17,16 @@ import ngat.swing.*;
 import ngat.util.*;
 
 /**
- * This class is the start point for the Ccs GUI.
+ * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 0.18 $
+ * @version $Revision: 0.19 $
  */
 public class CcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.18 2003-03-26 15:39:44 cjm Exp $");
+	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.19 2003-06-06 15:44:31 cjm Exp $");
 	/**
 	 * The stream to write error messages to - defaults to System.err.
 	 */
@@ -40,7 +40,7 @@ public class CcsGUI
 	 */
 	private JFrame frame = null;
 	/**
-	 * Label for current Ccs status.
+	 * Label for current Ics status.
 	 */
 	private JLabel ccdStatusLabel = null;
 	/**
@@ -78,13 +78,18 @@ public class CcsGUI
 	private JTextArea logTextArea = null;
 	/**
 	 * Field holding the maximum number of lines of text the log text area should have.
-	 * This field is used in the log method to stop the log text area getting so long CcsGUI runs
+	 * This field is used in the log method to stop the log text area getting so long IcsGUI runs
 	 * out of memory. A GUITextLengthLimiter is used to do this.
 	 * @see #log
 	 */
 	private int logTextAreaLineLimit = 500;
 	/**
-	 * CcsGUI status information.
+	 * The property filename to load status properties from.
+	 * If NULL, the status's internal default filename is used.
+	 */
+	private String propertyFilename = null;
+	/**
+	 * IcsGUI status information.
 	 */
 	private CcsGUIStatus status = null;
 	/**
@@ -92,11 +97,11 @@ public class CcsGUI
 	 */
 	private int ccsPortNumber = 0;
 	/**
-	 * The ip address of the machine the CCS is running on, to send CCS commands to.
+	 * The ip address of the machine the ICS is running on, to send ICS commands to.
 	 */
 	private InetAddress ccsAddress = null;
 	/**
-	 * The port number to listen for connections from the CCS on.
+	 * The port number to listen for connections from the ICS on.
 	 */
 	private int issPortNumber = 0;
 	/**
@@ -110,7 +115,7 @@ public class CcsGUI
 	private boolean initiallyStartISSServer = false;
 	/**
 	 * Whether ISS commands that are received should manage a message dialog. This allows the
-	 * user to manually configure the CCS's request.
+	 * user to manually configure the ICS's request.
 	 */
 	private boolean issMessageDialog = false;
 	/**
@@ -118,22 +123,30 @@ public class CcsGUI
 	 */
 	private JCheckBoxMenuItem messageDialogMenuItem = null;
 
+	/**
+	 * Default constructor.
+	 */
 	public CcsGUI()
 	{
+		super();
+		propertyFilename = null;
 	}
 
 	/**
-	 * The main routine, called when Ccs is executed.
+	 * The main routine, called when IcsGUI is executed.
 	 * This does the following:
 	 * <ul>
 	 * <li>Sets up the look and feel.
 	 * <li>Starts a splash screen.
-	 * <li>Constructs an instance of CcsGUI.
+	 * <li>Constructs an instance of IcsGUI.
+	 * <li>Calls parsePropertyFilenameArgument, which changes the property filename initStatus uses if
+	 *     a relevant argument is in the argument list.
 	 * <li>Calls initStatus, to load the properties.
-	 * <li>Calls parseArguments, to look at command line arguments.
+	 * <li>Calls parseArguments, to look at all the other command line arguments.
 	 * <li>Calls initGUI, to create the screens.
 	 * <li>Calls run.
 	 * </ul>
+	 * @see #parsePropertyFilenameArgument
 	 * @see #initStatus
 	 * @see #parseArguments
 	 * @see #initGUI
@@ -163,6 +176,7 @@ public class CcsGUI
 		CcsGUI ccsGUI = new CcsGUI();
 		try
 		{
+			ccsGUI.parsePropertyFilenameArgument(args);
 			ccsGUI.initStatus();
 			ccsGUI.parseArguments(args);
 		}
@@ -181,6 +195,7 @@ public class CcsGUI
 	 * Changes the errorStream and logStream to those specified in the configuration files.
 	 * @exception FileNotFoundException Thrown if a configuration filename not found.
 	 * @exception IOException Thrown if a configuration file has an IO error during reading.
+	 * @see #propertyFilename
 	 * @see #status
 	 * @see CcsGUIStatus#load
 	 * @see CcsGUIStatus#loadInstrumentConfig
@@ -193,7 +208,10 @@ public class CcsGUI
 		FileOutputStream fos = null;
 
 		status = new CcsGUIStatus();
-		status.load();
+		if(propertyFilename != null)
+			status.load(propertyFilename);
+		else
+			status.load();
 		status.loadInstrumentConfig();
 	// change errorStream to files defined in loaded properties
 		filename = status.getProperty("ccs_gui.file.error");
@@ -833,8 +851,8 @@ public class CcsGUI
 	}
 
 	/**
-	 * Return the Ccs GUI's Ccs internet address object, used for communication
-	 * with the Ccs.
+	 * Return the Ics GUI's Ics internet address object, used for communication
+	 * with the Ics.
 	 * @return The current reference stored in ccsAddress.
 	 * @see #ccsAddress
 	 */
@@ -864,8 +882,8 @@ public class CcsGUI
 	}
 
 	/**
-	 * Method to send a command to the CCS. A CcsGUIClientConnectionThread is constructed with
-	 * the passed in command, and the Ccs Address and port number from the configuration file.
+	 * Method to send a command to the ICS. A CcsGUIClientConnectionThread is constructed with
+	 * the passed in command, and the Ics Address and port number from the configuration file.
 	 * The thread is started, and added to the status's client thread list.
 	 * @param command The command to send.
 	 * @return The started client thread is returned.
@@ -874,6 +892,7 @@ public class CcsGUI
 	{
 		CcsGUIClientConnectionThread thread = null;
 
+		log("About to send "+command.getClass().getName()+" to "+ccsAddress.getHostName()+":"+ccsPortNumber);
 		thread = new CcsGUIClientConnectionThread(ccsAddress,ccsPortNumber,command);
 		thread.setParent(this);
 		thread.start();
@@ -884,7 +903,7 @@ public class CcsGUI
 	/**
 	 * Method to set the ccd status label. The mode number is translated into an equivalent string.
 	 * Note, the list of strings in this method should be kept up to date with the 
-	 * currentMode number returned by GET_STATUSImplementation in the Ccs process.
+	 * currentMode number returned by GET_STATUSImplementation in the Ics process.
 	 * @param currentMode The mode number from the get status command.
 	 */
 	public void setCCDStatusLabel(int currentMode)
@@ -1049,7 +1068,7 @@ public class CcsGUI
 
 	/**
 	 * Retrieve the current contents of the filename label, which contains the last filename
-	 * returned to the Ccs GUI.
+	 * returned to the Ics GUI.
 	 * @return A String containing the last filename. This can be blank, if no filenames have been
 	 * 	returned to the GUI yet.
 	 * @see #filenameLabel
@@ -1111,7 +1130,7 @@ public class CcsGUI
 	public void startISSServer()
 	{
 	// create and start server
-		server = new CcsGUIServer("CCS GUI ISS Server",issPortNumber);
+		server = new CcsGUIServer("ICS GUI ISS Server",issPortNumber);
 		server.setParent(this);
 		server.start();
 		log("ISS Server started on port:"+issPortNumber+".");
@@ -1137,17 +1156,47 @@ public class CcsGUI
 		messageDialogMenuItem.setEnabled(false);
 	}
 
+
 	/**
-	 * This routine parses arguments passed into Ccs. It gets some default arguments from the configuration
-	 * file. These are the CCS and ISS port numbers, and the CCS internet address.
+	 * This routine parses arguments passed into the GUI. It only looks for property filename argument
+	 * config, which is needed before the status is inited, and therfore needs a special parseArguments
+	 * method (as other arguments affect the status).
+	 * @param args The list of arguments to parse.
+	 * @see #propertyFilename
+	 * @see #parseArguments
+	 */
+	private void parsePropertyFilenameArgument(String[] args) throws NumberFormatException,UnknownHostException
+	{
+	// look through the argument list.
+		for(int i = 0; i < args.length;i++)
+		{
+			if(args[i].equals("-config")||args[i].equals("-co"))
+			{
+				if((i+1)< args.length)
+				{
+					propertyFilename = args[i+1];
+					i++;
+				}
+				else
+					error("-config requires a filename");
+			}
+		}
+	}
+
+
+	/**
+	 * This routine parses arguments passed into the GUI. It gets some default arguments from the configuration
+	 * file. These are the ICS and ISS port numbers, and the ICS internet address.
 	 * It then reads through the arguments in the list. This routine will stop the program 
-	 * if a `-help' is one of the arguments.
+	 * if a `-help' is one of the arguments. It ignores the property filename argument, as this is parsed in
+	 * parsePropertyFilenameArgument.
 	 * @param args The list of arguments to parse.
 	 * @see #ccsAddress
 	 * @see #ccsPortNumber
 	 * @see #initiallyStartISSServer
 	 * @see #issPortNumber
 	 * @see #help
+	 * @see #parsePropertyFilenameArgument
 	 */
 	private void parseArguments(String[] args) throws NumberFormatException,UnknownHostException
 	{
@@ -1175,7 +1224,14 @@ public class CcsGUI
 	// look through the argument list.
 		for(int i = 0; i < args.length;i++)
 		{
-			if(args[i].equals("-log"))
+			if(args[i].equals("-config")||args[i].equals("-co"))
+			{
+				// do nothing here, see parsePropertyFilenameArgument
+				// but move over filename argument.
+				if((i+1)< args.length)
+					i++;
+			}
+			else if(args[i].equals("-log"))
 			{
 				if((i+1)< args.length)
 				{
@@ -1185,7 +1241,7 @@ public class CcsGUI
 				else
 					error("-log requires a log level");
 			}
-			else if(args[i].equals("-ccsport"))
+			else if(args[i].equals("-icsport"))
 			{
 				if((i+1)< args.length)
 				{
@@ -1193,7 +1249,7 @@ public class CcsGUI
 					i++;
 				}
 				else
-					error("-ccsport requires a port number");
+					error("-icsport requires a port number");
 			}
 			else if(args[i].equals("-issspoof"))
 			{
@@ -1213,7 +1269,7 @@ public class CcsGUI
 				else
 					error("-issport requires a port number");
 			}
-			else if(args[i].equals("-ccsip")||args[i].equals("-ccsaddress"))
+			else if(args[i].equals("-icsip")||args[i].equals("-icsaddress"))
 			{
 				if((i+1)< args.length)
 				{
@@ -1224,12 +1280,12 @@ public class CcsGUI
 					catch(UnknownHostException e)
 					{
 						error(this.getClass().getName()+
-							":illegal CCS address:"+args[i+1]+":"+e);
+							":illegal ICS address:"+args[i+1]+":"+e);
 					}
 					i++;
 				}
 				else
-					error("-ccsaddress requires a valid ip address");
+					error("-icsaddress requires a valid ip address");
 			}
 			else if(args[i].equals("-h")||args[i].equals("-help"))
 			{
@@ -1237,7 +1293,7 @@ public class CcsGUI
 				System.exit(0);
 			}
 			else
-				error(this.getClass().getName()+"'"+args[i]+"' not a recognised option");
+				error(this.getClass().getName()+"'"+args[i]+"' not a recognised option.");
 		}
 	}
 
@@ -1247,18 +1303,22 @@ public class CcsGUI
 	private void help()
 	{
 		System.out.println(this.getClass().getName()+" Help:");
-		System.out.println("CcsGUI is the `CCD Control System Graphical User Interface'.");
+		System.out.println("IcsGUI is the `Instrument Control System Graphical User Interface'.");
 		System.out.println("Options are:");
-		System.out.println("\t-ccsport <port number> - Ccs server port number.");
+		System.out.println("\t-[co]nfig <filename> - Change the property file to load.");
+		System.out.println("\t-[icsip]|[icsaddress] <address> - Address to send ICS commands to.");
+		System.out.println("\t-icsport <port number> - ICS server port number.");
 		System.out.println("\t-issspoof - Start an thread to pretend to be the ISS.");
 		System.out.println("\t-issdialog - Bring up a message dialog for each ISS comamnd.");
 		System.out.println("\t-issport <port number> - Port for ISS commands, if ISS spoofing is on.");
-		System.out.println("\t-[ccsip]|[ccsaddress] <address> - Address to send CCS commands to.");
 		System.out.println("\t-log <log level> - log level.");
 	}
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.18  2003/03/26 15:39:44  cjm
+// Title and Icon changes.
+//
 // Revision 0.17  2002/12/16 18:35:51  cjm
 // Added extra mode data returned from GET_STATUS.
 //
