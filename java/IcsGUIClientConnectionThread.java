@@ -1,5 +1,5 @@
 // CcsGUIClientConnectionThread.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.10 2000-08-29 11:41:38 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.11 2001-07-10 18:21:28 cjm Exp $
 
 import java.lang.*;
 import java.io.*;
@@ -15,14 +15,14 @@ import ngat.message.ISS_INST.*;
  * It implements the generic ISS instrument command protocol.
  * It is used to send commands from the CcsGUI to the Ccs.
  * @author Chris Mottram
- * @version $Revision: 0.10 $
+ * @version $Revision: 0.11 $
  */
 public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.10 2000-08-29 11:41:38 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.11 2001-07-10 18:21:28 cjm Exp $");
 	/**
 	 * The CcsGUI object.
 	 */
@@ -68,22 +68,26 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 
 	/**
 	 * Routine to print out more details if the acknowledge was a MOVIE_ACK. This is currently the
-	 * returned filename.
+	 * returned filename. The filename label is also updated.
 	 * @param movieAck The acknowledge object passed back to the client.
+	 * @see CcsGUI#setFilenameLabel
 	 */
 	private void printMovieAck(MOVIE_ACK movieAck)
 	{
 		parent.log("The current movie frame is:"+movieAck.getFilename()+".");
+		parent.setFilenameLabel(movieAck.getFilename());
 	}
 
 	/**
 	 * Routine to print out more details if the acknowledge was a MULTRUN_ACK. This is currently the
-	 * returned filename.
+	 * returned filename. The filename label is also updated.
 	 * @param multrunAck The acknowledge object passed back to the client.
+	 * @see CcsGUI#setFilenameLabel
 	 */
 	private void printMultrunAck(MULTRUN_ACK multrunAck)
 	{
 		parent.log("The current Multrun frame is:"+multrunAck.getFilename()+".");
+		parent.setFilenameLabel(multrunAck.getFilename());
 	}
 
 	/**
@@ -150,6 +154,22 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	}
 
 	/**
+	 * This method is called when the thread generates an error due to an exception being thrown.
+	 * This prints the string using the parents error method. It then prints the exception stack trace
+	 * to the parents error stream.
+	 * @param errorString The error string.
+	 * @param exception The exception that was thrown.
+	 * @see CcsGUI#error
+	 * @see CcsGUI#getErrorStream
+	 * @see #parent
+	 */
+	protected void processError(String errorString,Exception exception)
+	{
+		parent.error(errorString+exception);
+		exception.printStackTrace(parent.getErrorStream());
+	}
+
+	/**
 	 * Method to display some status for a GET_STATUS message.
 	 * @param getStatusDone The DONE object instance containing status data to display.
 	 * @see #processDone
@@ -157,6 +177,7 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	private void printGetStatusDone(GET_STATUS_DONE getStatusDone)
 	{
 		Hashtable displayInfo = null;
+		String instrumentString = null;
 		Integer integer = null;
 		Long longObject = null;
 		Double ccdTemperature = null;
@@ -180,11 +201,26 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 			Object value = displayInfo.get(key);
 			parent.log(key.toString()+":"+value.toString());
 		}
+	// which instrument are we getting status from?
+		instrumentString = (String)(displayInfo.get("Instrument"));
+		if(instrumentString == null)
+			instrumentString = "RATCam";
 	// set current command status
 		parent.setCurrentCommandLabel((String)(displayInfo.get("currentCommand")));
 	// set filters selected status
-		parent.setFiltersSelectedLabel((String)(displayInfo.get("Filter Wheel:0")),
-			(String)(displayInfo.get("Filter Wheel:1")));
+		if(instrumentString.equals("RATCam"))
+		{
+			parent.setFiltersSelectedLabel((String)(displayInfo.get("Filter Wheel:0")),
+				(String)(displayInfo.get("Filter Wheel:1")));
+		}
+		else if(instrumentString.equals("Nu-View"))
+		{
+			parent.setFiltersSelectedLabel((Double)(displayInfo.get("Filter Wavelength")));
+		}
+		else if(instrumentString.equals("MES"))
+		{
+			parent.setFiltersSelectedLabel((Integer)(displayInfo.get("Filter Position")));
+		}
 	// set remaining exposures status
 		integer = (Integer)(displayInfo.get("Exposure Count"));
 		exposureCount = integer.intValue();
@@ -233,20 +269,23 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 
 	/**
 	 * Method to print out parameters associated with a CALIBRATE_DONE (sub)class instance.
-	 * These parameters are <i>peakCounts</i> and <i>meanCounts</i>.
+	 * These parameters are <i>filename</i>, <i>peakCounts</i> and <i>meanCounts</i>.
 	 * @param calibrateDone The instance of the DONE message.
+	 * @see CcsGUI#setFilenameLabel
 	 */
 	private void printCalibrateDone(CALIBRATE_DONE calibrateDone)
 	{
 		parent.log("Filename:"+calibrateDone.getFilename()+
 			":peakCounts:"+calibrateDone.getPeakCounts()+
 			":meanCounts:"+calibrateDone.getMeanCounts());
+		parent.setFilenameLabel(calibrateDone.getFilename());
 	}
 
 	/**
 	 * Method to print out parameters associated with a EXPOSE_DONE (sub)class instance.
 	 * These parameters are <i>Seeing</i>, <i>Counts</i>, <i>X_pix</i> and <i>Y_pix</i>.
 	 * @param exposeDone The instance of the DONE message.
+	 * @see CcsGUI#setFilenameLabel
 	 */
 	private void printExposeDone(EXPOSE_DONE exposeDone)
 	{
@@ -255,6 +294,7 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 			":Brightest Counts:"+exposeDone.getCounts()+
 			":Brightest X Pixel:"+exposeDone.getXpix()+
 			":Brightest Y Pixel:"+exposeDone.getYpix());
+		parent.setFilenameLabel(exposeDone.getFilename());
 	}
 
 	/**
@@ -270,6 +310,9 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.10  2000/08/29 11:41:38  cjm
+// Added printTelFocusDone to processDone.
+//
 // Revision 0.9  2000/07/03 10:34:08  cjm
 // Remaining exposure time implementation changed so when
 // Elapsed Exposure Time not returned by Ccs an approximation
