@@ -1,5 +1,5 @@
 // IcsGUIConfigListDialog.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigListDialog.java,v 0.5 2003-08-21 14:29:04 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigListDialog.java,v 0.6 2003-08-22 14:05:18 cjm Exp $
 import java.lang.*;
 import java.util.*;
 import java.awt.*;
@@ -18,7 +18,7 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public static String RCSID = new String("$Id: IcsGUIConfigListDialog.java,v 0.5 2003-08-21 14:29:04 cjm Exp $");
+	public static String RCSID = new String("$Id: IcsGUIConfigListDialog.java,v 0.6 2003-08-22 14:05:18 cjm Exp $");
 	/**
 	 * String to go on buttons.
 	 */
@@ -82,6 +82,10 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	 * The config dialog that caused this dialog to be managed.
 	 */
 	private CONFIGDialog configDialog = null;
+	/**
+	 * A copy of the reference to the instance of CcsGUIStatus.
+	 */
+	private CcsGUIStatus icsGUIStatus = null;
 	/**
 	 * Internal JList that actually displays the Instrument Configurations.
 	 */
@@ -175,12 +179,15 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 
 	/**
 	 * Method to set the config dialog instance that has managed this dialog.
+	 * Also copies CONFIGDialog's saved copy of icsGUIStatus to pass on to Add/Amend boxs.
 	 * @param c The CONFIGDialog instance.
 	 * @see #configDialog
+	 * @see #icsGUIStatus
 	 */
 	public void setConfigDialog(CONFIGDialog c)
 	{
 		configDialog = c;
+		icsGUIStatus = configDialog.getIcsGUIStatus();
 	}
 
 	/**
@@ -233,6 +240,7 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 					case IcsGUIConfigProperties.CONFIG_TYPE_CCD_RATCAM:
 						addAmendCCDDialog.setLocation(getX()+getWidth(),getY());
 						addAmendCCDDialog.pack();
+						addAmendCCDDialog.setIcsGUIStatus(icsGUIStatus);
 						addAmendCCDDialog.add();
 						break;
 					case IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_NUVIEW:
@@ -265,6 +273,7 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 					case IcsGUIConfigProperties.CONFIG_TYPE_CCD_RATCAM:
 						addAmendCCDDialog.setLocation(getX()+getWidth(),getY());
 						addAmendCCDDialog.pack();
+						addAmendCCDDialog.setIcsGUIStatus(icsGUIStatus);
 						addAmendCCDDialog.amend(id);
 						break;
 					case IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_NUVIEW:
@@ -480,6 +489,9 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.5  2003/08/21 14:29:04  cjm
+// Changed CcsCCDConfigAADialog to IcsGUICCDConfigAADialog.
+//
 // Revision 0.4  2003/07/15 16:20:01  cjm
 // Added IRCam property configuration.
 //
