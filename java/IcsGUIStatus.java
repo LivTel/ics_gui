@@ -1,5 +1,5 @@
-// CcsGUIStatus.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIStatus.java,v 0.3 2000-11-30 18:47:44 cjm Exp $
+// CcsGUIStatus.java
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIStatus.java,v 0.4 2003-06-06 15:44:31 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -7,14 +7,14 @@ import java.util.*;
 /**
  * This class holds status information for the CcsGUI program.
  * @author Chris Mottram
- * @version $Revision: 0.3 $
+ * @version $Revision: 0.4 $
  */
 public class CcsGUIStatus
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIStatus.java,v 0.3 2000-11-30 18:47:44 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIStatus.java,v 0.4 2003-06-06 15:44:31 cjm Exp $");
 	/**
 	 * File name containing properties for ccs gui.
 	 */
@@ -53,14 +53,25 @@ public class CcsGUIStatus
 	}
 
 	/**
-	 * The load method for the class. This loads the property file from disc.
-	 * @see #properties
+	 * The load method for the class. This loads the property file from disc, using the default filename.
+	 * @see #load(java.lang.String)
+	 * @see #PROPERTY_FILE_NAME
 	 */
 	public void load() throws FileNotFoundException,IOException
 	{
+		load(PROPERTY_FILE_NAME);
+	}
+
+	/**
+	 * The load method for the class. This loads the property file from disc, from the specified filename.
+	 * @param filename The filename of a valid properties file to load.
+	 * @see #properties
+	 */
+	public void load(String filename) throws FileNotFoundException,IOException
+	{
 		FileInputStream fileInputStream = null;
-		
-		fileInputStream = new FileInputStream(PROPERTY_FILE_NAME);
+
+		fileInputStream = new FileInputStream(filename);
 		properties.load(fileInputStream);
 		fileInputStream.close();
 	}
@@ -219,6 +230,9 @@ public class CcsGUIStatus
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.3  2000/11/30 18:47:44  cjm
+// Made generic for other instruments.
+//
 // Revision 0.2  1999/12/09 17:02:12  cjm
 // More functionality added.
 //
