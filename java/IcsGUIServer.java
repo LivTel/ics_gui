@@ -1,5 +1,5 @@
 // CcsGUIServer.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIServer.java,v 0.1 1999-11-22 09:53:49 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIServer.java,v 0.2 2001-02-13 10:27:47 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -11,14 +11,14 @@ import ngat.net.*;
  * commands to the Ccs. Some Ccs commands involve sending commands back to the ISS, and
  * this class is designed to catch these requests and to spawn a CcsGUIServerConnectionThread to deal with them.
  * @author Chris Mottram
- * @version $Revision: 0.1 $
+ * @version $Revision: 0.2 $
  */
 public class CcsGUIServer extends TCPServer
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIServer.java,v 0.1 1999-11-22 09:53:49 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIServer.java,v 0.2 2001-02-13 10:27:47 cjm Exp $");
 	/**
 	 * Field holding the instance of the CcsGUI currently executing, 
 	 * so we can pass this to spawned threads.
@@ -57,7 +57,20 @@ public class CcsGUIServer extends TCPServer
 		thread.start();
 	}
 
+	/**
+	 * Overwritten processError method, that receives error messages when an error occurs.
+	 * The error is dealt with using the parent's error method.
+	 * @param errorString The error string generated.
+	 * @see CcsGUI#error
+	 */
+	protected void processError(String errorString)
+	{
+		parent.error(errorString);
+	}
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.1  1999/11/22 09:53:49  cjm
+// initial revision.
+//
 //
