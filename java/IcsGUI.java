@@ -1,5 +1,5 @@
 // IcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.2 2004-01-13 20:15:03 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.3 2004-01-13 20:34:37 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -20,14 +20,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class IcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.2 2004-01-13 20:15:03 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.3 2004-01-13 20:34:37 cjm Exp $");
 	/**
 	 * The stream to write error messages to - defaults to System.err.
 	 */
@@ -114,6 +114,13 @@ public class IcsGUI
 	 * @see #server
 	 */
 	private boolean initiallyStartISSServer = false;
+	/**
+	 * Whether to optimise swing to work over a remote connection or not.
+	 * This means turning off double buffering, and making scroll panes scroll simply.
+	 * See http://developer.java.sun.com/developer/bugParade/bugs/4204845.html
+	 * for details.
+	 */
+	private boolean remoteX = false;
 	/**
 	 * Whether ISS commands that are received should manage a message dialog. This allows the
 	 * user to manually configure the ICS's request.
@@ -267,6 +274,7 @@ public class IcsGUI
 	 * Initialise the program.
 	 * Creates the frame and creates the widgets associated with it.
 	 * Creates the menu bar.
+	 * @see #remoteX
 	 * @see #frame
 	 * @see #initMenuBar
 	 * @see #initMainPanel
@@ -276,6 +284,11 @@ public class IcsGUI
 		Image image = null;
 		String titleString = null;
 
+		// optimise for remote X?
+		if(remoteX)
+		{
+			RepaintManager.currentManager(null).setDoubleBufferingEnabled(false);
+		}
 	// create the frame level layout manager
 		GridBagLayout gridBagLayout = new GridBagLayout();
         	GridBagConstraints gridBagCon = new GridBagConstraints();
@@ -437,6 +450,7 @@ public class IcsGUI
 	 * @param panel The panel to put the status panel in.
 	 * @param gridBagLayout The grid bag layout to set constraints for, before adding things
 	 * 	to the panel.
+	 * @see #remoteX
 	 * @see #logTextArea
 	 * @see #logTextAreaLineLimit
 	 */
@@ -455,7 +469,10 @@ public class IcsGUI
 		areaScrollPane.setMinimumSize(new Dimension(250,200));
 		areaScrollPane.setPreferredSize(new Dimension(1024,800));
 		areaScrollPane.setBorder(new TitledSmallerBorder("Log"));
-
+		if(remoteX)
+		{
+			areaScrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
+		}
 		gridBagCon.gridx = 0;
 		gridBagCon.gridy = 1;
 		gridBagCon.gridwidth = GridBagConstraints.REMAINDER;
@@ -968,8 +985,18 @@ public class IcsGUI
 	}
 
 	/**
+	 * Method to get whether to optimise swing components for running over a remote X server.
+	 * @return Returns the value of the remoteX field.
+	 * @see #remoteX
+	 */
+	public boolean getRemoteX()
+	{
+		return remoteX;
+	}
+
+	/**
 	 * Method to get whether to bring up message dialogs when dealing with ISS commands.
-	 * @return Retrurns the value of the issMessageDialog field.
+	 * @return Returns the value of the issMessageDialog field.
 	 * @see #issMessageDialog
 	 */
 	public boolean getISSMessageDialog()
@@ -1335,6 +1362,7 @@ public class IcsGUI
 	 * @see #ccsAddress
 	 * @see #ccsPortNumber
 	 * @see #initiallyStartISSServer
+	 * @see #remoteX
 	 * @see #issPortNumber
 	 * @see #help
 	 * @see #parsePropertyFilenameArgument
@@ -1433,6 +1461,10 @@ public class IcsGUI
 				help();
 				System.exit(0);
 			}
+			else if(args[i].equals("-remotex"))
+			{
+				remoteX = true;
+			}
 			else
 				error(this.getClass().getName()+"'"+args[i]+"' not a recognised option.");
 		}
@@ -1453,10 +1485,14 @@ public class IcsGUI
 		System.out.println("\t-issdialog - Bring up a message dialog for each ISS comamnd.");
 		System.out.println("\t-issport <port number> - Port for ISS commands, if ISS spoofing is on.");
 		System.out.println("\t-log <log level> - log level.");
+		System.out.println("\t-remotex - Optimise swing for running over a remote X connection.");
 	}
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2004/01/13 20:15:03  cjm
+// Added Wait to Start state.
+//
 // Revision 1.1  2003/09/19 14:08:45  cjm
 // Initial revision
 //

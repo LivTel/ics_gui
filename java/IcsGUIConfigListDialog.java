@@ -1,5 +1,5 @@
 // IcsGUIConfigListDialog.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigListDialog.java,v 0.7 2003-11-14 15:02:12 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigListDialog.java,v 0.8 2004-01-13 20:34:37 cjm Exp $
 import java.lang.*;
 import java.util.*;
 import java.awt.*;
@@ -18,7 +18,7 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public static String RCSID = new String("$Id: IcsGUIConfigListDialog.java,v 0.7 2003-11-14 15:02:12 cjm Exp $");
+	public static String RCSID = new String("$Id: IcsGUIConfigListDialog.java,v 0.8 2004-01-13 20:34:37 cjm Exp $");
 	/**
 	 * String to go on buttons.
 	 */
@@ -122,6 +122,7 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	 * @see #constructFilterMenu
 	 * @see #icsGUI
 	 * @see #icsGUIStatus
+	 * @see IcsGUI#getRemoteX
 	 */
 	public IcsGUIConfigListDialog(Frame owner,IcsGUIConfigProperties c,IcsGUI i)
 	{
@@ -157,6 +158,10 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	// create a scroll pane, add the list and add it to the panel
 		scrollPane = new JScrollPane();
 		scrollPane.getViewport().setView(list);
+		if(icsGUI.getRemoteX())
+		{
+			scrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
+		}
 		panel.add(scrollPane);
 	// create a CCD add/amend dialog
 		addAmendCCDDialog = new IcsGUICCDConfigAADialog(owner,c);
@@ -564,6 +569,11 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.7  2003/11/14 15:02:12  cjm
+// Added FTSpec / FixedFormatSpecConfig code.
+// Also added options from config file to show only relevent config filters and
+// add buttons, and to choose a default config filter to filter by.
+//
 // Revision 0.6  2003/08/22 14:05:18  cjm
 // Added reference to CcsGUIStatus to alow CONFIGDialog (and its subdialogs)
 // access to properties.
