@@ -167,19 +167,19 @@ CCDR32.6	& Filter Wheel Configuration & The ability to alter the mapping of the 
 \end{table}
 
 Most of these requirements are only needed for the engineering interface. The current thinking is that the
-{\em ccdtool} program supplied by SDSU will form the basis of the engineering interface. The 
-Readout Speed Configuration and System Adjustments can be done using {\em ccdtool}. The Bias and Clock Voltages
+{\em voodoo} program supplied by SDSU will form the basis of the engineering interface. The 
+Readout Speed Configuration and System Adjustments can be done using {\em voodoo}. The Bias and Clock Voltages
 can be changed using the SBV SDSU DSP comamnd, calls to this need putting in {\em libccd} and in the CCS
-configuration file. {\em ccdtool} can modify these numbers by typing in the SBN and SBV command manually.
+configuration file. {\em voodoo} can modify these numbers by typing in the SBN and SBV command manually.
 
 The Clock Timing configuration can only be edited by changing the DSP code that is downloaded to the
 controller. SDSU supply a tool to help you do this called {\em wvp} (Waveform Visualisation Program)
 that provides a graphical interface.
 
 \section{Communication}
-The CCS interface will communicate with teh SDSU CCD Controller electronics via the CCS process
+The CCS interface will communicate with the SDSU CCD Controller electronics via the CCS process
 itself. This will allow us to test the CCS as well as the underlying electronics. SDSU will be supplying
-{\em ccdtool}, which has a user interface but which communicates with the camera electronics directly. This will
+{\em voodoo}, which has a user interface but which communicates with the camera electronics directly. This will
 allow us to use the SDSU CCD Controller independantly of the CCS if required.
 
 This basically means the interface will be communicating with the CCS rather than the camera electronics
