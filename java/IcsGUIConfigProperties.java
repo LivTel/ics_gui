@@ -1,5 +1,5 @@
 // IcsGUIConfigProperties.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.8 2003-08-21 14:24:04 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.9 2003-11-14 15:02:12 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -11,14 +11,14 @@ import ngat.phase2.*;
  * in a Java properties file and this class extends java.util.Properties
  * @see java.util.Properties
  * @author Chris Mottram
- * @version $Revision: 0.8 $
+ * @version $Revision: 0.9 $
  */
 public class IcsGUIConfigProperties extends Properties
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.8 2003-08-21 14:24:04 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.9 2003-11-14 15:02:12 cjm Exp $");
 	/**
 	 * Configuration type specifier:CCD (RATCam).
 	 */
@@ -36,14 +36,19 @@ public class IcsGUIConfigProperties extends Properties
 	 */
 	public final static int CONFIG_TYPE_INFRA_RED_SUPIRCAM 	= 3;
 	/**
+	 * Configuration type specifier:Spectrograph (FTSpec).
+	 */
+	public final static int CONFIG_TYPE_SPECTROGRAPH_FTSPEC = 4;
+	/**
 	 * List of legal values that can be held in the config type field.
 	 * @see #CONFIG_TYPE_CCD_RATCAM
 	 * @see #CONFIG_TYPE_SPECTROGRAPH_MES
 	 * @see #CONFIG_TYPE_SPECTROGRAPH_NUVIEW
 	 * @see #CONFIG_TYPE_INFRA_RED_SUPIRCAM
+	 * @see #CONFIG_TYPE_SPECTROGRAPH_FTSPEC
 	 */
 	public final static int CONFIG_TYPE_LIST[] = {CONFIG_TYPE_CCD_RATCAM,CONFIG_TYPE_SPECTROGRAPH_MES,
-						CONFIG_TYPE_SPECTROGRAPH_NUVIEW,CONFIG_TYPE_INFRA_RED_SUPIRCAM};
+		CONFIG_TYPE_SPECTROGRAPH_NUVIEW,CONFIG_TYPE_INFRA_RED_SUPIRCAM,CONFIG_TYPE_SPECTROGRAPH_FTSPEC};
 	/**
 	 * Filename for properties file.
 	 */
@@ -156,6 +161,8 @@ public class IcsGUIConfigProperties extends Properties
 	 * @see #getCCDConfigById
 	 * @see #getMESConfigById
 	 * @see #getNuViewConfigById
+	 * @see #getIRCamConfigById
+	 * @see #getFTSpecConfigById
 	 */
 	public InstrumentConfig getConfigById(int id) throws NumberFormatException, IllegalArgumentException
 	{
@@ -177,6 +184,9 @@ public class IcsGUIConfigProperties extends Properties
 				break;
 			case CONFIG_TYPE_INFRA_RED_SUPIRCAM:
 				c = getIRCamConfigById(id);
+				break;
+			case CONFIG_TYPE_SPECTROGRAPH_FTSPEC:
+				c = getFTSpecConfigById(id);
 				break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":getConfigById:Id "
@@ -254,6 +264,10 @@ public class IcsGUIConfigProperties extends Properties
 			case CONFIG_TYPE_INFRA_RED_SUPIRCAM:
 				remove(configIdStringFilterWheel(id));
 				break;
+			case CONFIG_TYPE_SPECTROGRAPH_FTSPEC:
+				remove(configIdStringXBin(id));
+				remove(configIdStringYBin(id));
+				break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":deleteId:Id "
 					+id+" type "+type+" not a supported type of configuration.");
@@ -318,6 +332,12 @@ public class IcsGUIConfigProperties extends Properties
 			case CONFIG_TYPE_INFRA_RED_SUPIRCAM:
 					setConfigFilterWheel(i-1,getConfigFilterWheel(i));
 					remove(configIdStringFilterWheel(i));
+					break;
+			case CONFIG_TYPE_SPECTROGRAPH_FTSPEC:
+					setConfigXBin(i-1,getConfigXBin(i));
+					remove(configIdStringXBin(i));
+					setConfigYBin(i-1,getConfigYBin(i));
+					remove(configIdStringYBin(i));
 					break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":deleteId:Id "
@@ -1018,6 +1038,42 @@ public class IcsGUIConfigProperties extends Properties
 		return c;
 	}
 
+	/**
+	 * Method to return a FixedFormatSpecConfig, constructed from the information against id id.
+	 * @param id The Id number.
+	 * @return The constructed FixedFormatSpecConfig.
+	 * @exception NumberFormatException Thrown if a numeric parameter is not returned from the properties
+	 * 	file as a legal number.
+	 * @exception IllegalArgumentException Thrown if the config id specified does not have a legal type.
+	 */
+	private FixedFormatSpecConfig getFTSpecConfigById(int id) throws NumberFormatException, 
+									 IllegalArgumentException
+	{
+		FixedFormatSpecConfig c = null;
+		FixedFormatSpecDetector detector = null;
+
+	// check type
+		if(getConfigType(id) != CONFIG_TYPE_SPECTROGRAPH_FTSPEC)
+		{
+			throw new IllegalArgumentException(this.getClass().getName()+":getCCDConfigById:Id "
+				+id+" not a configuration of type FTSpec.");
+		}
+	// construct FixedFormatSpecConfig
+		c = new FixedFormatSpecConfig(getConfigName(id));
+	// setup detector
+		detector = new FixedFormatSpecDetector();
+		detector.setXBin(getConfigXBin(id));
+		detector.setYBin(getConfigYBin(id));
+		// note, other Detector fields not set, as they are not used by the instrument.
+	// don't set windows into detector, use default windows.
+	// Note flags are held IN the window list, so must setWindowFlags AFTER detector windows set
+		detector.setWindowFlags(0);
+	// set detector into config
+		c.setDetector(0,detector);
+	// return config
+		return c;
+	}
+
 // method to check values in the property file.
 	/**
 	 * Method to check whether a number is a legal configuration type number.
@@ -1307,6 +1363,9 @@ public class IcsGUIConfigProperties extends Properties
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.8  2003/08/21 14:24:04  cjm
+// Added calibrateBefore and calibrateAfter calls.
+//
 // Revision 0.7  2003/07/15 16:20:01  cjm
 // Added IRCam property configuration.
 //
