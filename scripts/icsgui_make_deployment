@@ -1,6 +1,6 @@
 #!/bin/csh
-# $Header: /home/cjm/cvs/ics_gui/scripts/icsgui_make_deployment,v 1.2 2004-04-14 09:54:37 cjm Exp $
-# Version: $Revision: 1.2 $
+# $Header: /home/cjm/cvs/ics_gui/scripts/icsgui_make_deployment,v 1.3 2004-04-14 11:35:26 cjm Exp $
+# Version: $Revision: 1.3 $
 # By $Author: cjm $
 # Make a deployment tar file.
 # This contains:
@@ -37,14 +37,24 @@ if("${HOSTTYPE}" != "i386-linux") then
     echo "Deployment script running on ${HOSTTYPE}, must run on i386-linux."
     exit 1
 endif
-set deployment_dir 	= "/tmp/icsgui_deployment"
-set deployment_tmp_dir 	= "/tmp/icsgui_deployment/tmp"
-set deployment_tmc_dir 	= "/tmp/icsgui_deployment/tmc"
-set deployment_bin_dir 	= "/tmp/icsgui_deployment/tmc/bin"
-set deployment_tar 	= "icsgui_deployment_${machine_name}.tar"
+# dev root directory
 set dev_dir 		= "/home/dev"
+# dev binary root directory
 set dev_bin_dir 	= "${dev_dir}/bin"
+# directory script was run in
 set current_dir		= `pwd`
+# temporary directory containing root of deployment tree (which becomes root of tar).
+set deployment_dir 	= "/tmp/icsgui_deployment"
+# temporary directory for deployment temporary files
+set deployment_tmp_dir 	= "/tmp/icsgui_deployment/tmp"
+# temporary directory containing root tmc directory.
+set deployment_tmc_dir 	= "/tmp/icsgui_deployment/tmc"
+# temporary directory containing root bin directory.
+set deployment_bin_dir 	= "/tmp/icsgui_deployment/tmc/bin"
+# directory location of tar
+set deployment_tar_dir 	= "${dev_dir}/public_html/ccs_gui/deployment"
+# name of tar file
+set deployment_tar 	= "icsgui_deployment_${machine_name}.tar"
 
 if (-d ${deployment_dir}) then
 	echo "Deployment directory ${deployment_dir} already exists:clearing..."
@@ -69,7 +79,7 @@ echo "${dir_count} directories created."
 # Copy jars
 #
 echo "Copying jars..."
-#ngat_fits.jar ngat_math.jar ngat_math_test.jar 
+#ngat_math.jar ngat_math_test.jar 
 set jar_list = "ngat_message_base.jar ngat_fits.jar ngat_message_inst_dp.jar ngat_message_iss_inst.jar ngat_net.jar ngat_phase2.jar ngat_sound.jar ngat_swing.jar ngat_util.jar ngat_util_logging.jar"
 set jar_count = 0
 foreach jar ( ${jar_list} )
@@ -294,12 +304,12 @@ rm -rf ${deployment_tmp_dir}
 echo "--------------------------"
 echo "Creating deployment tar..."
 cd ${deployment_dir}
-tar cvf ${current_dir}/${deployment_tar} .
+tar cvf ${deployment_tar_dir}/${deployment_tar} .
 echo "GZipping deployment tar..."
-cd ${current_dir}
+cd ${deployment_tar_dir}
 rm -f ${deployment_tar}.gz
 gzip ${deployment_tar}
-echo "Deployment tar : ${current_dir}/${deployment_tar}.gz"
+echo "Deployment tar : ${deployment_tar_dir}/${deployment_tar}.gz"
 echo "Installation script : ${current_dir}/icsgui_tar_install"
 rm -rf ${deployment_dir}
 echo "Download from http://ltccd1.livjm.ac.uk/~dev/ccs_gui/deployment/index.html."
