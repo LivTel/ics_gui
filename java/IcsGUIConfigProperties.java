@@ -1,5 +1,5 @@
 // IcsGUIConfigProperties.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.4 2001-02-27 13:45:03 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.5 2001-07-10 18:21:28 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -11,14 +11,14 @@ import ngat.phase2.nonpersist.*;
  * in a Java properties file and this class extends java.util.Properties
  * @see java.util.Properties
  * @author Chris Mottram
- * @version $Revision: 0.4 $
+ * @version $Revision: 0.5 $
  */
 public class IcsGUIConfigProperties extends Properties
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.4 2001-02-27 13:45:03 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.5 2001-07-10 18:21:28 cjm Exp $");
 	/**
 	 * Configuration type specifier:CCD (RATCam).
 	 */
@@ -153,6 +153,9 @@ public class IcsGUIConfigProperties extends Properties
 	 * 	file as a legal number.
 	 * @exception IllegalArgumentException Thrown if the config id specified does not have a legal type.
 	 * @see #getConfigType
+	 * @see #getCCDConfigById
+	 * @see #getMESConfigById
+	 * @see #getNuViewConfigById
 	 */
 	public NPInstrumentConfig getConfigById(int id) throws NumberFormatException, IllegalArgumentException
 	{
@@ -165,6 +168,12 @@ public class IcsGUIConfigProperties extends Properties
 		{
 			case CONFIG_TYPE_CCD_RATCAM:
 				c = getCCDConfigById(id);
+				break;
+			case CONFIG_TYPE_SPECTROGRAPH_MES:
+				c = getMESConfigById(id);
+				break;
+			case CONFIG_TYPE_SPECTROGRAPH_NUVIEW:
+				c = getNuViewConfigById(id);
 				break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":getConfigById:Id "
@@ -204,53 +213,105 @@ public class IcsGUIConfigProperties extends Properties
 	public void deleteId(int id)
 	{
 		String s = null;
-		int i,j;
+		int i,j,type;
 
+	// what type is this id
+		type = getConfigType(id);
 	// remove id id
 		remove(configIdStringName(id));
 		remove(configIdStringType(id));
-		remove(configIdStringLowerFilterWheel(id));
-		remove(configIdStringUpperFilterWheel(id));
-		remove(configIdStringXBin(id));
-		remove(configIdStringYBin(id));
-		remove(configIdStringWindowFlags(id));
-		for(j=1;j<5;j++)
+		remove(configIdStringCalibrateBefore(id));
+		remove(configIdStringCalibrateAfter(id));
+		switch(type)
 		{
-			remove(configIdWindowStringXStart(id,j));
-			remove(configIdWindowStringYStart(id,j));
-			remove(configIdWindowStringXEnd(id,j));
-			remove(configIdWindowStringYEnd(id,j));
+			case CONFIG_TYPE_CCD_RATCAM:
+				remove(configIdStringLowerFilterWheel(id));
+				remove(configIdStringUpperFilterWheel(id));
+				remove(configIdStringXBin(id));
+				remove(configIdStringYBin(id));
+				remove(configIdStringWindowFlags(id));
+				for(j=1;j<5;j++)
+				{
+					remove(configIdWindowStringXStart(id,j));
+					remove(configIdWindowStringYStart(id,j));
+					remove(configIdWindowStringXEnd(id,j));
+					remove(configIdWindowStringYEnd(id,j));
+				}
+				break;
+			case CONFIG_TYPE_SPECTROGRAPH_MES:
+				remove(configIdStringXBin(id));
+				remove(configIdStringYBin(id));
+				remove(configIdStringFilterSlideName(id));
+				break;
+			case CONFIG_TYPE_SPECTROGRAPH_NUVIEW:
+				remove(configIdStringXBin(id));
+				remove(configIdStringYBin(id));
+				remove(configIdStringWavelength(id));
+				break;
+			default:
+				throw new IllegalArgumentException(this.getClass().getName()+":deleteId:Id "
+					+id+" type "+type+" not a supported type of configuration.");
 		}
-
 	// move all ids after id down one
 		i = id+1;
 		while((s = getConfigName(i)) != null)
 		{
+		// what type is this id
+			type = getConfigType(i);
+
 			setConfigName(i-1,getConfigName(i));
 			remove(configIdStringName(i));
 			setConfigType(i-1,getConfigType(i));
 			remove(configIdStringType(i));
-			setConfigLowerFilterWheel(i-1,getConfigLowerFilterWheel(i));
-			remove(configIdStringLowerFilterWheel(i));
-			setConfigUpperFilterWheel(i-1,getConfigUpperFilterWheel(i));
-			remove(configIdStringUpperFilterWheel(i));
-			setConfigXBin(i-1,getConfigXBin(i));
-			remove(configIdStringXBin(i));
-			setConfigYBin(i-1,getConfigYBin(i));
-			remove(configIdStringYBin(i));
-			setConfigWindowFlags(i-1,getConfigWindowFlags(i));
-			remove(configIdStringWindowFlags(i));
-
-			for(j=1;j<5;j++)
+			setConfigCalibrateBefore(i-1,getConfigCalibrateBefore(i));
+			remove(configIdStringCalibrateBefore(i));
+			setConfigCalibrateAfter(i-1,getConfigCalibrateAfter(i));
+			remove(configIdStringCalibrateAfter(i));
+			switch(type)
 			{
-				setConfigXStart(i-1,j,getConfigXStart(i,j));
-				remove(configIdWindowStringXStart(i,j));
-				setConfigYStart(i-1,j,getConfigYStart(i,j));
-				remove(configIdWindowStringYStart(i,j));
-				setConfigXEnd(i-1,j,getConfigXEnd(i,j));
-				remove(configIdWindowStringXEnd(i,j));
-				setConfigYEnd(i-1,j,getConfigYEnd(i,j));
-				remove(configIdWindowStringYEnd(i,j));
+				case CONFIG_TYPE_CCD_RATCAM:
+					setConfigLowerFilterWheel(i-1,getConfigLowerFilterWheel(i));
+					remove(configIdStringLowerFilterWheel(i));
+					setConfigUpperFilterWheel(i-1,getConfigUpperFilterWheel(i));
+					remove(configIdStringUpperFilterWheel(i));
+					setConfigXBin(i-1,getConfigXBin(i));
+					remove(configIdStringXBin(i));
+					setConfigYBin(i-1,getConfigYBin(i));
+					remove(configIdStringYBin(i));
+					setConfigWindowFlags(i-1,getConfigWindowFlags(i));
+					remove(configIdStringWindowFlags(i));
+
+					for(j=1;j<5;j++)
+					{
+						setConfigXStart(i-1,j,getConfigXStart(i,j));
+						remove(configIdWindowStringXStart(i,j));
+						setConfigYStart(i-1,j,getConfigYStart(i,j));
+						remove(configIdWindowStringYStart(i,j));
+						setConfigXEnd(i-1,j,getConfigXEnd(i,j));
+						remove(configIdWindowStringXEnd(i,j));
+						setConfigYEnd(i-1,j,getConfigYEnd(i,j));
+						remove(configIdWindowStringYEnd(i,j));
+					}
+					break;
+			case CONFIG_TYPE_SPECTROGRAPH_MES:
+					setConfigXBin(i-1,getConfigXBin(i));
+					remove(configIdStringXBin(i));
+					setConfigYBin(i-1,getConfigYBin(i));
+					remove(configIdStringYBin(i));
+					setConfigFilterSlideName(i-1,getConfigFilterSlideName(i));
+					remove(configIdStringFilterSlideName(i));
+					break;
+			case CONFIG_TYPE_SPECTROGRAPH_NUVIEW:
+					setConfigXBin(i-1,getConfigXBin(i));
+					remove(configIdStringXBin(i));
+					setConfigYBin(i-1,getConfigYBin(i));
+					remove(configIdStringYBin(i));
+					setConfigWavelength(i-1,getConfigWavelength(i));
+					remove(configIdStringWavelength(i));
+					break;
+			default:
+				throw new IllegalArgumentException(this.getClass().getName()+":deleteId:Id "
+					+i+" type "+type+" not a supported type of configuration.");
 			}
 			i++;
 		}// while ids exist
@@ -316,6 +377,64 @@ public class IcsGUIConfigProperties extends Properties
 		//put(configIdStringType(id),Integer.toString(type));
 	// jdk 1.2.x
 		setProperty(configIdStringType(id),Integer.toString(type));
+	}
+
+	/**
+	 * Method to get the calibrate before flag of configuration id id.
+	 * @param id The id of the configuration.
+	 * @return The configuration calibrate before flag.
+	 */
+	public boolean getConfigCalibrateBefore(int id)
+	{
+		return getPropertyBoolean(configIdStringCalibrateBefore(id));
+	}
+
+	/**
+	 * Method to set the calibrate before flag of configuration id id.
+	 * @param id The id of the configuration.
+	 * @param cb The configuration calibrate before flag.
+	 */
+	public void setConfigCalibrateBefore(int id,boolean cb)
+	{
+	// jdk 1.1.x
+		//if(cb)
+		//	put(configIdStringCalibrateBefore(id),"true");
+		//else
+		//	put(configIdStringCalibrateBefore(id),"false");
+	// jdk 1.2.x
+		if(cb)
+			setProperty(configIdStringCalibrateBefore(id),"true");
+		else
+			setProperty(configIdStringCalibrateBefore(id),"false");
+	}
+
+	/**
+	 * Method to get the calibrate after flag of configuration id id.
+	 * @param id The id of the configuration.
+	 * @return The configuration calibrate after flag.
+	 */
+	public boolean getConfigCalibrateAfter(int id)
+	{
+		return getPropertyBoolean(configIdStringCalibrateAfter(id));
+	}
+
+	/**
+	 * Method to set the calibrate after flag of configuration id id.
+	 * @param id The id of the configuration.
+	 * @param cb The configuration calibrate after flag.
+	 */
+	public void setConfigCalibrateAfter(int id,boolean cb)
+	{
+	// jdk 1.1.x
+		//if(cb)
+		//	put(configIdStringCalibrateAfter(id),"true");
+		//else
+		//	put(configIdStringCalibrateAfter(id),"false");
+	// jdk 1.2.x
+		if(cb)
+			setProperty(configIdStringCalibrateAfter(id),"true");
+		else
+			setProperty(configIdStringCalibrateAfter(id),"false");
 	}
 
 	/**
@@ -432,6 +551,68 @@ public class IcsGUIConfigProperties extends Properties
 		//put(configIdStringYBin(id),Integer.toString(yBin));
 	// jdk 1.2.x
 		setProperty(configIdStringYBin(id),Integer.toString(yBin));
+	}
+
+	/**
+	 * Method to get the filter slide name of configuration id id.
+	 * This is a MES only configuration value.
+	 * @param id The id of the configuration.
+	 * @return The configuration filter slide name.
+	 */
+	public String getConfigFilterSlideName(int id)
+	{
+		return getProperty(configIdStringFilterSlideName(id));
+	}
+
+	/**
+	 * Method to set the filter slide name of configuration id id.
+	 * This is a MES only configuration value.
+	 * @param id The id of the configuration.
+	 * @param s The configuration filter slide name.
+	 */
+	public void setConfigFilterSlideName(int id,String s)
+	{
+	// jdk 1.1.x
+		//put(configIdStringFilterSlideName(id),s);
+	// jdk 1.2.x
+		setProperty(configIdStringFilterSlideName(id),s);
+	}
+
+	/**
+	 * Method to get the wavelength of configuration id id as a string.
+	 * This is a NuView only configuration value.
+	 * @param id The id of the configuration.
+	 * @return The configuration wavelength.
+	 * @exception NumberFormatException Thrown if the relevant property 
+	 * 	"ccs_gui_config."id".wavelength" does not contain a numeric value.
+	 */
+	public double getConfigWavelength(int id) throws NumberFormatException
+	{
+		return getPropertyDouble(configIdStringWavelength(id));
+	}
+
+	/**
+	 * Method to get the wavelength of configuration id id as a string.
+	 * @param id The id of the configuration.
+	 * @return The configuration wavelength number as a string.
+	 */
+	public String getConfigWavelengthString(int id)
+	{
+		return getProperty(configIdStringWavelength(id));
+	}
+
+	/**
+	 * Method to set the wavelength of configuration id id.
+	 * This is a NuView only configuration value.
+	 * @param id The id of the configuration.
+	 * @param wavelength The configuration wavelength, in Angstroms.
+	 */
+	public void setConfigWavelength(int id,double wavelength)
+	{
+	// jdk 1.1.x
+		//put(configIdStringWavelength(id),Double.toString(wavelength));
+	// jdk 1.2.x
+		setProperty(configIdStringWavelength(id),Double.toString(wavelength));
 	}
 
 	/**
@@ -692,6 +873,80 @@ public class IcsGUIConfigProperties extends Properties
 		return c;
 	}
 
+	/**
+	 * Method to return a NPLowResSpecConfig, constructed from the information against id id.
+	 * @param id The Id number.
+	 * @return The constructed NPLowResSpecConfig.
+	 * @exception NumberFormatException Thrown if a numeric parameter is not returned from the properties
+	 * 	file as a legal number.
+	 * @exception IllegalArgumentException Thrown if the config id specified does not have a legal type.
+	 */
+	private NPLowResSpecConfig getNuViewConfigById(int id) throws NumberFormatException, IllegalArgumentException
+	{
+		NPLowResSpecConfig c = null;
+		NPLowResSpecDetector detector = null;
+
+	// check type
+		if(getConfigType(id) != CONFIG_TYPE_SPECTROGRAPH_NUVIEW)
+		{
+			throw new IllegalArgumentException(this.getClass().getName()+":getCCDConfigById:Id "
+				+id+" not a configuration of type Nu-View.");
+		}
+	// construct NPLowResSpecConfig
+		c = new NPLowResSpecConfig(getConfigName(id));
+		c.setWavelength(getConfigWavelength(id));
+	// setup detector
+		detector = new NPLowResSpecDetector();
+		detector.setXBin(getConfigXBin(id));
+		detector.setYBin(getConfigYBin(id));
+		// note, other NPDetector fields not set, as they are not used by the instrument.
+	// don't set windows into detector, use default windows.
+	// Note flags are held IN the window list, so must setWindowFlags AFTER detector windows set
+		detector.setWindowFlags(0);
+	// set detector into config
+		c.setNPDetector(0,detector);
+	// return config
+		return c;
+	}
+
+	/**
+	 * Method to return a NPHiResSpecConfig, constructed from the information against id id.
+	 * @param id The Id number.
+	 * @return The constructed NPHiResSpecConfig.
+	 * @exception NumberFormatException Thrown if a numeric parameter is not returned from the properties
+	 * 	file as a legal number.
+	 * @exception IllegalArgumentException Thrown if the config id specified does not have a legal type.
+	 */
+	private NPHiResSpecConfig getMESConfigById(int id) throws NumberFormatException, IllegalArgumentException
+	{
+		NPHiResSpecConfig c = null;
+		NPLowResSpecDetector detector = null;
+
+	// check type
+		if(getConfigType(id) != CONFIG_TYPE_SPECTROGRAPH_MES)
+		{
+			throw new IllegalArgumentException(this.getClass().getName()+":getCCDConfigById:Id "
+				+id+" not a configuration of type MES.");
+		}
+	// construct NPHiResSpecConfig
+		c = new NPHiResSpecConfig(getConfigName(id));
+		c.setFilterSlideName(getConfigFilterSlideName(id));
+	// setup detector
+		detector = new NPLowResSpecDetector();
+		detector.setXBin(getConfigXBin(id));
+		detector.setYBin(getConfigYBin(id));
+		// note, other NPDetector fields not set, as they are not used by the instrument.
+
+	// set windows into detector
+		detector.setNPWindows(null);
+	// Note flags are held IN the window list, so must setWindowFlags AFTER detector windows set
+		detector.setWindowFlags(0);
+	// set detector into config
+		c.setNPDetector(0,detector);
+	// return config
+		return c;
+	}
+
 // method to check values in the property file.
 	/**
 	 * Method to check whether a number is a legal configuration type number.
@@ -744,6 +999,28 @@ public class IcsGUIConfigProperties extends Properties
 	}
 
 	/**
+	 * Method to return a key for the calibrate before flag for a particular config id.
+	 * @param id The config id.
+	 * @return The key string.
+	 * @see #configIdString
+	 */
+	private String configIdStringCalibrateBefore(int id)
+	{
+		return new String(configIdString(id)+"calibrateBefore");
+	}
+
+	/**
+	 * Method to return a key for the calibrate after flag for a particular config id.
+	 * @param id The config id.
+	 * @return The key string.
+	 * @see #configIdString
+	 */
+	private String configIdStringCalibrateAfter(int id)
+	{
+		return new String(configIdString(id)+"calibrateAfter");
+	}
+
+	/**
 	 * Method to return a key for the lower filter wheel for a particular config id.
 	 * @param id The config id.
 	 * @return The key string.
@@ -763,6 +1040,28 @@ public class IcsGUIConfigProperties extends Properties
 	private String configIdStringUpperFilterWheel(int id)
 	{
 		return new String(configIdString(id)+"upperFilterWheel");
+	}
+
+	/**
+	 * Method to return a key for the filter slide name for a particular config id.
+	 * @param id The config id.
+	 * @return The key string.
+	 * @see #configIdString
+	 */
+	private String configIdStringFilterSlideName(int id)
+	{
+		return new String(configIdString(id)+"filterSlideName");
+	}
+
+	/**
+	 * Method to return a key for the wavelength for a particular config id.
+	 * @param id The config id.
+	 * @return The key string.
+	 * @see #configIdString
+	 */
+	private String configIdStringWavelength(int id)
+	{
+		return new String(configIdString(id)+"filterWavelength");
 	}
 
 	/**
@@ -888,9 +1187,48 @@ public class IcsGUIConfigProperties extends Properties
 		returnValue = Integer.parseInt(valueString);
 		return returnValue;
 	}
+
+	/**
+	 * Routine to get a properties value, given a key. The value must be a valid double, else a 
+	 * NumberFormatException is thrown.
+	 * @param p The property key we want the value for.
+	 * @return The properties value, as an double.
+	 * @exception NumberFormatException If the properties value string is not a valid double, this
+	 * 	exception will be thrown when the Double.valueOf routine is called.
+	 */
+	public double getPropertyDouble(String p) throws NumberFormatException
+	{
+		String valueString = null;
+		Double returnValue = null;
+
+		valueString = getProperty(p);
+		returnValue = Double.valueOf(valueString);
+		return returnValue.doubleValue();
+	}
+
+	/**
+	 * Routine to get a properties boolean value, given a key. The properties value should be either 
+	 * "true" or "false".
+	 * Boolean.valueOf is used to convert the string to a boolean value.
+	 * @param p The property key we want the boolean value for.
+	 * @return The properties value, as an boolean.
+	 */
+	public boolean getPropertyBoolean(String p)
+	{
+		String valueString = null;
+		Boolean b = null;
+
+		valueString = getProperty(p);
+		b = Boolean.valueOf(valueString);
+		return b.booleanValue();
+	}
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.4  2001/02/27 13:45:03  cjm
+// Changed addNPDetector to setNPDetector to reflect changes
+// in ngat.phase2.nonpersist.NPCCDConfig.
+//
 // Revision 0.3  2000/12/20 17:56:02  cjm
 // Fixed window code.
 //
