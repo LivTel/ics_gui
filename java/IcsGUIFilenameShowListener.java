@@ -1,5 +1,5 @@
 // IcsGUIFilenameShowListener.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIFilenameShowListener.java,v 1.2 2001-07-12 10:13:56 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIFilenameShowListener.java,v 1.3 2001-07-31 09:35:41 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -18,14 +18,14 @@ import ngat.util.*;
  * to transfer the image to the CcsGUI's machine if necessary.
  * It calls a command specified in the config file to display the FITS image.
  * @author Chris Mottram
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class IcsGUIFilenameShowListener implements ActionListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIFilenameShowListener.java,v 1.2 2001-07-12 10:13:56 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIFilenameShowListener.java,v 1.3 2001-07-31 09:35:41 cjm Exp $");
 	/**
 	 * The instance of the main program.
 	 */
@@ -164,7 +164,7 @@ public class IcsGUIFilenameShowListener implements ActionListener
 			}
 		// Show FITS file
 			showCommand = status.getProperty("ics_gui.fits.show.command");
-			commandString = StringUtilites.replace(showCommand,"%s",filename);
+			commandString = StringUtilities.replace(showCommand,"%s",filename);
 			command = new ExecuteCommand(commandString);
 			parent.log("Executing Command:"+commandString);
 			command.run();
@@ -247,6 +247,11 @@ public class IcsGUIFilenameShowListener implements ActionListener
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2001/07/12 10:13:56  cjm
+// Added seperator checking to temporary directory, so that
+// if the property containg the temporary directory does not
+// end in a path seperator, one is added.
+//
 // Revision 1.1  2001/07/10 18:21:28  cjm
 // Initial revision
 //
