@@ -1,5 +1,5 @@
 # Makefile -*- mode: Fundamental;-*-
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.12 2001-03-30 15:56:56 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.13 2001-07-11 10:24:45 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -14,7 +14,8 @@ SRCS 		= $(MAIN_SRCS) $(DIALOG_SRCS)
 
 MAIN_SRCS	= CcsGUI.java CcsGUIStatus.java CcsGUIWindowListener.java CcsGUIMenuItemListener.java \
 		GUIDialogListener.java CcsGUIDialogListener.java CcsCommandDialog.java \
-		CcsGUIClientConnectionThread.java $(SERVER_SRCS) $(CONFIG_SRCS) $(UPDATE_SRCS)
+		CcsGUIClientConnectionThread.java IcsGUIFilenameShowListener.java \
+		$(SERVER_SRCS) $(CONFIG_SRCS) $(UPDATE_SRCS)
 
 SERVER_SRCS	= CcsGUIServer.java CcsGUIServerConnectionThread.java
 CONFIG_SRCS	= IcsGUIConfigProperties.java IcsGUIConfigListDialog.java CcsGUIConfigButtonListener.java \
@@ -31,30 +32,56 @@ SETUP_DIALOG_SRCS	= CONFIGDialog.java LAMPFOCUSDialog.java SET_LOGGINGDialog.jav
 OBJS 		= $(SRCS:%.java=$(BINDIR)/%.class)
 DOCS 		= $(SRCS:%.java=$(DOCSDIR)/%.html)
 
-CONFIG_PROPERTY_SRCS	= ltccd1.livjm.ac.uk.ccs_gui.properties ltspec1.ccs_gui.properties \
-	ltccd2.livjm.ac.uk.ccs_gui.properties ltobs5.ccs_gui.properties ltobs5.scs_gui.properties
+CONFIG_PROPERTY_SRCS	= ltccd1.ccs_gui.properties \
+	ltccd2.ccs_gui.properties ltobs5.ccs_gui.properties \
+	ltobs5.scs_gui.properties spectrograph.scs_gui.properties \
+	ccs_gui.fits.properties ccs_gui_config.properties
 CONFIG_OBJS	= $(CONFIG_PROPERTY_SRCS:%.properties=$(BINDIR)/%.properties)
 
+SCRIPT_SRCS	= scsgui ccsgui xv_wrapper.csh
+SCRIPT_OBJS	= $(SCRIPT_SRCS:%=$(BINDIR)/%)
 
-top: $(OBJS) config gifs docs
+top: $(OBJS) config gifs scripts docs
 
+#
+# java sources
+#
 $(BINDIR)/%.class:%.java
 	$(JAVAC) $(JAVAC_OPTIONS) -d $(BINDIR) $<
 
+#
+# configuration files
+#
 config: $(CONFIG_OBJS)
 
 $(BINDIR)/%.properties: %.properties
 	$(CP) $< $@
 
+#
+# run scripts
+#
+scripts: $(SCRIPT_OBJS)
 
-$(BINDIR)/ccs_gui.properties: $(HOST).ccs_gui.properties
-	$(CP) $(HOST).ccs_gui.properties $(BINDIR)/ccs_gui.properties
+$(BINDIR)/ccsgui: ccsgui
+	$(CP) ccsgui $@
 
+$(BINDIR)/scsgui: scsgui
+	$(CP) scsgui $@
+
+$(BINDIR)/xv_wrapper.csh: xv_wrapper.csh
+	$(CP) xv_wrapper.csh $@
+
+#
+# gifs
+#
 gifs: $(BINDIR)/lt.gif $(BINDIR)/lt_icon.gif
 
 $(BINDIR)/%.gif: %.gif
 	$(CP) $< $@
 
+#
+# documentation
+#
 docs: $(DOCS)
 
 $(DOCS): $(SRCS)
@@ -77,6 +104,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.12  2001/03/30 15:56:56  cjm
+# Added ltobs5.ccs_gui.properties.
+#
 # Revision 0.11  2000/12/01 18:43:14  cjm
 # New config dialogs for different instruments.
 #
