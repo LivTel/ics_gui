@@ -1,5 +1,5 @@
-// CcsGUI.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.16 2002-05-23 12:44:53 cjm Exp $
+// CcsGUI.java
+// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.17 2002-12-16 18:35:51 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -19,14 +19,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ccs GUI.
  * @author Chris Mottram
- * @version $Revision: 0.16 $
+ * @version $Revision: 0.17 $
  */
 public class CcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.16 2002-05-23 12:44:53 cjm Exp $");
+	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.17 2002-12-16 18:35:51 cjm Exp $");
 	/**
 	 * The stream to write error messages to - defaults to System.err.
 	 */
@@ -884,11 +884,13 @@ public class CcsGUI
 	 */
 	public void setCCDStatusLabel(int currentMode)
 	{
-		String currentModeList[] = {"Idle","Config","Clearing","Exposure","Readout","Error"};
+		// Ensure this list matches GET_STATUS_DONE.MODE_*
+		String currentModeList[] = {"Idle","Config","Clearing","Exposure","Pre-Readout","Readout",
+						"Post-Readout","Error"};
 		String s = null;
 
 		if((currentMode < 0)||(currentMode >= currentModeList.length))
-			currentMode = currentModeList.length-1;
+			currentMode = currentModeList.length-1; // set to Error mode
 		if(ccdStatusLabel != null)
 		{
 			SwingUtilities.invokeLater(new GUILabelSetter(ccdStatusLabel,currentModeList[currentMode]));
@@ -1252,6 +1254,9 @@ public class CcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.16  2002/05/23 12:44:53  cjm
+// Added DAY_CALIBRATE and TWILIGHT_CALIBRATE menus.
+//
 // Revision 0.15  2001/07/10 18:21:28  cjm
 // filenameLabel added.
 // Label strings changed.
