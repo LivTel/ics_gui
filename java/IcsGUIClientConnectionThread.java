@@ -1,5 +1,5 @@
 // CcsGUIClientConnectionThread.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.8 2000-06-15 12:13:34 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.9 2000-07-03 10:34:08 cjm Exp $
 
 import java.lang.*;
 import java.io.*;
@@ -20,14 +20,14 @@ import ngat.message.ISS_INST.GET_STATUS_DONE;
  * It implements the generic ISS instrument command protocol.
  * It is used to send commands from the CcsGUI to the Ccs.
  * @author Chris Mottram
- * @version $Revision: 0.8 $
+ * @version $Revision: 0.9 $
  */
 public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.8 2000-06-15 12:13:34 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.9 2000-07-03 10:34:08 cjm Exp $");
 	/**
 	 * The CcsGUI object.
 	 */
@@ -158,6 +158,7 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	{
 		Hashtable displayInfo = null;
 		Integer integer = null;
+		Long longObject = null;
 		Double ccdTemperature = null;
 		int exposureCount,exposureNumber;
 		long exposureLength,elapsedExposureTime;
@@ -198,18 +199,36 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 		{
 			integer = (Integer)(displayInfo.get("Exposure Length"));
 			exposureLength = integer.longValue();
-			integer = (Integer)(displayInfo.get("Elapsed Exposure Time"));
-			elapsedExposureTime = integer.longValue();
-			parent.setRemainingExposureTimeLabel(exposureLength-elapsedExposureTime);
+		// If Elapsed Exposure Time was included, use this to calculate remaining exposure time
+			if(displayInfo.containsKey("Elapsed Exposure Time"))
+			{
+				integer = (Integer)(displayInfo.get("Elapsed Exposure Time"));
+				elapsedExposureTime = integer.longValue();
+				parent.setRemainingExposureTimeLabel(exposureLength-elapsedExposureTime);
+			}
+		// otherwise, use current time - exposure start time to calculate remaining exposure time
+			else
+			{
+				longObject = (Long)(displayInfo.get("Exposure Start Time"));
+ 				elapsedExposureTime = System.currentTimeMillis()-longObject.longValue();
+				parent.setRemainingExposureTimeLabel(exposureLength-elapsedExposureTime);
+				parent.log("Elapsed Exposure Time not received, using Exposure Start Time"+
+					" to calculate remaining exposure time.");
+			}
 		}
 		else
 			parent.setRemainingExposureTimeLabel(0L);
 	// set temperature
-		ccdTemperature = (Double)(displayInfo.get("Temperature"));
-		if(ccdTemperature != null)
-			parent.setCCDTemperatureLabel(ccdTemperature.doubleValue());
+		if(displayInfo.containsKey("Temperature"))
+		{
+			ccdTemperature = (Double)(displayInfo.get("Temperature"));
+			if(ccdTemperature != null)
+				parent.setCCDTemperatureLabel(ccdTemperature.doubleValue());
+		}
 		else
-			parent.setCCDTemperatureLabel(0.0);
+		{
+			parent.log("Temperature not updated.");
+		}
 	}
 
 	/**
@@ -240,6 +259,10 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.8  2000/06/15 12:13:34  cjm
+// Test whether Temperature information returned.
+// Stops NullPointerException.
+//
 // Revision 0.7  2000/03/27 16:47:31  cjm
 // Improve remaining exposure time/CCD temperature with new keys from Ccs.
 //
