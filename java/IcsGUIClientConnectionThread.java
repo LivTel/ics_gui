@@ -1,5 +1,5 @@
 // CcsGUIClientConnectionThread.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.6 2000-03-02 12:09:36 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.7 2000-03-27 16:47:31 cjm Exp $
 
 import java.lang.*;
 import java.io.*;
@@ -20,14 +20,14 @@ import ngat.message.ISS_INST.GET_STATUS_DONE;
  * It implements the generic ISS instrument command protocol.
  * It is used to send commands from the CcsGUI to the Ccs.
  * @author Chris Mottram
- * @version $Revision: 0.6 $
+ * @version $Revision: 0.7 $
  */
 public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.6 2000-03-02 12:09:36 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.7 2000-03-27 16:47:31 cjm Exp $");
 	/**
 	 * The CcsGUI object.
 	 */
@@ -158,9 +158,9 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	{
 		Hashtable displayInfo = null;
 		Integer integer = null;
-		Long l = null;
-		long exposureStartTime,currentTime,timeElapsed;
-		int exposureCount,exposureNumber,exposureLength;
+		Double ccdTemperature = null;
+		int exposureCount,exposureNumber;
+		long exposureLength,elapsedExposureTime;
 
 	// current mode
 		parent.log("The current mode:"+getStatusDone.getCurrentMode()+".");
@@ -196,16 +196,17 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	// set remaining exposure time label
 		if(getStatusDone.getCurrentMode() == 3)
 		{
-			l = (Long)(displayInfo.get("Exposure Start Time"));
-			exposureStartTime = l.longValue();
 			integer = (Integer)(displayInfo.get("Exposure Length"));
-			exposureLength = integer.intValue();
-			currentTime = System.currentTimeMillis();
-			timeElapsed = currentTime-exposureStartTime;
-			parent.setRemainingExposureTimeLabel(((long)exposureLength)-timeElapsed);
+			exposureLength = integer.longValue();
+			integer = (Integer)(displayInfo.get("Elapsed Exposure Time"));
+			elapsedExposureTime = integer.longValue();
+			parent.setRemainingExposureTimeLabel(exposureLength-elapsedExposureTime);
 		}
 		else
 			parent.setRemainingExposureTimeLabel(0L);
+	// set temperature
+		ccdTemperature = (Double)(displayInfo.get("Temperature"));
+		parent.setCCDTemperatureLabel(ccdTemperature.doubleValue());
 	}
 
 	/**
@@ -236,6 +237,9 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.6  2000/03/02 12:09:36  cjm
+// Added filename printing to DONE messages.
+//
 // Revision 0.5  2000/02/28 19:14:40  cjm
 // Backup.
 //
