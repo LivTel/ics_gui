@@ -1,5 +1,5 @@
 // CcsGUIServerConnectionThread.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIServerConnectionThread.java,v 0.5 2000-08-11 14:32:33 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIServerConnectionThread.java,v 0.6 2000-08-29 11:42:24 cjm Exp $
 import java.lang.*;
 import java.lang.reflect.InvocationTargetException;
 import java.io.*;
@@ -19,14 +19,14 @@ import ngat.swing.GUIMessageDialogShower;
  * This class extends the TCPServerConnectionThread class for the CcsGUI application. This
  * allows CcsGUI to emulate the ISS's response to the CCS sending it commands.
  * @author Chris Mottram
- * @version $Revision: 0.5 $
+ * @version $Revision: 0.6 $
  */
 public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIServerConnectionThread.java,v 0.5 2000-08-11 14:32:33 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIServerConnectionThread.java,v 0.6 2000-08-29 11:42:24 cjm Exp $");
 	/**
 	 * Default time taken to respond to a command.
 	 */
@@ -109,10 +109,20 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 			{
 				sendAcknowledge(infiniteAcknowledge);
 			// bring up a dialog.
-				SwingUtilities.invokeAndWait(new GUIMessageDialogShower((Component)null,
-					(Object)("Please process Command "+command.getClass().getName()+
-					" and press Ok."),
-					" ISS Command Received ",JOptionPane.INFORMATION_MESSAGE));
+				if(command instanceof SET_FOCUS)
+				{
+					SwingUtilities.invokeAndWait(new GUIMessageDialogShower((Component)null,
+						(Object)("Please process Command "+command.getClass().getName()+
+						":"+((SET_FOCUS)command).getFocus()+" and press Ok."),
+						" ISS Command Received ",JOptionPane.INFORMATION_MESSAGE));
+				}
+				else
+				{
+					SwingUtilities.invokeAndWait(new GUIMessageDialogShower((Component)null,
+						(Object)("Please process Command "+command.getClass().getName()+
+						" and press Ok."),
+						" ISS Command Received ",JOptionPane.INFORMATION_MESSAGE));
+				}
 			}
 			catch(IOException e)
 			{
@@ -300,6 +310,9 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.5  2000/08/11 14:32:33  cjm
+// Added logging commands.
+//
 // Revision 0.4  2000/05/25 10:59:26  cjm
 // Fixed LONGITUD keyword.
 //
