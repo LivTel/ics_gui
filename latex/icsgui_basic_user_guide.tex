@@ -23,7 +23,8 @@ via the Instrument Control System GUI.
 \hline
 {\bf Version} & {\bf Author} & {\bf Date} & {\bf Notes} \\
 \hline
-0.1 & C. J. Mottram & 07/08/03 & First draft \\
+0.1 & C. J. Mottram & 07/08/03 & First draft. \\
+0.2 & C. J. Mottram & 13/08/03 & More diagrams. \\
 \hline
 \end{tabular}
 \end{center}
@@ -53,12 +54,13 @@ The correct power on sequence is as follows:
 
 \begin{itemize}
 \item Ensure all connections are connected.
-\item Power on the SDSU controller box (grey box).
-\item There should be 2 green lights come on on the back of the controller (plus one half lit).
-      If a red light comes on (second from the right) , the chances are the SDSU controller has a temperature fault 
-	(i.e. it thinks it is too hot). Cool the controller and try again.
+\item Power on the SDSU controller box (grey box). See Section \ref{sec:diagramsdsupsu}.
+\item There should be 2 green lights come on on the back of the controller (plus one half lit). 
+      See Section \ref{sec:diagramdewarelectronicsbox}.
+      If a red light comes on (second from the right) , the chances are the SDSU controller has a temperature fault.
+      This means the controller has got too hot, causing a thermistor in the controller to trip.
 \item Power on the filter wheel power supply.
-\item Power on the control computer.
+\item Power on the control computer. See Section \ref{sec:diagramsunultra5back}.
 \end{itemize}
 
 \subsection{Cryotiger}
@@ -76,6 +78,8 @@ If all goes well seven green lights should come on on the SDSU controller and th
 If the lights don't come on, check the green light on the PCI card plugged into the back of the control computer.
 If it is not on, then the fibre optic communication between the PCI card and the SDSU controller is not working.
 Try swapping the two connectors round at one end, if this doesn't work check the fibre.
+
+More advanced diagnostics can be found in the Advanced User Guide \cite{bib:ccs_aug}.
 
 \subsection{Control Computer locks up}
 In very rare cases the power up sequence may cause the Instrument Control Computer to appear to 'freeze' or 'lock up'.
@@ -103,7 +107,10 @@ eng 		& ng@teng 		& Engineer User \\ \hline
 \end{table}
 
 For normal operations the {\bf eng} user should be used. {\bf root} allows you to change the operating system
-setup, and other tasks like going into low-level engineering mode (killing the CCD Control System).
+setup, and other tasks like going into low-level engineering mode (stopping the CCD Control System
+robotic software).
+
+See the Advanced User Guide \cite{bib:ccs_aug} for more details.
 
 \section{Starting the Instrument Control Graphical User Interface}
 \label{sec:starticsgui}
@@ -150,20 +157,40 @@ Normally the CCS sends commands to the RCS whilst it is itself processing comman
 The following is an example list of commands the CCS sends:
 
 \begin{itemize}
-\item MOVE\_FOLD
-\item AUTOGUIDER\_ON
-\item AUTOGUIDER\_OFF
-\item RA\_DEC\_OFFSET
-\item SET\_FOCUS
-\item FOCUS\_OFFSET
+\item AG\_START
+\item AG\_STOP
 \item GET\_FITS 
+\item MOVE\_FOLD
+\item OFFSET\_FOCUS
+\item OFFSET\_RA\_DEC
+\item OFFSET\_ROTATOR
+\item SET\_FOCUS
 \end{itemize}
 
 If these commands are sent to the RCS, then they are actually performed, or in the case of GET\_FITS the
 headers returned contain the real data from the telescope.
 
 However, the IcsGUI has the capability of faking these commands, so that if the RCS is not running you can still
-use the camera. To make use of the feature, you must first tell the CCS to talk to the IcsGUI rather than
+use the camera. 
+
+Figure \ref{fig:rcsicsguicomms} shows the two possible interactions. In both cases a MULTRUN is sent to the CCS, 
+which causes the CCS to issue a {\bf MOVE\_FOLD} command. 
+On the left it is issued to the RCS, which sends the relevant command
+to the TCS. On the right the IcsGUI handles the {\bf MOVE\_FOLD}, and 'pretends' to do the command, or displays
+a dialog for the user to do it interactively.
+
+\setlength{\unitlength}{1in}
+\begin{figure}[!h]
+	\begin{center}
+		\begin{picture}(3.0,3.0)(0.0,0.0)
+			\put(0,0){\special{psfile=rcs_ccs_interaction.eps hscale=50 vscale=50}}
+		\end{picture}
+	\end{center}
+	\caption{\em RCS/IcsGUI communications with the CCS.}
+	\label{fig:rcsicsguicomms} 
+\end{figure}
+
+To make use of this feature of the IcsGUI, you must first tell the CCS to talk to the IcsGUI rather than
 the RCS.
 
 To do this, edit the file {\em /icc/bin/ccs/java/ccs.net.properties}. Change the following property: 
@@ -220,7 +247,7 @@ The menu is shown in Figure \ref{fig:icsguiissmenu}.
 	\label{fig:icsguiissmenu} 
 \end{figure}
 
-The {\em Spoof Requests} option turns off ISS emulation. You need this check-box on to pretend to be the ISS.
+The {\em Spoof Requests} option turns on ISS emulation. You need this check-box on to pretend to be the ISS.
 The {\em Message Dialog} option, if selected, brings up a message dialog whenever an ISS request is received from
 the CCS. This allows you to say, use the TCS to move the science fold when the CCS sends a {\bf MOVE\_FOLD} message.
 
@@ -244,9 +271,10 @@ GAIA).
 \section{Configuring for an exposure}
 \label{sec:configuring}
 
-Before taking an image with the instrument, it must first be configured. This is achieved using the robotic
+{\bf Before taking an image} with the instrument, it must first be configured. This is achieved using the robotic
 command	{\bf CONFIG}. To bring up the Config dialog, select the menu option 
-{\em Send$\rightarrow$Setup$\rightarrow$Config}, see Figure \ref{fig:icsguisetupmenu}.
+{\em Send$\rightarrow$Setup$\rightarrow$Config}, see Figure \ref{fig:icsguisetupmenu}. If an attempt is made to take 
+an exposure without configuring the instrument, then the {\bf COMMAND\_DONE} message indicates a failure.
 
 \setlength{\unitlength}{1in}
 \begin{figure}[!h]
@@ -277,7 +305,7 @@ This brings up the CONFIG dialog, see Figure \ref{fig:icsguiconfigdialog}.
 The Identifier field is automatically filled in by the IcsGUI, it allows the IcsGUI and CCS to identify
 specific commands.
 
-The {\em Config} button allows the user to select the configuration of the instrument they want from
+The {\em Config} button allows the user to select the configuration of the instrument wanted from
 a list. When the configuration has been selected, the blank area to the right of this button is filled in
 with the name of the selected configuration. See Section \ref{sec:instrumentconfigurationlist}.
 
@@ -285,8 +313,8 @@ The {\em Ok} button sends the {\bf CONFIG} command to the CCS.
 
 The {\em Cancel} button quits the dialog without sending the {\bf CONFIG} command.
 
-After sending the command, monitor it's progress using the {\em Auto-update} button on the main screen. Check
-the log text-area for a {\bf CONFIG\_DONE} message. If it's {\em successful} field is {\em true} the configuration
+After sending the command, monitor its progress using the {\em Auto-update} button on the main screen. Check
+the log text-area for a {\bf CONFIG\_DONE} message. If its {\em successful} field is {\em true} the configuration
 succeeded, otherwise the DONE message should contain an error message describing what went wrong. If it was
 a problem with the {\bf FOCUS\_OFFSET} the CCS issued, see Section \ref{sec:issconfiguration} to configure
 the ISS correctly.
@@ -401,8 +429,8 @@ This brings up the MULTRUN Dialog, see Figure \ref{fig:icsguimultrundialog}.
 The Identifier field is automatically filled in by the IcsGUI, it allows the IcsGUI and CCS to identify
 specific commands.
 
-The {\em Standard} check-box, if selected, marks this exposure as being of a standard field, and causes the CCS
-to save the image is a slightly different filename with a different OBSTYPE.
+The {\em Standard} check-box, if selected, marks this exposure as being of an astronomical photometric standard field, 
+and causes the CCS to save the image is a slightly different filename with a different OBSTYPE in the FITS header.
 
 If the {\em Pipeline Process} check-box is selected, when the image(s) are taken they will be sent through the 
 real time data pipeline, to be de-biased, flat-fielded and some measurements will be sent back in the DONE message
@@ -418,12 +446,12 @@ The {\em Ok} button sends the {\bf MULTRUN} command to the CCS.
 
 The {\em Cancel} button quits the dialog without sending the {\bf MULTRUN} command.
 
-After sending the command, monitor it's progress using the {\em Auto-update} button on the main screen. 
+After sending the command, monitor its progress using the {\em Auto-update} button on the main screen. 
 During the MULTRUN, you may receive ISS requests for {\bf MOVE\_FOLD}, {\bf AUTOGUIDER\_ON}, {\bf AUTOGUIDER\_OFF},
 {\bf OFFSET\_FOCUS} etc. Once the first image has been saved, you will receive a {\bf MULTRUN\_ACK} containing
 the filename, which you can then view using the {\em FITS Filename} button. 
 
-Check the log text-area for a {\bf MULTRUN\_DONE} message. If it's {\em successful} field is {\em true} the 
+Check the log text-area for a {\bf MULTRUN\_DONE} message. If its {\em successful} field is {\em true} the 
 {\bf MULTRUN} succeeded, otherwise the DONE message should contain an error message describing what went wrong. 
 If it was a problem with an ISS command the CCS issued, see Section \ref{sec:issconfiguration} to configure
 the ISS correctly.
@@ -491,14 +519,14 @@ This brings up the REBOOT Dialog, see Figure \ref{fig:icsguirebootdialog}.
 The {\em Level} field must be filled in to determine what sort of REBOOT you wish to do.
 The following lists the acceptable values:
 \begin{enumerate}
-\item {\em Re-datum}. This causes the CCS to re-read some of it's configuration files (NOT the network ones),
+\item {\em Re-datum}. This causes the CCS to re-read some of its configuration files (NOT the network ones),
 	and restart the SDSU controller.
 \item {\em Software}. This causes the CCS and DpRt processes to be killed. The Autobooter then kicks in
 	to restart these processes, which causes them to re-read all their configuration, and re-datum the hardware.
-\item {\em Hardware}. This causes the CCS to shut down it's connection to the SDSU controller, and then issue
+\item {\em Hardware}. This causes the CCS to shut down its connection to the SDSU controller, and then issue
 	a {\bf reboot} to the instrument control computer. After the control computer reboots, the Autobooter
 	will ensure the CCS and DpRt start again.
-\item {\em Power-Down}. This causes the CCS to shut down it's connection to the SDSU controller, and then issue
+\item {\em Power-Down}. This causes the CCS to shut down its connection to the SDSU controller, and then issue
 	a {\bf shutdown} to the instrument control computer. The instrument control computer will then power down,
 	or in the Solaris case will go to an {\em ok} prompt where it is safe to remove power. The SDSU controller
 	and Filter Wheel Power can then also be powered down.
@@ -510,7 +538,8 @@ The {\em Cancel} button quits the dialog without sending the {\bf REBOOT} comman
 
 You may or may not get a {\bf REBOOT\_DONE} message appearing in the log text area, depending on the
 type of REBOOT performed. If doing a level {\em 1} or {\em 2} REBOOT, use the {\em Auto-update} check-box
-to determine when the CCS starts returning status again (the CCS has restarted, this can take a minute or so). 
+to determine when the CCS starts returning status again (when the CCS has restarted, this can take a minute or so,
+it will return {\em Connection refused} errors in the meantime). 
 Otherwise, the desktop will disappear and the machine will either shut down or reboot. 
 Save any work you are doing first!
 
@@ -527,18 +556,18 @@ If the CCD Control System is running, power off as follows:
 	On a Solaris control computer, when the {\em ok} prompt appears it is safe to turn off the computers power.
 	On a Linux control computer, the power will automatically turn off or the computer will print
 	{\em Power off now.}.
-\item Power off the control computer.
+\item Power off the control computer. See Section \ref{sec:diagramsunultra5back}.
 \item Power off the filter wheel power supply.
-\item Power off the SDSU controller power supply.
+\item Power off the SDSU controller power supply. See Section \ref{sec:diagramsdsupsu}.
 \end{itemize}
 
 \subsection{Without the CCD Control System running}
 \begin{itemize}
 \item Log in as {\bf root}.
 \item Shut the computer down. On Solaris, type {\em shutdown -i 0 -y -g 1}. On Linux, type {\em shutdown -h now}.
-\item Power off the control computer.
+\item Power off the control computer. See Section \ref{sec:diagramsunultra5back}.
 \item Power off the filter wheel power supply.
-\item Power off the SDSU controller power supply.
+\item Power off the SDSU controller power supply. See Section \ref{sec:diagramsdsupsu}.
 \end{itemize}
 
 \section{Diagrams}
@@ -565,12 +594,81 @@ If the CCD Control System is running, power off as follows:
 \item Fibre optic transmitter connector (with dust cap on).
 \end{enumerate}
 
+\newpage
+\subsection{SDSU Power supply}
+
+\label{sec:diagramsdsupsu}
+\setlength{\unitlength}{1in}
+\begin{figure}[!h]
+	\begin{center}
+		\begin{picture}(5.0,5.0)(0.0,0.0)
+			\put(0,0){\special{psfile=sdsu_psu_low_res_annotated.eps hscale=70 vscale=70}}
+		\end{picture}
+	\end{center}
+	\caption{\em SDSU Power Supply.}
+	\label{fig:diagramsdsupsu} 
+\end{figure}
+
+\begin{enumerate}
+\item On/Off switch.
+\item Reset button, resets timing and utility board.
+\item Connector supplying PSU voltages to SDSU electronics box on dewar.
+\end{enumerate}
+
+\newpage
+\subsection{Sun SPARC Ultra 5}
+
+\label{sec:diagramsunultra5back}
+\setlength{\unitlength}{1in}
+\begin{figure}[!h]
+	\begin{center}
+		\begin{picture}(5.0,5.0)(0.0,0.0)
+			\put(0,0){\special{psfile=sun_ultra5_back_low_res_annotated.eps hscale=70 vscale=70}}
+		\end{picture}
+	\end{center}
+	\caption{\em Sun Ultra 5 Back.}
+	\label{fig:diagramsunultra5back} 
+\end{figure}
+
+\begin{enumerate}
+\item On/Off switch.
+\item SDSU PCI Card normally here. See Section \ref{sec:diagrampcicard}.
+\end{enumerate}
+
+Do not use the On/Off switch on the front.
+
+\newpage
+\subsection{Dewar/Electronics Box}
+
+\label{sec:diagramdewarelectronicsbox}
+\setlength{\unitlength}{1in}
+\begin{figure}[!h]
+	\begin{center}
+		\begin{picture}(4.0,6.0)(0.0,0.0)
+			\put(0,0){\special{psfile=sdsu_dewar_electronics_back_low_res_annotated.eps hscale=70 vscale=70}}
+		\end{picture}
+	\end{center}
+	\caption{\em Back of the dewar and electronics box.}
+	\label{fig:diagramdewarelectronicsback} 
+\end{figure}
+
+\begin{enumerate}
+\item Vacuum pump connector.
+\item Cryotiger gas pipe - supply.
+\item Cryotiger gas pipe - return.
+\item SDSU power supply connector.
+\item Power Control Board LED window.
+\item Fibre Optic connector.
+\item Fibre Optic connector.
+\item Shutter cable connector.
+\end{enumerate}
+
 \section{Conventions/Abbreviations}
 \begin{itemize}
 \item {\bf ARI} - Astrophysics Research Institute.
 \item {\bf CCD} - Charge Coupled Device. The first detector used by the telescope.
 \item {\bf CCS} - CCD Control System. This is the camera control process.
-\item {\bf DP(RT)} - The Data Pipeline Real Time module.
+\item {\bf DpRt} - The Data Pipeline Real Time module.
 \item {\bf FARTCAM} - Faulkes Astronomical Robotic Telescope Camera. The FT imager instrument.
 \item {\bf FITS} - Flexible Image Transport System. File format used to save astronomical images.
 \item {\bf FT} - The Faulkes Telescope. Robotic 2m Telescope sited in Hawaii.
@@ -593,7 +691,12 @@ If the CCD Control System is running, power off as follows:
 \addcontentsline{toc}{section}{Bibliography}
 
 \bibitem{bib:ccs}{\bf CCD Control System}
-Liverpool John Moores University \newline{\em http://ltccd1.livjm.ac.uk/\verb'~'dev/ccs/latex/ccs.ps}
+Liverpool John Moores University 
+\newline{\em http://ltccd1.livjm.ac.uk/\verb'~'dev/ccs/latex/ccs.ps}
+
+\bibitem{bib:ccs_aug}{\bf CCD Control System : Advanced User Guide}
+Liverpool John Moores University 
+\newline{\em http://ltccd1.livjm.ac.uk/\verb'~'dev/ccs/latex/ccs\_advanced\_user\_guide.ps}
 
 \end{thebibliography}
 
