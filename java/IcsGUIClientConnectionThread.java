@@ -1,5 +1,5 @@
 // CcsGUIClientConnectionThread.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.16 2003-09-19 14:08:45 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.17 2003-11-14 15:02:12 cjm Exp $
 
 import java.awt.*;
 import java.lang.*;
@@ -17,14 +17,14 @@ import ngat.util.StringUtilities;
  * It implements the generic ISS instrument command protocol.
  * It is used to send commands from the CcsGUI to the Ccs.
  * @author Chris Mottram
- * @version $Revision: 0.16 $
+ * @version $Revision: 0.17 $
  */
 public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.16 2003-09-19 14:08:45 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.17 2003-11-14 15:02:12 cjm Exp $");
 	/**
 	 * The CcsGUI object.
 	 */
@@ -262,7 +262,8 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	// set current command status
 		parent.setCurrentCommandLabel((String)(displayInfo.get("currentCommand")));
 	// set filters selected status
-		if(instrumentString.equals("RATCam")||instrumentString.equals("FARTCam"))
+		if(instrumentString.equals("RATCam")||instrumentString.equals("FARTCam")||
+		   instrumentString.equals("DillCam"))
 		{
 			parent.setFiltersSelectedLabel((String)(displayInfo.get("Filter Wheel:0")),
 				(String)(displayInfo.get("Filter Wheel:1")));
@@ -278,6 +279,10 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 		else if(instrumentString.equals("SupIRCam"))
 		{
 			parent.setFiltersSelectedLabel((String)(displayInfo.get("Filter Wheel:0")));
+		}
+		else if(instrumentString.equals("FTSPec"))
+		{
+			parent.setFiltersSelectedLabel((String)("Fixed"));
 		}
 	// set remaining exposures status
 		integer = (Integer)(displayInfo.get("Exposure Count"));
@@ -378,6 +383,10 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.16  2003/09/19 14:08:45  cjm
+// Changed CcsGUI to IcsGUI.
+// Added audio feedback for done messages.
+//
 // Revision 0.15  2003/08/21 14:24:04  cjm
 // Added colouration of filename and COMMAND_DONE logging.
 // Added SupIRCam setFiltersSelectedLabel call.
