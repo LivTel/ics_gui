@@ -1,5 +1,5 @@
 # Makefile
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.24 2004-03-23 13:56:49 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.25 2004-03-23 14:30:20 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -56,7 +56,7 @@ SCRIPT_SRCS	= icsgui scsgui ccsgui xv_wrapper.csh
 SCRIPT_OBJS	= $(SCRIPT_SRCS:%=$(BINDIR)/%)
 
 GIF_SRCS	= lt.gif lt_icon.gif ratcam.gif ratcam_ltccd1.gif ratcam_ftccd1.gif ratcam_ltccd2.gif \
-		ratcam_ltccd3.gif supircam.gif
+		ratcam_ltccd3.gif supircam.gif ftspec.gif
 GIF_OBJS	= $(GIF_SRCS:%=$(BINDIR)/%)
 
 SOUND_SRCS	= wav/command_completed.wav wav/command_failed.wav wav/filename.wav \
@@ -141,6 +141,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.24  2004/03/23 13:56:49  cjm
+# Added ftspec1 configs.
+#
 # Revision 0.23  2004/02/04 14:06:27  cjm
 # Changed properties.
 #
