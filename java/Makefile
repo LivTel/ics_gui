@@ -1,5 +1,5 @@
 # Makefile -*- mode: Fundamental;-*-
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.4 1999-12-07 17:50:45 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.5 1999-12-09 16:36:42 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -11,8 +11,15 @@ DOCFLAGS 	= -version -author -private
 # note - only MAIN_SRCS checked in/out
 # note - DIALOG_SRCS are deleted on clean target to ensure they are re-built
 SRCS 		= $(MAIN_SRCS) $(DIALOG_SRCS)
-MAIN_SRCS	= CcsGUI.java CcsGUIStatus.java CcsGUIWindowListener.java CcsGUIMenuItemListener.java GUIDialogListener.java CcsGUIDialogListener.java CcsCommandDialog.java CcsGUIServer.java CcsGUIServerConnectionThread.java CcsGUIClientConnectionThread.java CcsCCDConfigProperties.java CcsCCDConfigListDialog.java CcsGUIConfigButtonListener.java CcsGUIUpdateListener.java CcsGUIUpdateThread.java
+
+MAIN_SRCS	= CcsGUI.java CcsGUIStatus.java CcsGUIWindowListener.java CcsGUIMenuItemListener.java GUIDialogListener.java CcsGUIDialogListener.java CcsCommandDialog.java CcsGUIClientConnectionThread.java $(SERVER_SRCS) $(CONFIG_SRCS) $(UPDATE_SRCS)
+
+SERVER_SRCS	= CcsGUIServer.java CcsGUIServerConnectionThread.java
+CONFIG_SRCS	= CcsCCDConfigProperties.java CcsCCDConfigListDialog.java CcsGUIConfigButtonListener.java CcsCCDConfigAADialog.java CcsConfigAADialogListener.java 
+UPDATE_SRCS	= CcsGUIUpdateListener.java CcsGUIUpdateThread.java
+
 DIALOG_SRCS	= ACQUIREDialog.java $(CALIBRATE_DIALOG_SRCS) $(EXPOSE_DIALOG_SRCS) $(INTERRUPT_DIALOG_SRCS) $(SETUP_DIALOG_SRCS)
+
 CALIBRATE_DIALOG_SRCS	= ARCDialog.java BIASDialog.java DARKDialog.java LAMPFLATDialog.java SKYFLATDialog.java
 EXPOSE_DIALOG_SRCS	= GLANCEDialog.java MOVIEDialog.java MULTRUNDialog.java RUNATDialog.java SAVEDialog.java
 INTERRUPT_DIALOG_SRCS	= ABORTDialog.java GET_STATUSDialog.java PAUSEDialog.java REBOOTDialog.java RESUMEDialog.java STOPDialog.java
@@ -50,6 +57,9 @@ tidy:
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.4  1999/12/07 17:50:45  cjm
+# Added auto-update sources.
+#
 # Revision 0.3  1999/11/30 11:25:54  cjm
 # Added CcsGUIWindowListener source file.
 #
