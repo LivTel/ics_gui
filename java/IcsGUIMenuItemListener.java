@@ -1,5 +1,5 @@
-// CcsGUIMenuItemListener.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIMenuItemListener.java,v 0.5 2003-08-22 14:05:18 cjm Exp $
+// CcsGUIMenuItemListener.java
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIMenuItemListener.java,v 0.6 2003-09-19 14:08:45 cjm Exp $
 import java.lang.*;
 import java.lang.reflect.*;
 import java.io.*;
@@ -19,11 +19,11 @@ public class CcsGUIMenuItemListener implements ActionListener
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIMenuItemListener.java,v 0.5 2003-08-22 14:05:18 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIMenuItemListener.java,v 0.6 2003-09-19 14:08:45 cjm Exp $");
 	/**
 	 * The parent to the menu item listener. The instance of the main program.
 	 */
-	private CcsGUI parent = null;
+	private IcsGUI parent = null;
 	/**
 	 * Listener for the dialogs.
 	 */
@@ -49,7 +49,7 @@ public class CcsGUIMenuItemListener implements ActionListener
 	 * @see #uniqueCommandId
 	 * @see #dialogListener
 	 */
-	public CcsGUIMenuItemListener(CcsGUI p)
+	public CcsGUIMenuItemListener(IcsGUI p)
 	{
 		super();
 
@@ -200,6 +200,22 @@ public class CcsGUIMenuItemListener implements ActionListener
 			}
 			return;
 		}
+		if(commandString.equals("Audio"))
+		{
+			JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem)event.getSource();
+
+			if(cbmi.getState())
+			{
+				parent.setAudioFeedback(true);
+				parent.log("Audio feedback enabled.");
+			}
+			else
+			{
+				parent.setAudioFeedback(false);
+				parent.log("Audio feedback disabled.");
+			}
+			return;
+		}
 	// get the dialog class name
 		dialog = (CcsCommandDialog)dialogClassNameList.get(commandString);
 		if(dialog == null)
@@ -332,6 +348,9 @@ public class CcsGUIMenuItemListener implements ActionListener
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.5  2003/08/22 14:05:18  cjm
+// checkin.
+//
 // Revision 0.4  2002/05/23 12:44:53  cjm
 // Moved dialog to command name mapping to config file.
 // Re-wrote mechanism for constructing dialogs.
