@@ -1,5 +1,5 @@
 // IcsGUILowResSpecConfigAADialog.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUILowResSpecConfigAADialog.java,v 0.1 2000-11-30 18:48:36 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUILowResSpecConfigAADialog.java,v 0.2 2001-07-10 18:21:28 cjm Exp $
 import java.lang.*;
 import java.util.*;
 import java.awt.*;
@@ -13,14 +13,14 @@ import ngat.swing.*;
 /**
  * This class provides an Add and Amend facility for Low Resolution Spectrograph Configurations.
  * @author Chris Mottram
- * @version $Revision: 0.1 $
+ * @version $Revision: 0.2 $
  */
 public class IcsGUILowResSpecConfigAADialog extends JDialog implements ActionListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUILowResSpecConfigAADialog.java,v 0.1 2000-11-30 18:48:36 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUILowResSpecConfigAADialog.java,v 0.2 2001-07-10 18:21:28 cjm Exp $");
 	/**
 	 * Button height.
 	 */
@@ -55,15 +55,11 @@ public class IcsGUILowResSpecConfigAADialog extends JDialog implements ActionLis
 	CcsConfigAADialogListener listener = null;
 
 	JTextField nameTextField = null;
-	JTextField lowerFilterWheelTextField = null;
-	JTextField upperFilterWheelTextField = null;
+	JCheckBox calibrateBeforeCheckBox = null;
+	JCheckBox calibrateAfterCheckBox = null;
 	JTextField xBinTextField = null;
 	JTextField yBinTextField = null;
-	JCheckBox windowFlagCheckBox[] = null;
-	JTextField windowXStartTextField[] = null;
-	JTextField windowYStartTextField[] = null;
-	JTextField windowXEndTextField[] = null;
-	JTextField windowYEndTextField[] = null;
+	JTextField wavelengthTextField = null;
 
 	/**
 	 * Constructor.
@@ -75,10 +71,10 @@ public class IcsGUILowResSpecConfigAADialog extends JDialog implements ActionLis
 		super(owner,"Add/Amend Low Resolution Spectrograph Configuration");
 //		setResizable(false);
 		configProperties = c;
-	// there are 15 fields arranged vertically.
+	// there are 5 fields arranged vertically.
 	// there are 2 titled border height from 2 sets of titled border
 	// there is one set of buttons vertically 
-		int height = (15*FIELD_HEIGHT)+(2*TITLED_BORDER_HEIGHT)+BUTTON_HEIGHT;
+		int height = (5*FIELD_HEIGHT)+(2*TITLED_BORDER_HEIGHT)+BUTTON_HEIGHT;
 
 		getContentPane().setLayout(new SizedBoxLayout(getContentPane(),BoxLayout.Y_AXIS,
 			new Dimension(DIALOG_WIDTH,height)));
@@ -99,11 +95,21 @@ public class IcsGUILowResSpecConfigAADialog extends JDialog implements ActionLis
 		subPanel = new JPanel();
 		getContentPane().add(subPanel);
 		subPanel.setLayout(new SizedGridLayout(0,2,new Dimension(DIALOG_WIDTH,FIELD_HEIGHT)));
+	// calibrateBefore flag
+		calibrateBeforeCheckBox = new JCheckBox("Calibrate Before");
+		subPanel.add(calibrateBeforeCheckBox);
+	// calibrateAfter flag
+		calibrateAfterCheckBox = new JCheckBox("Calibrate After");
+		subPanel.add(calibrateAfterCheckBox);
+	// sub panel
+		subPanel = new JPanel();
+		getContentPane().add(subPanel);
+		subPanel.setLayout(new SizedGridLayout(0,2,new Dimension(DIALOG_WIDTH,FIELD_HEIGHT)));
 	// grating position
-		label = new JLabel("Grating Position");
+		label = new JLabel("Wavelength");
 		subPanel.add(label);
-		lowerFilterWheelTextField = new JTextField();
-		subPanel.add(lowerFilterWheelTextField);
+		wavelengthTextField = new JTextField();
+		subPanel.add(wavelengthTextField);
 	// sub panel
 		subPanel = new JPanel();
 		getContentPane().add(subPanel);
@@ -122,53 +128,6 @@ public class IcsGUILowResSpecConfigAADialog extends JDialog implements ActionLis
 		subPanel.add(label);
 		yBinTextField = new JTextField();
 		subPanel.add(yBinTextField);
-	// Windows
-		windowFlagCheckBox = new JCheckBox[WINDOW_COUNT];
-		windowXStartTextField = new JTextField[WINDOW_COUNT];
-		windowYStartTextField = new JTextField[WINDOW_COUNT];
-		windowXEndTextField = new JTextField[WINDOW_COUNT];
-		windowYEndTextField = new JTextField[WINDOW_COUNT];
-		for(int i = 0;i < WINDOW_COUNT; i++)
-		{
-			if((i%2)==0)
-			{
-			// window panel
-				subPanel = new JPanel();
-				getContentPane().add(subPanel);
-				subPanel.setLayout(new GridLayout(0,2));
-			}
-		// window panel
-			JPanel windowPanel = new JPanel();
-			subPanel.add(windowPanel);
-			windowPanel.setBorder(new TitledSmallerBorder("Window "+(i+1)));
-			windowPanel.setLayout(new SizedGridLayout(0,2,
-				new Dimension(DIALOG_WIDTH,TITLED_BORDER_HEIGHT+(5*FIELD_HEIGHT))));
-		// window flag
-			windowFlagCheckBox[i] = new JCheckBox("Use");
-			windowPanel.add(windowFlagCheckBox[i]);
-			label = new JLabel("");// for grid layout only
-			windowPanel.add(label);
-		// x start
-			label = new JLabel("X Start");
-			windowPanel.add(label);
-			windowXStartTextField[i] = new JTextField();
-			windowPanel.add(windowXStartTextField[i]);
-		// y start
-			label = new JLabel("Y Start");
-			windowPanel.add(label);
-			windowYStartTextField[i] = new JTextField();
-			windowPanel.add(windowYStartTextField[i]);
-		// x end
-			label = new JLabel("X End");
-			windowPanel.add(label);
-			windowXEndTextField[i] = new JTextField();
-			windowPanel.add(windowXEndTextField[i]);
-		// y end
-			label = new JLabel("Y End");
-			windowPanel.add(label);
-			windowYEndTextField[i] = new JTextField();
-			windowPanel.add(windowYEndTextField[i]);
-		}// end for on windows
 	// sub panel
 		subPanel = new JPanel();
 		getContentPane().add(subPanel);
@@ -193,18 +152,11 @@ public class IcsGUILowResSpecConfigAADialog extends JDialog implements ActionLis
 		configId = configProperties.getNewConfigId();
 
 		nameTextField.setText("Configuration "+configId);
-		lowerFilterWheelTextField.setText("None");
-		upperFilterWheelTextField.setText("None");
+		calibrateBeforeCheckBox.setSelected(false);
+		calibrateAfterCheckBox.setSelected(false);
+		wavelengthTextField.setText("8000.0");
 		xBinTextField.setText("1");
 		yBinTextField.setText("1");
-		for(i=0;i<WINDOW_COUNT;i++)
-		{
-			windowFlagCheckBox[i].setSelected(false);
-			windowXStartTextField[i].setText("-1");
-			windowYStartTextField[i].setText("-1");
-			windowXEndTextField[i].setText("-1");
-			windowYEndTextField[i].setText("-1");
-		}
 
 		this.setVisible(true);
 	}
@@ -218,18 +170,11 @@ public class IcsGUILowResSpecConfigAADialog extends JDialog implements ActionLis
 		configId = id;
 
 		nameTextField.setText(configProperties.getConfigName(id));
-		lowerFilterWheelTextField.setText(configProperties.getConfigLowerFilterWheel(id));
-		upperFilterWheelTextField.setText(configProperties.getConfigUpperFilterWheel(id));
+		calibrateBeforeCheckBox.setSelected(configProperties.getConfigCalibrateBefore(id));
+		calibrateAfterCheckBox.setSelected(configProperties.getConfigCalibrateAfter(id));
+		wavelengthTextField.setText(configProperties.getConfigWavelengthString(id));
 		xBinTextField.setText(configProperties.getConfigXBinString(id));
 		yBinTextField.setText(configProperties.getConfigYBinString(id));
-		for(int i=0;i<WINDOW_COUNT;i++)
-		{
-			windowFlagCheckBox[i].setSelected((configProperties.getConfigWindowFlags(id)&(1<<i))>0);
-			windowXStartTextField[i].setText(configProperties.getConfigXStartString(id,i+1));
-			windowYStartTextField[i].setText(configProperties.getConfigYStartString(id,i+1));
-			windowXEndTextField[i].setText(configProperties.getConfigXEndString(id,i+1));
-			windowYEndTextField[i].setText(configProperties.getConfigYEndString(id,i+1));
-		}
 
 		this.setVisible(true);
 	}
@@ -256,11 +201,8 @@ public class IcsGUILowResSpecConfigAADialog extends JDialog implements ActionLis
 		String s = null;
 		int testId = 0;
 		int i;
-		int xBin,yBin,windowFlags;
-		int xStart[] = new int[WINDOW_COUNT];
-		int yStart[] = new int[WINDOW_COUNT];
-		int xEnd[] = new int[WINDOW_COUNT];
-		int yEnd[] = new int[WINDOW_COUNT];
+		int xBin,yBin;
+		double wavelength;
 		boolean uniqueId = false;
 
 		if(commandString.equals("Ok"))
@@ -287,23 +229,15 @@ public class IcsGUILowResSpecConfigAADialog extends JDialog implements ActionLis
 			}
 		// get and test numeric data from text fields
 			try
-			{			
+			{
+				wavelength = Double.parseDouble(wavelengthTextField.getText());
+// diddly test
 				xBin = Integer.parseInt(xBinTextField.getText());
 				if(xBin < 1)
 					throw new NumberFormatException("X Binning is less than one");
 				yBin = Integer.parseInt(yBinTextField.getText());
 				if(yBin < 1)
 					throw new NumberFormatException("Y Binning is less than one");
-				windowFlags = 0;
-				for(i=0;i<WINDOW_COUNT;i++)
-				{
-					if(windowFlagCheckBox[i].isSelected())
-						windowFlags |= (1<<i);
-					xStart[i] = Integer.parseInt(windowXStartTextField[i].getText());
-					yStart[i] = Integer.parseInt(windowYStartTextField[i].getText());
-					xEnd[i] = Integer.parseInt(windowXEndTextField[i].getText());
-					yEnd[i] = Integer.parseInt(windowYEndTextField[i].getText());
-				}
 			}
 			catch(NumberFormatException e)
 			{
@@ -315,19 +249,11 @@ public class IcsGUILowResSpecConfigAADialog extends JDialog implements ActionLis
 		// set data
 			configProperties.setConfigName(configId,s);
 			configProperties.setConfigType(configId,IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_NUVIEW);
-
-			configProperties.setConfigLowerFilterWheel(configId,lowerFilterWheelTextField.getText());
-			configProperties.setConfigUpperFilterWheel(configId,upperFilterWheelTextField.getText());
+			configProperties.setConfigCalibrateBefore(configId,calibrateBeforeCheckBox.isSelected());
+			configProperties.setConfigCalibrateAfter(configId,calibrateAfterCheckBox.isSelected());
+			configProperties.setConfigWavelength(configId,wavelength);
 			configProperties.setConfigXBin(configId,xBin);
 			configProperties.setConfigYBin(configId,yBin);
-			configProperties.setConfigWindowFlags(configId,windowFlags);
-			for(i=0;i<WINDOW_COUNT;i++)
-			{
-				configProperties.setConfigXStart(configId,i+1,xStart[i]);
-				configProperties.setConfigYStart(configId,i+1,yStart[i]);
-				configProperties.setConfigXEnd(configId,i+1,xEnd[i]);
-				configProperties.setConfigYEnd(configId,i+1,yEnd[i]);
-			}
 			if(listener != null)
 				listener.actionPerformed(true,configId);
 		}
@@ -342,4 +268,7 @@ public class IcsGUILowResSpecConfigAADialog extends JDialog implements ActionLis
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.1  2000/11/30 18:48:36  cjm
+// initial revision.
+//
 //
