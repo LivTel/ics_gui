@@ -1,5 +1,5 @@
 # Makefile -*- mode: Fundamental;-*-
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.9 2000-06-19 08:50:34 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.10 2000-11-14 11:55:50 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -29,7 +29,7 @@ OBJS 		= $(SRCS:%.java=$(BINDIR)/%.class)
 DOCS 		= $(SRCS:%.java=$(DOCSDIR)/%.html)
 
 CONFIG_PROPERTY_SRCS	= ltccd1.livjm.ac.uk.ccs_gui.properties ltspec1.ccs_gui.properties \
-	ltccd2.livjm.ac.uk.ccs_gui.properties
+	ltccd2.livjm.ac.uk.ccs_gui.properties ltobs5.scs_gui.properties
 CONFIG_OBJS	= $(CONFIG_PROPERTY_SRCS:%.properties=$(BINDIR)/%.properties)
 
 
@@ -74,6 +74,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.9  2000/06/19 08:50:34  cjm
+# Backup.
+#
 # Revision 0.8  2000/06/13 17:26:12  cjm
 # Changes.
 #
