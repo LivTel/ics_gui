@@ -1,5 +1,5 @@
 # Makefile
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.27 2004-05-24 18:18:19 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.28 2004-07-06 18:08:30 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -38,26 +38,28 @@ PROPERTY_SRCS	= $(CCS_GUI_PROPERTY_SRCS) $(CCS_GUI_CONFIG_PROPERTY_SRCS) $(CCS_G
 CCS_GUI_PROPERTY_SRCS	= ltccd1.ccs_gui.properties \
 	ltccd2.ccs_gui.properties ltccd3.ccs_gui.properties ftccd1.ccs_gui.properties ftccd2.ccs_gui.properties \
 	spectrograph.scs_gui.properties \
-	ltobs9.ratcam.ccs_gui.properties ltobs9.fartcam.ccs_gui.properties ltobs9.supircam.ccs_gui.properties \
+	ltobs9.ratcam.ccs_gui.properties ltobs9.fartcam.ccs_gui.properties ltobs9.dillcamsouth.ccs_gui.properties \
+	ltobs9.supircam.ccs_gui.properties \
 	ltobs9.spectrograph.scs_gui.properties supircam1.ccs_gui.properties \
-	ftspec1.ccs_gui.properties spectrograph.ccs_gui.properties ltobs9.ftspec.ics_gui.properties \
+	ftspec1.ccs_gui.properties \
+	spectrograph.ccs_gui.properties nuview1.ccs_gui.properties ltobs9.ftspec.ics_gui.properties \
 	lttmc.ccs_gui.properties ftntmc.ccs_gui.properties
 CCS_GUI_CONFIG_PROPERTY_SRCS = ltccd1.ccs_gui_config.properties ltccd2.ccs_gui_config.properties \
 	ltccd3.ccs_gui_config.properties ftccd1.ccs_gui_config.properties ftccd2.ccs_gui_config.properties \
 	supircam1.ccs_gui_config.properties \
-	ftspec1.ccs_gui_config.properties spectrograph.ccs_gui_config.properties \
+	ftspec1.ccs_gui_config.properties spectrograph.ccs_gui_config.properties nuview1.ccs_gui_config.properties \
 	lttmc.ccs_gui_config.properties ftntmc.ccs_gui_config.properties
 CCS_GUI_FITS_PROPERTY_SRCS = ltccd1.ccs_gui.fits.properties ltccd2.ccs_gui.fits.properties \
 	ltccd3.ccs_gui.fits.properties ftccd1.ccs_gui.fits.properties ftccd2.ccs_gui.fits.properties \
-	ftspec1.ccs_gui.fits.properties spectrograph.ccs_gui.fits.properties \
+	ftspec1.ccs_gui.fits.properties spectrograph.ccs_gui.fits.properties nuview1.ccs_gui.fits.properties \
 	lttmc.ccs_gui.fits.properties ftntmc.ccs_gui.fits.properties  
 PROPERTY_OBJS	= $(PROPERTY_SRCS:%.properties=$(BINDIR)/%.properties)
 
 SCRIPT_SRCS	= icsgui scsgui ccsgui xv_wrapper.csh
 SCRIPT_OBJS	= $(SCRIPT_SRCS:%=$(BINDIR)/%)
 
-GIF_SRCS	= lt.gif lt_icon.gif ratcam.gif ratcam_ltccd1.gif ratcam_ftccd1.gif ratcam_ltccd2.gif \
-		ratcam_ltccd3.gif supircam.gif ftspec.gif
+GIF_SRCS	= lt.gif lt_icon.gif ratcam.gif ratcam_ltccd1.gif ratcam_ftccd1.gif ratcam_ftccd2.gif \
+		ratcam_ltccd2.gif ratcam_ltccd3.gif supircam.gif ftspec.gif
 GIF_OBJS	= $(GIF_SRCS:%=$(BINDIR)/%)
 
 SOUND_SRCS	= wav/command_completed.wav wav/command_failed.wav wav/filename.wav \
@@ -142,6 +144,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.27  2004/05/24 18:18:19  cjm
+# Added ftccd2.
+#
 # Revision 0.26  2004/04/19 18:15:51  cjm
 # Added spectrograph configs.
 #
