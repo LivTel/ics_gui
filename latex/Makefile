@@ -1,4 +1,4 @@
-# $Header: /home/cjm/cvs/ics_gui/latex/Makefile,v 0.2 1999-12-10 11:59:44 cjm Exp $
+# $Header: /home/cjm/cvs/ics_gui/latex/Makefile,v 0.3 2000-10-03 16:40:43 cjm Exp $
 
 include ../../Makefile.common
 include ../Makefile.common
@@ -30,7 +30,7 @@ ccs_gui_design.dvi: ccs_gui_ui_main.ps ccs_gui_ui_menu.ps ccs_gui_ui_runat.ps cc
 	$(LATEX) $<
 
 #%.eps: %.fig
-#	$(FIG2DEV) -L ps $< $@
+#	$(FIG2DEV) $(FIG2DEV_OPTIONS) $< $@
 
 depend:
 	echo "NO depend rule for latex files."
@@ -52,6 +52,9 @@ checkout:
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.2  1999/12/10 11:59:44  cjm
+# Added backup target.
+#
 # Revision 0.1  1999/11/22 09:50:53  cjm
 # initial revision.
 #
