@@ -1,5 +1,5 @@
 // IcsGUIConfigProperties.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.2 2000-11-30 18:47:44 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.3 2000-12-20 17:56:02 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -11,14 +11,14 @@ import ngat.phase2.nonpersist.*;
  * in a Java properties file and this class extends java.util.Properties
  * @see java.util.Properties
  * @author Chris Mottram
- * @version $Revision: 0.2 $
+ * @version $Revision: 0.3 $
  */
 public class IcsGUIConfigProperties extends Properties
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.2 2000-11-30 18:47:44 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.3 2000-12-20 17:56:02 cjm Exp $");
 	/**
 	 * Configuration type specifier:CCD (RATCam).
 	 */
@@ -669,16 +669,15 @@ public class IcsGUIConfigProperties extends Properties
 		for(int i = 0; i < detector.getMaxWindowCount(); i++)
 		{
 		// Note, windows are only non-null if they are active in RCS created configs
-		// Lets re-create that effect here, we can use isActiveWindow as we set the window
-		// flags in the detector above.
-			if(detector.isActiveWindow(i))
+		// Lets re-create that effect here, we can use the config window flags.
+			if((getConfigWindowFlags(id) & (1<<i))>0)
 			{
 				windowArray[i] = new NPWindow();
 
-				windowArray[i].setXs(getConfigXStart(id,i));
-				windowArray[i].setYs(getConfigYStart(id,i));
-				windowArray[i].setXe(getConfigXEnd(id,i));
-				windowArray[i].setYe(getConfigYEnd(id,i));
+				windowArray[i].setXs(getConfigXStart(id,i+1));
+				windowArray[i].setYs(getConfigYStart(id,i+1));
+				windowArray[i].setXe(getConfigXEnd(id,i+1));
+				windowArray[i].setYe(getConfigYEnd(id,i+1));
 			}
 			else
 				windowArray[i] = null;
@@ -892,6 +891,9 @@ public class IcsGUIConfigProperties extends Properties
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.2  2000/11/30 18:47:44  cjm
+// Made generic for other instruments.
+//
 // Revision 0.1  2000/11/28 15:45:41  cjm
 // initial revision.
 //
