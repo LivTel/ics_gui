@@ -1,5 +1,5 @@
 # Makefile
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.17 2003-06-06 15:46:29 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.18 2003-07-15 16:21:43 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -19,7 +19,8 @@ MAIN_SRCS	= CcsGUI.java CcsGUIStatus.java CcsGUIWindowListener.java CcsGUIMenuIt
 
 SERVER_SRCS	= CcsGUIServer.java CcsGUIServerConnectionThread.java
 CONFIG_SRCS	= IcsGUIConfigProperties.java IcsGUIConfigListDialog.java CcsGUIConfigButtonListener.java \
-		CcsCCDConfigAADialog.java IcsGUILowResSpecConfigAADialog.java CcsConfigAADialogListener.java 
+		CcsCCDConfigAADialog.java IcsGUILowResSpecConfigAADialog.java IcsGUIIRCamConfigAADialog.java \
+		CcsConfigAADialogListener.java 
 UPDATE_SRCS	= CcsGUIUpdateListener.java CcsGUIUpdateThread.java
 
 DIALOG_SRCS	= ACQUIREDialog.java $(CALIBRATE_DIALOG_SRCS) $(EXPOSE_DIALOG_SRCS) $(INTERRUPT_DIALOG_SRCS) $(SETUP_DIALOG_SRCS)
@@ -37,6 +38,7 @@ CONFIG_PROPERTY_SRCS	= ltccd1.ccs_gui.properties \
 	ltccd2.ccs_gui.properties ltccd3.ccs_gui.properties ftccd1.ccs_gui.properties ltobs5.ccs_gui.properties \
 	ltobs5.scs_gui.properties spectrograph.scs_gui.properties \
 	ltobs9.ratcam.ccs_gui.properties ltobs9.fartcam.ccs_gui.properties ltobs9.supircam.ccs_gui.properties \
+	supircam1.ccs_gui.properties \
 	ccs_gui.fits.properties ccs_gui_config.properties
 CONFIG_OBJS	= $(CONFIG_PROPERTY_SRCS:%.properties=$(BINDIR)/%.properties)
 
@@ -112,6 +114,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.17  2003/06/06 15:46:29  cjm
+# *** empty log message ***
+#
 # Revision 0.16  2003/03/11 11:11:11  cjm
 # Added properties.
 #
