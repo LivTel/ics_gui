@@ -1,5 +1,5 @@
 # Makefile -*- mode: Fundamental;-*-
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.10 2000-11-14 11:55:50 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.11 2000-12-01 18:43:14 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -12,10 +12,13 @@ DOCFLAGS 	= -version -author -private
 # note - DIALOG_SRCS are deleted on clean target to ensure they are re-built
 SRCS 		= $(MAIN_SRCS) $(DIALOG_SRCS)
 
-MAIN_SRCS	= CcsGUI.java CcsGUIStatus.java CcsGUIWindowListener.java CcsGUIMenuItemListener.java GUIDialogListener.java CcsGUIDialogListener.java CcsCommandDialog.java CcsGUIClientConnectionThread.java $(SERVER_SRCS) $(CONFIG_SRCS) $(UPDATE_SRCS)
+MAIN_SRCS	= CcsGUI.java CcsGUIStatus.java CcsGUIWindowListener.java CcsGUIMenuItemListener.java \
+		GUIDialogListener.java CcsGUIDialogListener.java CcsCommandDialog.java \
+		CcsGUIClientConnectionThread.java $(SERVER_SRCS) $(CONFIG_SRCS) $(UPDATE_SRCS)
 
 SERVER_SRCS	= CcsGUIServer.java CcsGUIServerConnectionThread.java
-CONFIG_SRCS	= CcsCCDConfigProperties.java CcsCCDConfigListDialog.java CcsGUIConfigButtonListener.java CcsCCDConfigAADialog.java CcsConfigAADialogListener.java 
+CONFIG_SRCS	= IcsGUIConfigProperties.java IcsGUIConfigListDialog.java CcsGUIConfigButtonListener.java \
+		CcsCCDConfigAADialog.java IcsGUILowResSpecConfigAADialog.java CcsConfigAADialogListener.java 
 UPDATE_SRCS	= CcsGUIUpdateListener.java CcsGUIUpdateThread.java
 
 DIALOG_SRCS	= ACQUIREDialog.java $(CALIBRATE_DIALOG_SRCS) $(EXPOSE_DIALOG_SRCS) $(INTERRUPT_DIALOG_SRCS) $(SETUP_DIALOG_SRCS)
@@ -74,6 +77,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.10  2000/11/14 11:55:50  cjm
+# Added ltobs5.scs_gui.properties.
+#
 # Revision 0.9  2000/06/19 08:50:34  cjm
 # Backup.
 #
