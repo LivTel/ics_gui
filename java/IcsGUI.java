@@ -1,5 +1,5 @@
 // IcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.1 2003-09-19 14:08:45 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.2 2004-01-13 20:15:03 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -20,14 +20,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class IcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.1 2003-09-19 14:08:45 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.2 2004-01-13 20:15:03 cjm Exp $");
 	/**
 	 * The stream to write error messages to - defaults to System.err.
 	 */
@@ -1035,8 +1035,8 @@ public class IcsGUI
 	public void setCCDStatusLabel(int currentMode)
 	{
 		// Ensure this list matches GET_STATUS_DONE.MODE_*
-		String currentModeList[] = {"Idle","Config","Clearing","Exposure","Pre-Readout","Readout",
-						"Post-Readout","Error"};
+		String currentModeList[] = {"Idle","Config","Clearing","Wait to Start","Exposure",
+					    "Pre-Readout","Readout","Post-Readout","Error"};
 		String s = null;
 
 		if((currentMode < 0)||(currentMode >= currentModeList.length))
@@ -1457,6 +1457,9 @@ public class IcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2003/09/19 14:08:45  cjm
+// Initial revision
+//
 // Revision 0.21  2003/08/26 13:24:31  cjm
 // Fixing logTextArea in old Solaris JVMs.
 //
