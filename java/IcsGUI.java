@@ -1,5 +1,5 @@
 // IcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.8 2004-06-15 19:15:39 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.9 2004-08-05 16:54:41 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -21,14 +21,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class IcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.8 2004-06-15 19:15:39 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.9 2004-08-05 16:54:41 cjm Exp $");
 	/**
 	 * Internal constant used when converting temperatures in centigrade (from the CCD controller) to Kelvin.
 	 */
@@ -89,6 +89,15 @@ public class IcsGUI
 	 * @see #log
 	 */
 	private int logTextAreaLineLimit = 500;
+	/**
+	 * Field holding the number of lines of text that should be deleted from the log area
+	 * when it's length exceeds logTextAreaLineLimit.
+	 * This field is used in the log method to stop the log text area getting so long IcsGUI runs
+	 * out of memory. A GUITextLengthLimiter is used to do this.
+	 * The value of this field MUST be less than logTextAreaLineLimit.
+	 * @see #log
+	 */
+	private int logTextAreaDeleteLength = 100;
 	/**
 	 * The property filename to load status properties from.
 	 * If NULL, the status's internal default filename is used.
@@ -458,6 +467,7 @@ public class IcsGUI
 	 * @see #remoteX
 	 * @see #logTextArea
 	 * @see #logTextAreaLineLimit
+	 * @see #logTextAreaDeleteLength
 	 */
 	private void initLogPanel(JPanel panel,GridBagLayout gridBagLayout)
 	{
@@ -496,6 +506,15 @@ public class IcsGUI
 		catch(NumberFormatException e)
 		{ // non-fatal error...
 			error(this.getClass().getName()+":initLogPanel:initialsing log text area line limit:"+e);
+		}
+	// initialise logTextArea delete length from property file
+		try
+		{
+			logTextAreaDeleteLength = status.getPropertyInteger("ccs_gui.log_text.delete_length");
+		}
+		catch(NumberFormatException e)
+		{ // non-fatal error...
+			error(this.getClass().getName()+":initLogPanel:initialsing log text area delete length:"+e);
 		}
 	}
 
@@ -891,7 +910,7 @@ public class IcsGUI
 		{
 			SwingUtilities.invokeLater(new GUIAttributedTextAreaAppender(logTextArea,s+"\n",true));
 			SwingUtilities.invokeLater(new GUIAttributedTextAreaLengthLimiter(logTextArea,
-											  logTextAreaLineLimit,false));
+						   logTextAreaLineLimit,logTextAreaDeleteLength,false));
 		}
 		logStream.println(s);
 	}
@@ -1500,6 +1519,9 @@ public class IcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.8  2004/06/15 19:15:39  cjm
+// Changed audio feedback and added new ones.
+//
 // Revision 1.7  2004/05/06 09:29:36  cjm
 // Swapped Ctrl-S shortcut from STOP to SKYFLAT.
 //
