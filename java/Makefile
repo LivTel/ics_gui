@@ -1,5 +1,5 @@
 # Makefile -*- mode: Fundamental;-*-
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.13 2001-07-11 10:24:45 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.14 2002-05-23 12:49:27 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -24,7 +24,8 @@ UPDATE_SRCS	= CcsGUIUpdateListener.java CcsGUIUpdateThread.java
 
 DIALOG_SRCS	= ACQUIREDialog.java $(CALIBRATE_DIALOG_SRCS) $(EXPOSE_DIALOG_SRCS) $(INTERRUPT_DIALOG_SRCS) $(SETUP_DIALOG_SRCS)
 
-CALIBRATE_DIALOG_SRCS	= ARCDialog.java BIASDialog.java DARKDialog.java LAMPFLATDialog.java SKYFLATDialog.java
+CALIBRATE_DIALOG_SRCS	= ARCDialog.java BIASDialog.java DARKDialog.java DAY_CALIBRATEDialog.java LAMPFLATDialog.java \
+			SKYFLATDialog.java TWILIGHT_CALIBRATEDialog.java
 EXPOSE_DIALOG_SRCS	= GLANCEDialog.java MOVIEDialog.java MULTRUNDialog.java RUNATDialog.java SAVEDialog.java
 INTERRUPT_DIALOG_SRCS	= ABORTDialog.java GET_STATUSDialog.java PAUSEDialog.java REBOOTDialog.java RESUMEDialog.java STOPDialog.java
 SETUP_DIALOG_SRCS	= CONFIGDialog.java LAMPFOCUSDialog.java SET_LOGGINGDialog.java STARFOCUSDialog.java TELFOCUSDialog.java TESTDialog.java
@@ -104,6 +105,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.13  2001/07/11 10:24:45  cjm
+# Added IcsGUIFilenameShowListener and changes to configuration files.
+#
 # Revision 0.12  2001/03/30 15:56:56  cjm
 # Added ltobs5.ccs_gui.properties.
 #
