@@ -1,5 +1,5 @@
 // IcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.6 2004-03-16 15:10:16 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.7 2004-05-06 09:29:36 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -20,14 +20,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class IcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.6 2004-03-16 15:10:16 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.7 2004-05-06 09:29:36 cjm Exp $");
 	/**
 	 * Internal constant used when converting temperatures in centigrade (from the CCD controller) to Kelvin.
 	 */
@@ -590,6 +590,7 @@ public class IcsGUI
 		submenu.add(menuItem);
         // SKYFLAT
 		menuItem = new JMenuItem("Sky Flat",KeyEvent.VK_S);
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,ActionEvent.CTRL_MASK));
 		menuItem.getAccessibleContext().setAccessibleDescription("Send an Sky Flat command");
 		menuItem.addActionListener(menuItemListener);
 		submenu.add(menuItem);
@@ -671,7 +672,6 @@ public class IcsGUI
 		submenu.add(menuItem);
         // STOP
 		menuItem = new JMenuItem("Stop",KeyEvent.VK_S);
-		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,ActionEvent.CTRL_MASK));
 		menuItem.getAccessibleContext().setAccessibleDescription("Send a Stop command");
 		menuItem.addActionListener(menuItemListener);
 		submenu.add(menuItem);
@@ -1497,6 +1497,11 @@ public class IcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2004/03/16 15:10:16  cjm
+// Fixed remaining exposure time label.
+// Remaining exposure time label says (secs) rather then (ms),
+// as it is displayed in secs.
+//
 // Revision 1.5  2004/03/03 16:08:57  cjm
 // Added CENTIGRADE_TO_KELVIN constant.
 // setCCDTemperatureLabel assumes input temperature is in degrees Kelvin, and converts
