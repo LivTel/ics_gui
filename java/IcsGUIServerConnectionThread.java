@@ -1,5 +1,5 @@
 // CcsGUIServerConnectionThread.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIServerConnectionThread.java,v 0.2 1999-12-09 17:02:12 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIServerConnectionThread.java,v 0.3 2000-05-23 15:31:45 cjm Exp $
 import java.lang.*;
 import java.lang.reflect.InvocationTargetException;
 import java.io.*;
@@ -19,14 +19,14 @@ import ngat.swing.GUIMessageDialogShower;
  * This class extends the TCPServerConnectionThread class for the CcsGUI application. This
  * allows CcsGUI to emulate the ISS's response to the CCS sending it commands.
  * @author Chris Mottram
- * @version $Revision: 0.2 $
+ * @version $Revision: 0.3 $
  */
 public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIServerConnectionThread.java,v 0.2 1999-12-09 17:02:12 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIServerConnectionThread.java,v 0.3 2000-05-23 15:31:45 cjm Exp $");
 	/**
 	 * Default time taken to respond to a command.
 	 */
@@ -157,22 +157,52 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 			GET_FITS_DONE getFitsDone = new GET_FITS_DONE(command.getId());
 			Hashtable hashTable = new Hashtable();
 
-// lots more stuff to go here
-			hashTable.put("OBSERVAT","LIVERPOOL");
-			hashTable.put("TELESCOP","LIVERPOOL");
-			hashTable.put("OBSERVER","observer");
-			hashTable.put("OBJECT","object");
+		// As defined in the 'Liverpool Telescope Fits Keywords Specification'
+		// These are ISS keywords.
+			hashTable.put("TELESCOP","Liverpool 2m Telescope");
+			hashTable.put("TELMODE","ENGINEERING");
+			hashTable.put("TAGID","Tag");
+			hashTable.put("USERID","User");
+			hashTable.put("PROPID","Proposal");
+			hashTable.put("GROUPID","Group");
+			hashTable.put("OBSID","Observation");
+		// acording to http://www.seds.org/billa/bigeyes.html,
+		// The WHT is at: 28 46 N; 17 53 W 2400 m
+			hashTable.put("LATITUDE",new Double(28.46));
+			hashTable.put("LONGITUDE",new Double(17.53));
+			hashTable.put("RA"," 00:00:00.000");
+			hashTable.put("DEC","+00:00:00.000");
 			hashTable.put("RADECSYS","FK5");
-			hashTable.put("RA",new Double(0.0));
-			hashTable.put("DEC",new Double(0.0));
-			// hashTable.put("ST","sidereal time");// sidereal time
-			// UTSTART
-			// gm_time = gmtime(&tp);
-			// strftime(gmt, 70, "%T", gm_time);
-			hashTable.put("UTSTART","gmt");
-			hashTable.put("EQUINOX",new Double(2000.0));
-			hashTable.put("EPOCH",new Double(1999.5));
+		// Note the LT FITS keyword specifies this as a String
+		// The NOST FITS standard specifies this as a real (so how do we get the J?)
+			hashTable.put("EQUINOX","J2000.0");
+			hashTable.put("CAT-RA"," 00:00:00.000");
+			hashTable.put("CAT-DEC","+00:00:00.000");
+			hashTable.put("CAT-EQUI","J2000.0");
+			hashTable.put("CAT-EPOC",new Double(1999.5));
+			hashTable.put("CAT-NAME","Catalogue name");
+			hashTable.put("OBJECT","object");
+			hashTable.put("PM-RA"," 00:00:00.000");
+			hashTable.put("PM-DEC","+00:00:00.000");
+			hashTable.put("PARALLAX",new Double(0.0));
+			hashTable.put("RATRACK",new Double(0.0));
+			hashTable.put("DECTRACK",new Double(0.0));
+			hashTable.put("TELSTAT","FAULT");
+			hashTable.put("TELFOCUS",new Double(0.0));
+			hashTable.put("FILTER","None");
 			hashTable.put("AIRMASS",new Double(99.9));
+			hashTable.put("HUMIDITY",new Double(0.0));
+			hashTable.put("WINDSPEE",new Double(0.0));
+			hashTable.put("WINDDIR",new Double(0.0));
+			hashTable.put("TEMPTUBE",new Double(0.0));
+		// AUTOGUID keyword needs to be defined.
+			hashTable.put("AGFOCUS",new Double(0.0));
+			hashTable.put("AGSLIDE",new Double(0.0));
+			hashTable.put("AGFILTER","None");
+			hashTable.put("DFOCUS",new Double(0.0));
+			hashTable.put("ROTMODE","SKY");
+			hashTable.put("ROTSKYPA",new Double(0.0));
+
 			getFitsDone.setFitsHeader(hashTable);
 			getFitsDone.setErrorNum(0);
 			getFitsDone.setErrorString("");
@@ -261,6 +291,9 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.2  1999/12/09 17:02:12  cjm
+// More functionality added.
+//
 // Revision 0.1  1999/11/22 09:53:49  cjm
 // initial revision.
 //
