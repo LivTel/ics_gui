@@ -1,0 +1,10 @@
+# $Header: /home/cjm/cvs/ics_gui/Makefile.common,v 1.1 2003-11-14 15:27:19 cjm Exp $
+
+CCS_GUI_HOME		=	ccs_gui
+CCS_GUI_SRC_HOME	= 	$(LT_SRC_HOME)/$(CCS_GUI_HOME)
+CCS_GUI_BIN_HOME	= 	$(LT_BIN_HOME)/$(CCS_GUI_HOME)
+CCS_GUI_DOC_HOME	= 	$(LT_DOC_HOME)/$(CCS_GUI_HOME)
+
+#
+# $Log: not supported by cvs2svn $
+#
