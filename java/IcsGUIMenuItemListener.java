@@ -1,13 +1,15 @@
 // CcsGUIMenuItemListener.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIMenuItemListener.java,v 0.1 1999-11-22 09:53:49 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIMenuItemListener.java,v 0.2 1999-12-09 17:02:12 cjm Exp $
 import java.lang.*;
 import java.lang.reflect.*;
 import java.io.*;
 import java.util.*;
-
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
+
+import ngat.util.ThreadMonitorFrame;
 
 /**
  * This class is an ActionListener for the CcsGUI menu bar items.
@@ -17,7 +19,7 @@ public class CcsGUIMenuItemListener implements ActionListener
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIMenuItemListener.java,v 0.1 1999-11-22 09:53:49 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIMenuItemListener.java,v 0.2 1999-12-09 17:02:12 cjm Exp $");
 	/**
 	 * The parent to the menu item listener. The instance of the main program.
 	 */
@@ -115,6 +117,15 @@ public class CcsGUIMenuItemListener implements ActionListener
 			if(dialog != null)
 			{
 				dialog.addGUIDialogListener(dialogListener);
+				if(dialog instanceof CONFIGDialog)
+				{
+					CONFIGDialog configDialog = (CONFIGDialog)dialog;
+					CcsGUIConfigButtonListener configButtonListener = null;
+
+					configButtonListener = new CcsGUIConfigButtonListener(parent,configDialog);
+					configDialog.addConfigButtonActionListener(configButtonListener);
+					configDialog.setConfigProperties(parent.getStatus().getCCDConfigProperties());
+				}
 				dialogClassNameList.put(menuName,dialog);
 			}
 		}// end for on list
@@ -130,30 +141,98 @@ public class CcsGUIMenuItemListener implements ActionListener
 	 */
 	public void actionPerformed(ActionEvent event)
 	{
-		JMenuItem source = (JMenuItem)(event.getSource());
+		String commandString = event.getActionCommand();
 		CcsCommandDialog dialog = null;
 
-		if(source.getText().equals("Exit"))
+		if(commandString.equals("Exit"))
 		{
 			parent.exit(0);
 		}
-		if(source.getText().equals("Clear"))
+		if(commandString.equals("Clear"))
 		{
 			parent.clearLog();
 			parent.log("Log cleared.");
 			return;
 		}
+		if(commandString.equals("Thread Monitor"))
+		{
+			ThreadMonitorFrame threadMonitorFrame = new ThreadMonitorFrame("Ccs GUI");
+			threadMonitorFrame.getThreadMonitor().setUpdateTime(1000);
+			threadMonitorFrame.pack();
+			threadMonitorFrame.setVisible(true);
+			parent.log("Thread Monitor started.");
+			return;
+		}
+		if(commandString.equals("Spoof Requests"))
+		{
+			JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem)event.getSource();
+
+			if(cbmi.getState())
+				parent.startISSServer();
+			else
+				parent.stopISSServer();
+			return;
+		}
+		if(commandString.equals("Message Dialog"))
+		{
+			JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem)event.getSource();
+
+			if(cbmi.getState())
+			{
+				parent.setISSMessageDialog(true);
+				parent.log("Message Dialogs will be brought up in response to ISS commands.");
+			}
+			else
+			{
+				parent.setISSMessageDialog(false);
+				parent.log("Message Dialogs will NOT be brought up in response to ISS commands.");
+			}
+			return;
+		}
 	// get the dialog class name
-		dialog = (CcsCommandDialog)dialogClassNameList.get(source.getText());
+		dialog = (CcsCommandDialog)dialogClassNameList.get(commandString);
 		if(dialog == null)
 		{
-			parent.error("Failed to find mapping to dialog for menu:"+source.getText());
+			parent.error("Failed to find mapping to dialog for menu:"+commandString);
 			return;
 		}
 		dialog.setID(parent.getClass().getName()+":"+uniqueCommandId);
 		uniqueCommandId++;
+		dialog.setLocation(getDialogX(dialog),getDialogY(dialog));
 		dialog.pack();
 		dialog.setVisible(true);
+	}
+
+	/**
+	 * Get the position the dialog should be placed at in the X direction.
+	 * This method tries to place the dialog in the centre of the parent frame.
+	 * @param d The dialog we are positioning. We read the width of this dialog.
+	 * @return An X location.
+	 */
+	private int getDialogX(JDialog d)
+	{
+		int widthDifference;
+
+		widthDifference = parent.getFrame().getWidth()-d.getWidth();
+		if(widthDifference < 0)
+			return 0;
+		return parent.getFrame().getX()+(widthDifference/2);
+	}
+
+	/**
+	 * Get the position the dialog should be placed at in the Y direction.
+	 * This method tries to place the dialog in the centre of the parent frame.
+	 * @param d The dialog we are positioning. We read the height of this dialog.
+	 * @return An Y location.
+	 */
+	private int getDialogY(JDialog d)
+	{
+		int heightDifference;
+
+		heightDifference = parent.getFrame().getHeight()-d.getHeight();
+		if(heightDifference < 0)
+			return 0;
+		return parent.getFrame().getY()+(heightDifference/2);
 	}
 
 	/**
@@ -242,4 +321,7 @@ public class CcsGUIMenuItemListener implements ActionListener
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.1  1999/11/22 09:53:49  cjm
+// initial revision.
+//
 //

@@ -1,5 +1,5 @@
 // CcsGUI.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.2 1999-11-24 12:51:28 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.3 1999-12-09 17:02:12 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -7,22 +7,25 @@ import java.util.*;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
+import javax.swing.plaf.metal.*;
 
 import ngat.message.base.*;
+import ngat.swing.*;
 import ngat.util.*;
 
 /**
  * This class is the start point for the Ccs GUI.
  * @author Chris Mottram
- * @version $Revision: 0.2 $
+ * @version $Revision: 0.3 $
  */
 public class CcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.2 1999-11-24 12:51:28 cjm Exp $");
+	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.3 1999-12-09 17:02:12 cjm Exp $");
 	/**
 	 * The stream to write error messages to - defaults to System.err.
 	 */
@@ -35,11 +38,6 @@ public class CcsGUI
 	 * Top level frame for the program.
 	 */
 	private JFrame frame = null;
-	private final String ccdStatusLabelString = new String("CCD Status:");
-	private final String remainingExposureTimeLabelString = new String("Remaining Exposure Time:");
-	private final String remainingExposuresLabelString = new String("Remaining Exposures:");
-	private final String filterSelectedLabelString = new String("Filters Selected:");
-	private final String ccdTemperatureLabelString = new String("CCD Temperature:");
 	/**
 	 * Label for last command sent.
 	 */
@@ -60,6 +58,10 @@ public class CcsGUI
 	 * Label for last DONE message recieved: errorString field.
 	 */
 	private JLabel ccdTemperatureLabel = null;
+	/**
+	 * Text field for storing the update time for status queries.
+	 */
+	private JTextField autoUpdateTextField = null;
 	/**
 	 * Text area for logging.
 	 */
@@ -85,9 +87,19 @@ public class CcsGUI
 	 */
 	private CcsGUIServer server = null;
 	/**
-	 * Thread scheduler.
+	 * Whether to start the ISS server or not to spoof ISS calls at startup.
+	 * @see #server
 	 */
-	private CPUScheduler scheduler = null;
+	private boolean initiallyStartISSServer = false;
+	/**
+	 * Whether ISS commands that are received should manage a message dialog. This allows the
+	 * user to manually configure the CCS's request.
+	 */
+	private boolean issMessageDialog = false;
+	/**
+	 * Menu item for bringing up dialog boxs in response to ISS requests.
+	 */
+	private JCheckBoxMenuItem messageDialogMenuItem = null;
 
 	public CcsGUI()
 	{
@@ -98,68 +110,65 @@ public class CcsGUI
 	 */
 	public static void main(String[] args)
 	{
-		UIManager.installLookAndFeel("Liverpool Telescope Look and Feel","LTLookAndFeel");
+		MetalLookAndFeel metalLookAndFeel = null;
+
+	// setup LTMetalTheme
 		try
 		{
-			UIManager.setLookAndFeel("LTLookAndFeel");
-//			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+			Class cl = Class.forName(UIManager.getCrossPlatformLookAndFeelClassName());
+			metalLookAndFeel = (MetalLookAndFeel)(cl.newInstance());
+			metalLookAndFeel.setCurrentTheme(new LTMetalTheme());
+			UIManager.setLookAndFeel(metalLookAndFeel);
 		}
 		catch(Exception e)
 		{
 			System.err.println("UIManager.setLookAndFeel failed:"+e);
 		}
-System.err.println(UIManager.getLookAndFeel());
+	// construct gui main object
 		CcsGUI ccsGUI = new CcsGUI();
 		try
 		{
-			ccsGUI.init();
+			ccsGUI.initStatus();
+			ccsGUI.parseArguments(args);
 		}
 		catch(Exception e)
 		{
 			ccsGUI.error(e.toString());
 			System.exit(1);
 		}
+		ccsGUI.initGUI();
 		ccsGUI.run();
 	}
 
 	/**
-	 * Initialise the program.
+	 * Initialise the program status, from the configuration files.
 	 * Creates the status object and initialises it.
+	 * @exception FileNotFoundException Thrown if a configuration filename not found.
+	 * @exception IOException Thrown if a configuration file has an IO error during reading.
+	 * @see #status
+	 * @see CcsGUIStatus#load
+	 * @see CcsGUIStatus#loadCCDConfig
+	 */
+	private void initStatus() throws FileNotFoundException,IOException
+	{
+		status = new CcsGUIStatus();
+		status.load();
+		status.loadCCDConfig();
+	}
+
+	/**
+	 * Initialise the program.
 	 * Creates the frame and creates the widgets associated with it.
 	 * Creates the menu bar.
 	 * @see #frame
 	 */
-	private void init() throws FileNotFoundException,IOException,NumberFormatException,UnknownHostException
+	private void initGUI()
 	{
-		status = new CcsGUIStatus();
-		status.load();
-
-	// initialise port numbers from properties file
-		try
-		{
-			ccsPortNumber = status.getPropertyInteger("ccs_gui.net.default_CCS_port_number");
-			issPortNumber = status.getPropertyInteger("ccs_gui.net.default_ISS_port_number");
-		}
-		catch(NumberFormatException e)
-		{
-			error(this.getClass().getName()+":init:initialsing port number:"+e);
-			throw e;
-		}
-	// initialise address's from properties file
-		try
-		{
-			ccsAddress = InetAddress.getByName(status.getProperty("ccs_gui.net.default_CCS_address"));
-		}
-		catch(UnknownHostException e)
-		{
-			error(this.getClass().getName()+":illegal internet address:"+e);
-			throw e;
-		}
 	// create the frame level layout manager
 		GridBagLayout gridBagLayout = new GridBagLayout();
         	GridBagConstraints gridBagCon = new GridBagConstraints();
-	//Create the top-level container.
-		frame = new MinimumSizeFrame("CCS Interface",new Dimension(400,200));
+	// Create the top-level container.
+		frame = new MinimumSizeFrame("CCS Interface",new Dimension(400,250));
 
 		frame.getContentPane().setLayout(gridBagLayout);
 		initMenuBar();
@@ -170,8 +179,6 @@ System.err.println(UIManager.getLookAndFeel());
 		 */
 		JPanel panel = new JPanel();
 
-		panel.setMinimumSize(new Dimension(250,400));
-		panel.setPreferredSize(new Dimension(1280,1024));
 		initMainPanel(panel);
 
 	// Add the JPanel to the frame.
@@ -187,15 +194,7 @@ System.err.println(UIManager.getLookAndFeel());
 		frame.getContentPane().add(panel);
 
 	//Finish setting up the frame, and show it.
-		frame.addWindowListener(new WindowAdapter()
-		{
-			public void windowClosing(WindowEvent e)
-			{
-// diddly more code here - see also menu item listener
-//diddly			parent.exit(0);
-				System.exit(0);
-			}
-		});
+		frame.addWindowListener(new CcsGUIWindowListener(this));
 	}
 
 	private void initMainPanel(JPanel panel)
@@ -206,13 +205,13 @@ System.err.println(UIManager.getLookAndFeel());
 		panel.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
 		panel.setLayout(gridBagLayout);
 		panel.setMinimumSize(new Dimension(450,400));
-		panel.setPreferredSize(new Dimension(1024,1024));
+		panel.setPreferredSize(new Dimension(450,300));
+		panel.setMaximumSize(new Dimension(1024,1024));
 	//  status labels
 		initStatusPanel(panel,gridBagLayout);
 	// log text area
 		initLogPanel(panel,gridBagLayout);
 	}
-
 
 	/**
 	 * Initialise status area.
@@ -225,11 +224,16 @@ System.err.println(UIManager.getLookAndFeel());
 		JPanel lastStatusPanel = new JPanel();
 		JLabel label = null;
         	GridBagConstraints gridBagCon = new GridBagConstraints();
+		String ccdStatusLabelString = new String("CCD Status:");
+		String remainingExposureTimeLabelString = new String("Remaining Exposure Time:");
+		String remainingExposuresLabelString = new String("Remaining Exposures:");
+		String filterSelectedLabelString = new String("Filters Selected:");
+		String ccdTemperatureLabelString = new String("CCD Temperature:");
 
 		lastStatusPanel.setLayout(new GridLayout(0,2));
-		lastStatusPanel.setMinimumSize(new Dimension(250,75));
-		lastStatusPanel.setPreferredSize(new Dimension(1024,75));
-		lastStatusPanel.setMaximumSize(new Dimension(1024,75));
+		lastStatusPanel.setMinimumSize(new Dimension(250,125));
+		lastStatusPanel.setPreferredSize(new Dimension(1024,125));
+		lastStatusPanel.setMaximumSize(new Dimension(1024,125));
 	// ccd status
 		label = new JLabel(ccdStatusLabelString);
 		lastStatusPanel.add(label);
@@ -255,7 +259,13 @@ System.err.println(UIManager.getLookAndFeel());
 		lastStatusPanel.add(label);
 		ccdTemperatureLabel = new JLabel("Unknown");
 		lastStatusPanel.add(ccdTemperatureLabel);
-
+	// auto update
+		JCheckBox autoUpdateCheckbox = new JCheckBox("Auto-Update",false);
+		autoUpdateCheckbox.addActionListener(new CcsGUIUpdateListener(this));
+		lastStatusPanel.add(autoUpdateCheckbox);
+		autoUpdateTextField = new JTextField();
+		lastStatusPanel.add(autoUpdateTextField);
+	// add border
 		lastStatusPanel.setBorder(new TitledSmallerBorder("Status"));
 	// these constraints mean that the GridBagLayout can't alter the size of lastStatusPanel
 		gridBagCon.gridx = 0;
@@ -320,9 +330,9 @@ System.err.println(UIManager.getLookAndFeel());
 		frame.setJMenuBar(menuBar);
 
 	//Build the general menu.
-		menu = new JMenu("General");
-		menu.setMnemonic(KeyEvent.VK_G);
-		menu.getAccessibleContext().setAccessibleDescription("The General Menu");
+		menu = new JMenu("File");
+		menu.setMnemonic(KeyEvent.VK_F);
+		menu.getAccessibleContext().setAccessibleDescription("The File Menu");
 		menuBar.add(menu);
         // Thread Monitor
 		menuItem = new JMenuItem("Thread Monitor",KeyEvent.VK_T);
@@ -501,23 +511,39 @@ System.err.println(UIManager.getLookAndFeel());
 		submenu.add(menuItem);
 	// add SETUP submenu
 		menu.add(submenu);
-
-
+	// Build the ISS menu.
+		menu = new JMenu("ISS");
+		menu.setMnemonic(KeyEvent.VK_I);
+		menu.getAccessibleContext().setAccessibleDescription("The Instrument Support System Menu");
+		menuBar.add(menu);
+        // Spoof ISS Requests
+		menuItem = new JCheckBoxMenuItem("Spoof Requests",initiallyStartISSServer);
+		menuItem.getAccessibleContext().
+			setAccessibleDescription("Starts a thread to Spoof requests sent to the ISS");
+		menuItem.addActionListener(menuItemListener);
+		menu.add(menuItem);
+        // ISS Message Dialogs
+		messageDialogMenuItem = new JCheckBoxMenuItem("Message Dialog",issMessageDialog);
+		messageDialogMenuItem.getAccessibleContext().
+			setAccessibleDescription("Manage message dialog when an ISS command is received.");
+		messageDialogMenuItem.addActionListener(menuItemListener);
+		messageDialogMenuItem.setEnabled(false);
+		menu.add(messageDialogMenuItem);
 	}
 
 	/**
- 	 * The run routine. Sets the main frame visible. Starts the 
-	 * @see #frame.
+ 	 * The run routine. Sets the main frame visible.
+	 * Starts the server, if we want to start it.
+	 * @see #frame
+	 * @see #initiallyStartISSServer
+	 * @see #startISSServer
+	 * @see #server
 	 */
 	private void run()
 	{
-		scheduler = new CPUScheduler(100);// diddly ccs_gui.properties
-		server = new CcsGUIServer("CCS GUI ISS Server",issPortNumber);
-		server.setParent(this);
-		scheduler.addThread(server);
-		server.start();
+		if(initiallyStartISSServer)
+			startISSServer();
 		frame.pack();
-		frame.setSize(450,300);
 		frame.setVisible(true);
 	}
 
@@ -565,7 +591,15 @@ System.err.println(UIManager.getLookAndFeel());
 		{
 			error(this.getClass().getName()+":trying to exit:"+e);
 		}
-		server.close();
+		try
+		{
+			status.saveCCDConfig();
+		}
+		catch(IOException e)
+		{
+			error(this.getClass().getName()+":trying to exit:saving CCD Config failed:"+e);
+		}
+		stopISSServer();
 		System.exit(n);
 	}
 
@@ -627,13 +661,23 @@ System.err.println(UIManager.getLookAndFeel());
 	}
 
 	/**
-	 * Return the GUI's thread scheduler.
-	 * @return The scheduler.
-	 * @see #scheduler
+	 * Method to set whether to bring up message dialogs when dealing with ISS commands.
+	 * @param b True if we want message dialogs, false otherwise.
+	 * @see #issMessageDialog
 	 */
-	public CPUScheduler getScheduler()
+	public void setISSMessageDialog(boolean b)
 	{
-		return scheduler;
+		issMessageDialog = b;
+	}
+
+	/**
+	 * Method to get whether to bring up message dialogs when dealing with ISS commands.
+	 * @return Retrurns the value of the issMessageDialog field.
+	 * @see #issMessageDialog
+	 */
+	public boolean getISSMessageDialog()
+	{
+		return issMessageDialog;
 	}
 
 	/**
@@ -646,7 +690,6 @@ System.err.println(UIManager.getLookAndFeel());
 
 		thread = new CcsGUIClientConnectionThread(ccsAddress,ccsPortNumber,command);
 		thread.setParent(this);
-		scheduler.addThread(thread);
 		thread.start();
 		status.addClientThread(thread);
 	}
@@ -662,9 +705,208 @@ System.err.println(UIManager.getLookAndFeel());
 			SwingUtilities.invokeLater(new GUILabelSetter(ccdStatusLabel,s));
 		}
 	}
+
+	/**
+	 * Method to get the update time for status update. This is got from the autoUpdateTextField,
+	 * and then parsed into a long to return. If a parse exception occurs, zero is returned.
+	 * @return An auto update time. If an error occurs zero is returned.
+	 */
+	public long getAutoUpdateTime()
+	{
+		String s = null;
+		long retval = 0;
+
+		s = autoUpdateTextField.getText();
+		try
+		{
+			retval = Long.parseLong(s);
+		}
+		catch(NumberFormatException e)
+		{
+			error("Could not get the auto-update time:`"+s+"' not a valid number.");
+			retval = 0;
+		}
+		if(retval < 1000)
+		{
+			error("Auto-update time must be at least 1000 milliseconds.");
+			retval = 0;
+		}
+		return retval;
+	}
+
+	/**
+	 * Enable or disable the auto update text field, so that a new value cannot be entered
+	 * whilst auto update is turned on.
+	 * @param b Boolean value passed to setEnabled.
+	 */
+	public void setAutoUpdateTimeEnabled(boolean b)
+	{
+		autoUpdateTextField.setEnabled(b);
+	}
+
+	/**
+	 * Method to start running the ISS server.
+	 * Creates a new thread. Sets it's parent to this class instance.
+	 * Calls the server run method to start the thread.
+	 * Sets the ISS Message Dialog menu item sensitive.
+	 * @see #issPortNumber
+	 * @see #server
+	 * @see #messageDialogMenuItem
+	 */
+	public void startISSServer()
+	{
+	// create and start server
+		server = new CcsGUIServer("CCS GUI ISS Server",issPortNumber);
+		server.setParent(this);
+		server.start();
+		log("ISS Server started on port:"+issPortNumber+".");
+		messageDialogMenuItem.setEnabled(true);
+	}
+
+	/**
+	 * Method to stop the ISS server. If the server reference is non-null, calls it's close method.
+	 * Sets the server reference to null.
+	 * Sets the ISS Message Dialog menu item in-sensitive.
+	 * @see #server
+	 * @see CcsGUIServer#close
+	 * @see #messageDialogMenuItem
+	 */
+	public void stopISSServer()
+	{
+		if(server != null)
+		{
+			server.close();
+		}
+		server = null;
+		log("ISS Server stoped.");
+		messageDialogMenuItem.setEnabled(false);
+	}
+
+	/**
+	 * This routine parses arguments passed into Ccs. It gets some default arguments from the configuration
+	 * file. These are the CCS and ISS port numbers, and the CCS internet address.
+	 * It then reads through the arguments in the list. This routine will stop the program 
+	 * if a `-help' is one of the arguments.
+	 * @param args The list of arguments to parse.
+	 * @see #ccsAddress
+	 * @see #ccsPortNumber
+	 * @see #initiallyStartISSServer
+	 * @see #issPortNumber
+	 * @see #help
+	 */
+	private void parseArguments(String[] args) throws NumberFormatException,UnknownHostException
+	{
+	// initialise port numbers from properties file
+		try
+		{
+			ccsPortNumber = status.getPropertyInteger("ccs_gui.net.default_CCS_port_number");
+			issPortNumber = status.getPropertyInteger("ccs_gui.net.default_ISS_port_number");
+		}
+		catch(NumberFormatException e)
+		{
+			error(this.getClass().getName()+":parseArguments:initialsing port number:"+e);
+			throw e;
+		}
+	// initialise address's from properties file
+		try
+		{
+			ccsAddress = InetAddress.getByName(status.getProperty("ccs_gui.net.default_CCS_address"));
+		}
+		catch(UnknownHostException e)
+		{
+			error(this.getClass().getName()+":illegal internet address:"+e);
+			throw e;
+		}
+	// look through the argument list.
+		for(int i = 0; i < args.length;i++)
+		{
+			if(args[i].equals("-log"))
+			{
+				if((i+1)< args.length)
+				{
+					status.setLogLevel(Integer.parseInt(args[i+1]));
+					i++;
+				}
+				else
+					error("-log requires a log level");
+			}
+			else if(args[i].equals("-ccsport"))
+			{
+				if((i+1)< args.length)
+				{
+					ccsPortNumber = Integer.parseInt(args[i+1]);
+					i++;
+				}
+				else
+					error("-ccsport requires a port number");
+			}
+			else if(args[i].equals("-issspoof"))
+			{
+				initiallyStartISSServer = true;
+			}
+			else if(args[i].equals("-issdialog"))
+			{
+				issMessageDialog = true;
+			}
+			else if(args[i].equals("-issport"))
+			{
+				if((i+1)< args.length)
+				{
+					issPortNumber = Integer.parseInt(args[i+1]);
+					i++;
+				}
+				else
+					error("-issport requires a port number");
+			}
+			else if(args[i].equals("-ccsip")||args[i].equals("-ccsaddress"))
+			{
+				if((i+1)< args.length)
+				{
+					try
+					{
+						ccsAddress = InetAddress.getByName(args[i+1]);
+					}
+					catch(UnknownHostException e)
+					{
+						error(this.getClass().getName()+
+							":illegal CCS address:"+args[i+1]+":"+e);
+					}
+					i++;
+				}
+				else
+					error("-ccsaddress requires a valid ip address");
+			}
+			else if(args[i].equals("-h")||args[i].equals("-help"))
+			{
+				help();
+				System.exit(0);
+			}
+			else
+				error(this.getClass().getName()+"'"+args[i]+"' not a recognised option");
+		}
+	}
+
+	/**
+	 * Help message routine.
+	 */
+	private void help()
+	{
+		System.out.println(this.getClass().getName()+" Help:");
+		System.out.println("CcsGUI is the `CCD Control System Graphical User Interface'.");
+		System.out.println("Options are:");
+		System.out.println("\t-ccsport <port number> - Ccs server port number.");
+		System.out.println("\t-issspoof - Start an thread to pretend to be the ISS.");
+		System.out.println("\t-issdialog - Bring up a message dialog for each ISS comamnd.");
+		System.out.println("\t-issport <port number> - Port for ISS commands, if ISS spoofing is on.");
+		System.out.println("\t-[ccsip]|[ccsaddress] <address> - Address to send CCS commands to.");
+		System.out.println("\t-log <log level> - log level.");
+	}
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.2  1999/11/24 12:51:28  cjm
+// Changed @see clause.
+//
 // Revision 0.1  1999/11/22 09:53:49  cjm
 // initial revision.
 //

@@ -1,5 +1,5 @@
 // CcsGUIClientConnectionThread.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.1 1999-11-22 09:53:49 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.2 1999-12-09 17:02:12 cjm Exp $
 
 import java.lang.*;
 import java.io.*;
@@ -17,14 +17,14 @@ import ngat.message.ISS_INST.GET_STATUS_DONE;
  * It implements the generic ISS instrument command protocol.
  * It is used to send commands from the CcsGUI to the Ccs.
  * @author Chris Mottram
- * @version $Revision: 0.1 $
+ * @version $Revision: 0.2 $
  */
 public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.1 1999-11-22 09:53:49 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.2 1999-12-09 17:02:12 cjm Exp $");
 	/**
 	 * The CcsGUI object.
 	 */
@@ -55,12 +55,11 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	{
 		if(acknowledge == null)
 		{
-			parent.log(parent.getClass().getName()+":has received a null acknowledgment for command "+
-				command.getClass().getName()+".");
+			parent.log("Null acknowledgment received for command:"+command.getClass().getName()+".");
 			return;
 		}
-		parent.log(parent.getClass().getName()+":has received an acknowledgment for command "+
-			command.getClass().getName()+" with time to complete:"+acknowledge.getTimeToComplete()+".");
+		parent.log("Acknowledgment received for command:"+command.getClass().getName()+
+			" with time to complete:"+acknowledge.getTimeToComplete()+".");
 		if(acknowledge instanceof MOVIE_ACK)
 			printMovieAck((MOVIE_ACK)acknowledge);
 		if(acknowledge instanceof MULTRUN_ACK)
@@ -96,20 +95,30 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 
 		if(done == null)
 		{
-			parent.log(parent.getClass().getName()+" has received a null done message for:"+
-				command.getClass().getName()+".");
+			parent.log("Null done message received for:"+command.getClass().getName()+".");
 		}
 		else
 		{
-			parent.log(parent.getClass().getName()+" has received a done message for:"+
-				command.getClass().getName()+
-				"\n\terror Number"+done.getErrorNum()+
-				"\n\terror String:"+done.getErrorString()+
-				"\n\tsuccessful:"+done.getSuccessful());
+			parent.log("Done message received for:"+command.getClass().getName()+":"+
+				"\nerror Number:"+done.getErrorNum()+
+				"\nerror String:"+done.getErrorString()+
+				"\nsuccessful:"+done.getSuccessful());
 			if(done instanceof GET_STATUS_DONE)
 				printGetStatus((GET_STATUS_DONE)done);
 		}
 		parent.getStatus().removeClientThread(this);
+	}
+
+	/**
+	 * This method is called when the thread generates an error.
+	 * Currently, this just prints the string using the parents error method.
+	 * @param errorString The error string.
+	 * @see CcsGUI#error
+	 * @see #parent
+	 */
+	protected void processError(String errorString)
+	{
+		parent.error(errorString);
 	}
 
 	private void printGetStatus(GET_STATUS_DONE getStatusDone)
@@ -134,4 +143,7 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.1  1999/11/22 09:53:49  cjm
+// initial revision.
+//
 //

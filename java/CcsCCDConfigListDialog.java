@@ -1,5 +1,5 @@
 // CcsCCDConfigListDialog.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/CcsCCDConfigListDialog.java,v 0.1 1999-12-08 10:41:12 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/CcsCCDConfigListDialog.java,v 0.2 1999-12-09 17:02:12 cjm Exp $
 import java.lang.*;
 import java.util.*;
 import java.awt.*;
@@ -11,30 +11,37 @@ import javax.swing.event.*;
 import ngat.swing.*;
 
 /**
- * This class provides a list 
+ * This class provides a list of configurations for the Ccs. 
  */
-public class CcsCCDConfigListDialog extends JDialog implements ActionListener
+public class CcsCCDConfigListDialog extends JDialog implements ActionListener, CcsConfigAADialogListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: CcsCCDConfigListDialog.java,v 0.1 1999-12-08 10:41:12 cjm Exp $");
+	public final static String RCSID = new String("$Id: CcsCCDConfigListDialog.java,v 0.2 1999-12-09 17:02:12 cjm Exp $");
 	/**
 	 * The data to be displayed in the list.
 	 */
-	CcsCCDConfigProperties ccdConfigProperties = null;
+	private CcsCCDConfigProperties ccdConfigProperties = null;
+	/**
+	 * The Add/Amend dialog to use when Add or Amend is selected.
+	 */
+	private CcsCCDConfigAADialog addAmendDialog = null;
 	/**
 	 * The config dialog that caused this dialog to be managed.
 	 */
-	CONFIGDialog configDialog = null;
+	private CONFIGDialog configDialog = null;
 	/**
 	 * Internal JList that actually displays the CCD Configurations.
 	 */
 	private JList list = null;
 
 	/**
-	 * Constructor.
+	 * Constructor. Calls the JDialog constructor. Creates the components in the dialog.
+	 * Creates the add/amend dialog.
 	 * @param owner The parent frame of this dialog. Used in calling Dialog's constructor.
+	 * @param c A reference to the object holding the CCD Configuration data. Used to fill the list,
+	 *	and for updating purposes.
 	 */
 	public CcsCCDConfigListDialog(Frame owner,CcsCCDConfigProperties c)
 	{
@@ -46,6 +53,7 @@ public class CcsCCDConfigListDialog extends JDialog implements ActionListener
 
 		ccdConfigProperties = c;
 		getContentPane().setLayout(new BorderLayout());
+		setResizable(true);
 	// setup menu bar
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -89,7 +97,7 @@ public class CcsCCDConfigListDialog extends JDialog implements ActionListener
 	// create the panel
 		JPanel panel = new JPanel();
 		panel.setMinimumSize(new Dimension(250,250));
-		panel.setPreferredSize(new Dimension(250,500));
+		panel.setPreferredSize(new Dimension(250,250));
 		panel.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
 		panel.setLayout(new BorderLayout());
 	// Add the JPanel to the frame.
@@ -101,6 +109,9 @@ public class CcsCCDConfigListDialog extends JDialog implements ActionListener
 		scrollPane = new JScrollPane();
 		scrollPane.getViewport().setView(list);
 		panel.add(scrollPane);
+	// create an add/amend dialog
+		addAmendDialog = new CcsCCDConfigAADialog(owner,c);
+		addAmendDialog.addCcsConfigAADialogListener(this);
 	}
 
 	/**
@@ -118,6 +129,11 @@ public class CcsCCDConfigListDialog extends JDialog implements ActionListener
 
 		l = ccdConfigProperties.getConfigNameList();
 		list.setListData(l);
+	}
+
+	public boolean isResizable()
+	{
+		return true;
 	}
 
 	/**
@@ -138,6 +154,8 @@ public class CcsCCDConfigListDialog extends JDialog implements ActionListener
 		String commandString = event.getActionCommand();
 		String s = null;
 		Object o = null;
+		int id = 0;
+		int retval = 0;
 
 		if(commandString.equals("Select"))
 		{
@@ -156,31 +174,97 @@ public class CcsCCDConfigListDialog extends JDialog implements ActionListener
 				if(configDialog != null)
 				{
 					configDialog.setConfigTextField(s);
+				// unmanage the dialog later - this allows the menu to disappear
 					SwingUtilities.invokeLater(new GUIDialogUnmanager(this));
 				}
 			}
 		}
 		if(commandString.equals("Add"))
 		{
-			JOptionPane.showMessageDialog((Component)null,(Object)("This menu is not implemented yet."),
-				" Menu not Implmeneted ",JOptionPane.WARNING_MESSAGE);
+			addAmendDialog.setLocation(getX()+getWidth(),getY());
+			addAmendDialog.pack();
+			addAmendDialog.add();
 		}
 		if(commandString.equals("Amend"))
 		{
-			JOptionPane.showMessageDialog((Component)null,(Object)("This menu is not implemented yet."),
-				" Menu not Implmeneted ",JOptionPane.WARNING_MESSAGE);
+			try
+			{
+				id = getSelectedCCDConfigId();
+				addAmendDialog.setLocation(getX()+getWidth(),getY());
+				addAmendDialog.pack();
+				addAmendDialog.amend(id);
+			}
+			catch(IllegalArgumentException e)
+			{
+				JOptionPane.showMessageDialog((Component)null,
+					(Object)("Getting selected configuration failed:"+e),
+					" Operation failed ",JOptionPane.ERROR_MESSAGE);
+			}
 		}
 		if(commandString.equals("Delete"))
 		{
-			JOptionPane.showMessageDialog((Component)null,(Object)("This menu is not implemented yet."),
-				" Menu not Implmeneted ",JOptionPane.WARNING_MESSAGE);
+			try
+			{
+				id = getSelectedCCDConfigId();
+			}
+			catch(IllegalArgumentException e)
+			{
+				JOptionPane.showMessageDialog((Component)null,
+					(Object)("Getting selected configuration failed:"+e),
+					" Operation failed ",JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			retval = JOptionPane.showConfirmDialog((Component)null,
+				(Object)("Are you sure you want to delete:"+ccdConfigProperties.getConfigName(id)),
+				" Delete "+ccdConfigProperties.getConfigName(id),
+				JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
+			if(retval == JOptionPane.YES_OPTION)
+			{
+				ccdConfigProperties.deleteId(id);
+				setData();
+			}
 		}
 		if(commandString.equals("Quit"))
 		{
 			SwingUtilities.invokeLater(new GUIDialogUnmanager(this));
 		}
 	}
+
+	/**
+	 * Method implementing the CcsConfigAADialogListener interface. Called when an
+	 * CCD Configuration is added/amended.
+	 * @param ok Boolean, true if the Ok button was pressed on the dialog.
+	 * @param id The id of the CCD Configuration if ok was true.
+	 */
+	public void actionPerformed(boolean ok,int id)
+	{
+		setData();
+	}
+
+	/**
+	 * Method to get the id of the selected CCDConfig in the list.
+	 * @return The id.
+	 * @exception IllegalArgumentException Thrown if no item is selected, the selected item is not a string,
+	 * 	or a configuration cannot be found with the correct name.
+	 */
+	private int getSelectedCCDConfigId() throws IllegalArgumentException
+	{
+		String s = null;
+		Object o = null;
+
+		// get the selected string.
+		o = list.getSelectedValue();
+		if(o == null)
+			throw new IllegalArgumentException("No Item Selected");
+		if((o instanceof String)==false)
+			throw new IllegalArgumentException("Selected Item wrong class:"+o.getClass().getName());
+		s = (String)o;
+		return ccdConfigProperties.getIdFromName(s);
+	}
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.1  1999/12/08 10:41:12  cjm
+// initial revision.
+//
 //

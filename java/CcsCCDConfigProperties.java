@@ -1,5 +1,5 @@
 // CcsCCDConfigProperties.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/CcsCCDConfigProperties.java,v 0.1 1999-11-25 13:33:39 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/CcsCCDConfigProperties.java,v 0.2 1999-12-09 17:02:12 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -11,14 +11,14 @@ import ngat.phase2.*;
  * in a Java proerties file and this class extends java.util.Properties
  * @see java.util.Properties
  * @author Chris Mottram
- * @version $Revision: 0.1 $
+ * @version $Revision: 0.2 $
  */
 public class CcsCCDConfigProperties extends Properties
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: CcsCCDConfigProperties.java,v 0.1 1999-11-25 13:33:39 cjm Exp $");
+	public final static String RCSID = new String("$Id: CcsCCDConfigProperties.java,v 0.2 1999-12-09 17:02:12 cjm Exp $");
 	/**
 	 * Filename for properties file.
 	 */
@@ -59,16 +59,37 @@ public class CcsCCDConfigProperties extends Properties
 	}
 
 	/**
-	 * Method to get the number of configurations in the list.
-	 * @return The number of configurations.
+	 * Method to get a list of CCD Configuration names.
+	 * @return A Vector, each element is a String with a CCD Configuration Name.
 	 */
-	public int getConfigurationCount()
+	public Vector getConfigNameList()
+	{
+		Vector list = null;
+		String s = null;
+		int i;
+
+		list = new Vector();
+		i = 0;
+		while((s = getConfigName(i)) != null)
+		{
+			list.addElement(s);
+			i++;
+		}
+		return list;
+	}
+
+	/**
+	 * Method to get a new Id to insert a new configuration with. This is done by
+	 * getting config names with ids until one fails.
+	 * @see #getConfigName
+	 */
+	public int getNewConfigId()
 	{
 		String s = null;
 		int i;
 
 		i = 0;
-		while(getProperty(configIdString(i)+"name") != null)
+		while((s = getConfigName(i)) != null)
 			i++;
 		return i;
 	}
@@ -85,6 +106,7 @@ public class CcsCCDConfigProperties extends Properties
 		c = new CCDConfig(getConfigName(id));
 		c.setLowerFilterWheel(getConfigLowerFilterWheel(id));
 		c.setUpperFilterWheel(getConfigUpperFilterWheel(id));
+
 		c.setXbin(getConfigXBin(id));
 		c.setYbin(getConfigYBin(id));
 
@@ -133,13 +155,67 @@ public class CcsCCDConfigProperties extends Properties
 	}
 
 	/**
+	 * Method to delete an id. This involves removing all the elements of the id, and them moving down
+	 * things with greater ids to the id numbers are still contiguous.
+	 * @param id The id of the configuration to remove.
+	 */
+	public void deleteId(int id)
+	{
+		String s = null;
+		int i,j;
+
+	// remove id id
+		remove(configIdStringName(id));
+		remove(configIdStringLowerFilterWheel(id));
+		remove(configIdStringUpperFilterWheel(id));
+		remove(configIdStringXBin(id));
+		remove(configIdStringYBin(id));
+		for(j=1;j<5;j++)
+		{
+			remove(configIdWindowStringXStart(id,j));
+			remove(configIdWindowStringYStart(id,j));
+			remove(configIdWindowStringXEnd(id,j));
+			remove(configIdWindowStringYEnd(id,j));
+		}
+
+	// move all ids after id down one
+		i = id+1;
+		while((s = getConfigName(i)) != null)
+		{
+			setConfigName(i-1,getConfigName(i));
+			remove(configIdStringName(i));
+			setConfigLowerFilterWheel(i-1,getConfigLowerFilterWheel(i));
+			remove(configIdStringLowerFilterWheel(i));
+			setConfigUpperFilterWheel(i-1,getConfigUpperFilterWheel(i));
+			remove(configIdStringUpperFilterWheel(i));
+			setConfigXBin(i-1,getConfigXBin(i));
+			remove(configIdStringXBin(i));
+			setConfigYBin(i-1,getConfigYBin(i));
+			remove(configIdStringYBin(i));
+
+			for(j=1;j<5;j++)
+			{
+				setConfigXStart(i-1,j,getConfigXStart(i,j));
+				remove(configIdWindowStringXStart(i,j));
+				setConfigYStart(i-1,j,getConfigYStart(i,j));
+				remove(configIdWindowStringYStart(i,j));
+				setConfigXEnd(i-1,j,getConfigXEnd(i,j));
+				remove(configIdWindowStringXEnd(i,j));
+				setConfigYEnd(i-1,j,getConfigYEnd(i,j));
+				remove(configIdWindowStringYEnd(i,j));
+			}
+			i++;
+		}// while ids exist
+	}
+
+	/**
 	 * Method to get the name of configuration id id.
 	 * @param id The id of the configuration.
 	 * @return The configuration name.
 	 */
 	public String getConfigName(int id)
 	{
-		return getProperty(configIdString(id)+"name");
+		return getProperty(configIdStringName(id));
 	}
 
 	/**
@@ -150,9 +226,9 @@ public class CcsCCDConfigProperties extends Properties
 	public void setConfigName(int id,String n)
 	{
 	// jdk 1.1.x
-		//put(configIdString(id)+"name",n);
+		//put(configIdStringName(id),n);
 	// jdk 1.2.x
-		setProperty(configIdString(id)+"name",n);
+		setProperty(configIdStringName(id),n);
 	}
 
 	/**
@@ -162,7 +238,7 @@ public class CcsCCDConfigProperties extends Properties
 	 */
 	public String getConfigLowerFilterWheel(int id)
 	{
-		return getProperty(configIdString(id)+"lowerFilterWheel");
+		return getProperty(configIdStringLowerFilterWheel(id));
 	}
 
 	/**
@@ -173,9 +249,9 @@ public class CcsCCDConfigProperties extends Properties
 	public void setConfigLowerFilterWheel(int id,String s)
 	{
 	// jdk 1.1.x
-		//put(configIdString(id)+"lowerFilterWheel",s);
+		//put(configIdStringLowerFilterWheel(id),s);
 	// jdk 1.2.x
-		setProperty(configIdString(id)+"lowerFilterWheel",s);
+		setProperty(configIdStringLowerFilterWheel(id),s);
 	}
 
 	/**
@@ -185,7 +261,7 @@ public class CcsCCDConfigProperties extends Properties
 	 */
 	public String getConfigUpperFilterWheel(int id)
 	{
-		return getProperty(configIdString(id)+"upperFilterWheel");
+		return getProperty(configIdStringUpperFilterWheel(id));
 	}
 
 	/**
@@ -196,9 +272,9 @@ public class CcsCCDConfigProperties extends Properties
 	public void setConfigUpperFilterWheel(int id,String s)
 	{
 	// jdk 1.1.x
-		//put(configIdString(id)+"upperFilterWheel",s);
+		//put(configIdStringUpperFilterWheel(id),s);
 	// jdk 1.2.x
-		setProperty(configIdString(id)+"upperFilterWheel",s);
+		setProperty(configIdStringUpperFilterWheel(id),s);
 	}
 
 	/**
@@ -210,7 +286,17 @@ public class CcsCCDConfigProperties extends Properties
 	 */
 	public int getConfigXBin(int id) throws NumberFormatException
 	{
-		return getPropertyInteger(configIdString(id)+"xBin");
+		return getPropertyInteger(configIdStringXBin(id));
+	}
+
+	/**
+	 * Method to get the X binning of configuration id id as a string.
+	 * @param id The id of the configuration.
+	 * @return The configuration X binning number as a string.
+	 */
+	public String getConfigXBinString(int id)
+	{
+		return getProperty(configIdStringXBin(id));
 	}
 
 	/**
@@ -221,9 +307,9 @@ public class CcsCCDConfigProperties extends Properties
 	public void setConfigXBin(int id,int xBin)
 	{
 	// jdk 1.1.x
-		//put(configIdString(id)+"xBin",Integer.toString(xBin));
+		//put(configIdStringXBin(id),Integer.toString(xBin));
 	// jdk 1.2.x
-		setProperty(configIdString(id)+"xBin",Integer.toString(xBin));
+		setProperty(configIdStringXBin(id),Integer.toString(xBin));
 	}
 
 	/**
@@ -235,7 +321,17 @@ public class CcsCCDConfigProperties extends Properties
 	 */
 	public int getConfigYBin(int id) throws NumberFormatException
 	{
-		return getPropertyInteger(configIdString(id)+"yBin");
+		return getPropertyInteger(configIdStringYBin(id));
+	}
+
+	/**
+	 * Method to get the Y binning of configuration id id as a string.
+	 * @param id The id of the configuration.
+	 * @return The configuration Y binning number as a string.
+	 */
+	public String getConfigYBinString(int id)
+	{
+		return getProperty(configIdStringYBin(id));
 	}
 
 	/**
@@ -246,9 +342,9 @@ public class CcsCCDConfigProperties extends Properties
 	public void setConfigYBin(int id,int yBin)
 	{
 	// jdk 1.1.x
-		//put(configIdString(id)+"yBin",Integer.toString(yBin));
+		//put(configIdStringYBin(id),Integer.toString(yBin));
 	// jdk 1.2.x
-		setProperty(configIdString(id)+"yBin",Integer.toString(yBin));
+		setProperty(configIdStringYBin(id),Integer.toString(yBin));
 	}
 
 	/**
@@ -262,7 +358,19 @@ public class CcsCCDConfigProperties extends Properties
 	 */
 	public int getConfigXStart(int id,int windowNumber) throws NumberFormatException
 	{
-		return getPropertyInteger(configIdWindowString(id,windowNumber)+"xStart");
+		return getPropertyInteger(configIdWindowStringXStart(id,windowNumber));
+	}
+
+	/**
+	 * Method to get the X start offset of the specified configuration and window number as a string.
+	 * @param id The id of the configuration.
+	 * @param windowNumber The number of the window to get the start offset for. This should be
+	 * 	between 1 and 4 inclusive.
+	 * @return The X start offset as a string.
+	 */
+	public String getConfigXStartString(int id,int windowNumber)
+	{
+		return getProperty(configIdWindowStringXStart(id,windowNumber));
 	}
 
 	/**
@@ -275,9 +383,9 @@ public class CcsCCDConfigProperties extends Properties
 	public void setConfigXStart(int id,int windowNumber,int xStart)
 	{
 	// jdk 1.1.x
-		//put(configIdWindowString(id,windowNumber)+"xStart",Integer.toString(xStart));
+		//put(configIdWindowStringXStart(id,windowNumber),Integer.toString(xStart));
 	// jdk 1.2.x
-		setProperty(configIdWindowString(id,windowNumber)+"xStart",Integer.toString(xStart));
+		setProperty(configIdWindowStringXStart(id,windowNumber),Integer.toString(xStart));
 	}
 
 	/**
@@ -291,7 +399,19 @@ public class CcsCCDConfigProperties extends Properties
 	 */
 	public int getConfigYStart(int id,int windowNumber) throws NumberFormatException
 	{
-		return getPropertyInteger(configIdWindowString(id,1)+"yStart");
+		return getPropertyInteger(configIdWindowStringYStart(id,windowNumber));
+	}
+
+	/**
+	 * Method to get the Y start offset of the specified configuration and window number as a string.
+	 * @param id The id of the configuration.
+	 * @param windowNumber The number of the window to get the start offset for. This should be
+	 * 	between 1 and 4 inclusive.
+	 * @return The Y start offset as a string.
+	 */
+	public String getConfigYStartString(int id,int windowNumber)
+	{
+		return getProperty(configIdWindowStringYStart(id,windowNumber));
 	}
 
 	/**
@@ -304,9 +424,9 @@ public class CcsCCDConfigProperties extends Properties
 	public void setConfigYStart(int id,int windowNumber,int yStart)
 	{
 	// jdk 1.1.x
-		//put(configIdWindowString(id,windowNumber)+"yStart",Integer.toString(yStart));
+		//put(configIdWindowStringYStart(id,windowNumber),Integer.toString(yStart));
 	// jdk 1.2.x
-		setProperty(configIdWindowString(id,windowNumber)+"yStart",Integer.toString(yStart));
+		setProperty(configIdWindowStringYStart(id,windowNumber),Integer.toString(yStart));
 	}
 
 	/**
@@ -320,7 +440,19 @@ public class CcsCCDConfigProperties extends Properties
 	 */
 	public int getConfigXEnd(int id,int windowNumber) throws NumberFormatException
 	{
-		return getPropertyInteger(configIdWindowString(id,1)+"xEnd");
+		return getPropertyInteger(configIdWindowStringXEnd(id,windowNumber));
+	}
+
+	/**
+	 * Method to get the X end offset of the specified configuration and window number as a string.
+	 * @param id The id of the configuration.
+	 * @param windowNumber The number of the window to get the end offset for. This should be
+	 * 	between 1 and 4 inclusive.
+	 * @return The X end offset as a string.
+	 */
+	public String getConfigXEndString(int id,int windowNumber)
+	{
+		return getProperty(configIdWindowStringXEnd(id,windowNumber));
 	}
 
 	/**
@@ -333,9 +465,9 @@ public class CcsCCDConfigProperties extends Properties
 	public void setConfigXEnd(int id,int windowNumber,int xEnd)
 	{
 	// jdk 1.1.x
-		//put(configIdWindowString(id,windowNumber)+"xEnd",Integer.toString(xEnd));
+		//put(configIdWindowStringXEnd(id,windowNumber),Integer.toString(xEnd));
 	// jdk 1.2.x
-		setProperty(configIdWindowString(id,windowNumber)+"xEnd",Integer.toString(xEnd));
+		setProperty(configIdWindowStringXEnd(id,windowNumber),Integer.toString(xEnd));
 	}
 
 	/**
@@ -349,7 +481,19 @@ public class CcsCCDConfigProperties extends Properties
 	 */
 	public int getConfigYEnd(int id,int windowNumber) throws NumberFormatException
 	{
-		return getPropertyInteger(configIdWindowString(id,1)+"yEnd");
+		return getPropertyInteger(configIdWindowStringYEnd(id,windowNumber));
+	}
+
+	/**
+	 * Method to get the Y end offset of the specified configuration and window number as a string.
+	 * @param id The id of the configuration.
+	 * @param windowNumber The number of the window to get the end offset for. This should be
+	 * 	between 1 and 4 inclusive.
+	 * @return The Y end offset as a string.
+	 */
+	public String getConfigYEndString(int id,int windowNumber)
+	{
+		return getProperty(configIdWindowStringYEnd(id,windowNumber));
 	}
 
 	/**
@@ -362,9 +506,113 @@ public class CcsCCDConfigProperties extends Properties
 	public void setConfigYEnd(int id,int windowNumber,int yEnd)
 	{
 	// jdk 1.1.x
-		//put(configIdWindowString(id,windowNumber)+"yEnd",Integer.toString(yEnd));
+		//put(configIdWindowStringYEnd(id,windowNumber),Integer.toString(yEnd));
 	// jdk 1.2.x
-		setProperty(configIdWindowString(id,windowNumber)+"yEnd",Integer.toString(yEnd));
+		setProperty(configIdWindowStringYEnd(id,windowNumber),Integer.toString(yEnd));
+	}
+
+	/**
+	 * Method to return a key for the name string for a particular config id.
+	 * @param id The config id.
+	 * @return The key string.
+	 * @see #configIdString
+	 */
+	private String configIdStringName(int id)
+	{
+		return new String(configIdString(id)+"name");
+	}
+
+	/**
+	 * Method to return a key for the lower filter wheel for a particular config id.
+	 * @param id The config id.
+	 * @return The key string.
+	 * @see #configIdString
+	 */
+	private String configIdStringLowerFilterWheel(int id)
+	{
+		return new String(configIdString(id)+"lowerFilterWheel");
+	}
+
+	/**
+	 * Method to return a key for the upper filter wheel for a particular config id.
+	 * @param id The config id.
+	 * @return The key string.
+	 * @see #configIdString
+	 */
+	private String configIdStringUpperFilterWheel(int id)
+	{
+		return new String(configIdString(id)+"upperFilterWheel");
+	}
+
+	/**
+	 * Method to return a key for the x binning for a particular config id.
+	 * @param id The config id.
+	 * @return The key string.
+	 * @see #configIdString
+	 */
+	private String configIdStringXBin(int id)
+	{
+		return new String(configIdString(id)+"xBin");
+	}
+
+	/**
+	 * Method to return a key for the y binning for a particular config id.
+	 * @param id The config id.
+	 * @return The key string.
+	 * @see #configIdString
+	 */
+	private String configIdStringYBin(int id)
+	{
+		return new String(configIdString(id)+"yBin");
+	}
+
+	/**
+	 * Method to return a key for the x start position for a particular config id and window number.
+	 * @param id The config id.
+	 * @param windowNumber The number of the window, from 1 to 4.
+	 * @return The key string.
+	 * @see #configIdWindowString
+	 */
+	private String configIdWindowStringXStart(int id,int windowNumber)
+	{
+		return new String(configIdWindowString(id,windowNumber)+"xStart");
+	}
+
+
+	/**
+	 * Method to return a key for the y start position for a particular config id and window number.
+	 * @param id The config id.
+	 * @param windowNumber The number of the window, from 1 to 4.
+	 * @return The key string.
+	 * @see #configIdWindowString
+	 */
+	private String configIdWindowStringYStart(int id,int windowNumber)
+	{
+		return new String(configIdWindowString(id,windowNumber)+"yStart");
+	}
+
+	/**
+	 * Method to return a key for the x end position for a particular config id and window number.
+	 * @param id The config id.
+	 * @param windowNumber The number of the window, from 1 to 4.
+	 * @return The key string.
+	 * @see #configIdWindowString
+	 */
+	private String configIdWindowStringXEnd(int id,int windowNumber)
+	{
+		return new String(configIdWindowString(id,windowNumber)+"xEnd");
+	}
+
+	/**
+	 * Method to return a key for the y end position for a particular config id and window number.
+	 * @param id The config id.
+	 * @param windowNumber The number of the window, from 1 to 4.
+	 * @return The key string.
+	 * @see #configIdWindowString
+	 */
+	private String configIdWindowStringYEnd(int id,int windowNumber)
+	{
+		return new String(configIdWindowString(id,windowNumber)+"yEnd");
 	}
 
 	/**
@@ -387,7 +635,7 @@ public class CcsCCDConfigProperties extends Properties
 	 */
 	private String configIdWindowString(int id,int windowNumber)
 	{
-		return new String(configIdString(id)+".window"+windowNumber+".");
+		return new String(configIdString(id)+"window"+windowNumber+".");
 	}
 
 	/**
@@ -410,4 +658,7 @@ public class CcsCCDConfigProperties extends Properties
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.1  1999/11/25 13:33:39  cjm
+// initial revision.
+//
 //

@@ -1,26 +1,32 @@
 // CcsGUIServerConnectionThread.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIServerConnectionThread.java,v 0.1 1999-11-22 09:53:49 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIServerConnectionThread.java,v 0.2 1999-12-09 17:02:12 cjm Exp $
 import java.lang.*;
+import java.lang.reflect.InvocationTargetException;
 import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import java.awt.Component;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
 import ngat.net.*;
 import ngat.message.base.*;
 import ngat.message.ISS_INST.*;
+import ngat.swing.GUIMessageDialogShower;
 
 /**
  * This class extends the TCPServerConnectionThread class for the CcsGUI application. This
  * allows CcsGUI to emulate the ISS's response to the CCS sending it commands.
  * @author Chris Mottram
- * @version $Revision: 0.1 $
+ * @version $Revision: 0.2 $
  */
 public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIServerConnectionThread.java,v 0.1 1999-11-22 09:53:49 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIServerConnectionThread.java,v 0.2 1999-12-09 17:02:12 cjm Exp $");
 	/**
 	 * Default time taken to respond to a command.
 	 */
@@ -85,10 +91,7 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 	{
 		if(command == null)
 		{
-			synchronized(errorStream)
-			{
-				errorStream.println("processCommand:command was null.");
-			}
+			processError("processCommand:command was null.");
 			done = new COMMAND_DONE(command.getId());
 			done.setErrorNum(1);
 			done.setErrorString("processCommand:command was null.");
@@ -96,6 +99,37 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 			return;
 		}
 		parent.log("Command:"+command.getClass().getName()+" received from the Ccs.");
+		if(parent.getISSMessageDialog())
+		{
+			ACK infiniteAcknowledge = new ACK(command.getId());
+
+		// Make the Ccs wait forever.
+			infiniteAcknowledge.setTimeToComplete(0);
+			try
+			{
+				sendAcknowledge(infiniteAcknowledge);
+			// bring up a dialog.
+				SwingUtilities.invokeAndWait(new GUIMessageDialogShower((Component)null,
+					(Object)("Please process Command "+command.getClass().getName()+
+					" and press Ok."),
+					" ISS Command Received ",JOptionPane.INFORMATION_MESSAGE));
+			}
+			catch(IOException e)
+			{
+				parent.error("Bringing up message dialog for command:"+command.getClass().getName()+
+					" failed:"+e);
+			}
+			catch(InterruptedException e)
+			{
+				parent.error("Bringing up message dialog for command:"+command.getClass().getName()+
+					" failed:"+e);
+			}
+			catch(InvocationTargetException e)
+			{
+				parent.error("Bringing up message dialog for command:"+command.getClass().getName()+
+					" failed:"+e);
+			}
+		}
 	// setup return object.
 		if(command instanceof AG_START)
 		{
@@ -212,7 +246,22 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 		}
 		parent.log("Command:"+command.getClass().getName()+" Completed.");
 	}
+
+	/**
+	 * This method is called when the thread generates an error.
+	 * Currently, this just prints the string using the parents error method.
+	 * @param errorString The error string.
+	 * @see CcsGUI#error
+	 * @see #parent
+	 */
+	protected void processError(String errorString)
+	{
+		parent.error(errorString);
+	}
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.1  1999/11/22 09:53:49  cjm
+// initial revision.
+//
 //

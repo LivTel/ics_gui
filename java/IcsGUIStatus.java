@@ -1,5 +1,5 @@
 // CcsGUIStatus.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIStatus.java,v 0.1 1999-11-22 09:53:49 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIStatus.java,v 0.2 1999-12-09 17:02:12 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -7,14 +7,14 @@ import java.util.*;
 /**
  * This class holds status information for the CcsGUI program.
  * @author Chris Mottram
- * @version $Revision: 0.1 $
+ * @version $Revision: 0.2 $
  */
 public class CcsGUIStatus
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIStatus.java,v 0.1 1999-11-22 09:53:49 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIStatus.java,v 0.2 1999-12-09 17:02:12 cjm Exp $");
 	/**
 	 * File name containing properties for ccs gui.
 	 */
@@ -29,18 +29,27 @@ public class CcsGUIStatus
 	 */
 	private Properties properties = null;
 	/**
+	 * A list of CCD Configurations held in a properties file. These properties are used for selecting and 
+	 * filling CCD Configurations.
+	 */
+	private CcsCCDConfigProperties configProperties = null;
+	/**
 	 * List of client threads running.
 	 */
 	private Vector clientThreadList = null;
 
 	/**
-	 * Constructor. Creates the clientThreadList.
+	 * Constructor. Creates the clientThreadList. Constrcuts the properties and configProperties
 	 * @see #clientThreadList
+	 * @see #properties
+	 * @see #configProperties
 	 */
 	public CcsGUIStatus()
 	{
 		super();
 		clientThreadList = new Vector();
+		properties = new Properties();
+		configProperties = new CcsCCDConfigProperties();
 	}
 
 	/**
@@ -51,10 +60,31 @@ public class CcsGUIStatus
 	{
 		FileInputStream fileInputStream = null;
 		
-		properties = new Properties();
 		fileInputStream = new FileInputStream(PROPERTY_FILE_NAME);
 		properties.load(fileInputStream);
 		fileInputStream.close();
+	}
+
+	/**
+	 * Method to load CCD Configurations.
+	 * Calls configProperties.load.
+	 * @see #configProperties
+	 * @see CcsCCDConfigProperties#load
+	 */
+	public void loadCCDConfig() throws FileNotFoundException,IOException
+	{
+		configProperties.load();
+	}
+
+	/**
+	 * Method to save CCD Configurations.
+	 * Calls configProperties.load.
+	 * @see #configProperties
+	 * @see CcsCCDConfigProperties#save
+	 */
+	public void saveCCDConfig() throws IOException
+	{
+		configProperties.save();
 	}
 
 	/**
@@ -85,6 +115,15 @@ public class CcsGUIStatus
 	}
 
 	/**
+	 * Get the thread at index index in the list
+	 * @param index The index in the list.
+	 */
+	public synchronized CcsGUIClientConnectionThread clientThreadAt(int index)
+	{
+		return (CcsGUIClientConnectionThread)clientThreadList.elementAt(index);
+	}
+
+	/**
 	 * Delete a client thread from the list.
 	 * @param thread The thread to add.
 	 */
@@ -99,6 +138,16 @@ public class CcsGUIStatus
 	public synchronized int clientThreadListCount()
 	{
 		return clientThreadList.size();
+	}
+
+	/**
+	 * Get the CCD Configuration Property list.
+	 * @return The properties.
+	 * @see #configProperties
+	 */
+	public CcsCCDConfigProperties getCCDConfigProperties()
+	{
+		return configProperties;
 	}
 
 	/**
@@ -170,4 +219,7 @@ public class CcsGUIStatus
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.1  1999/11/22 09:53:49  cjm
+// initial revision.
+//
 //
