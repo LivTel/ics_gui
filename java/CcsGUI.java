@@ -1,5 +1,5 @@
 // CcsGUI.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.11 2000-06-27 11:30:34 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.12 2000-07-11 09:23:07 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -19,14 +19,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ccs GUI.
  * @author Chris Mottram
- * @version $Revision: 0.11 $
+ * @version $Revision: 0.12 $
  */
 public class CcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.11 2000-06-27 11:30:34 cjm Exp $");
+	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.12 2000-07-11 09:23:07 cjm Exp $");
 	/**
 	 * The stream to write error messages to - defaults to System.err.
 	 */
@@ -173,17 +173,60 @@ public class CcsGUI
 	/**
 	 * Initialise the program status, from the configuration files.
 	 * Creates the status object and initialises it.
+	 * Changes the errorStream and logStream to those specified in the configuration files.
 	 * @exception FileNotFoundException Thrown if a configuration filename not found.
 	 * @exception IOException Thrown if a configuration file has an IO error during reading.
 	 * @see #status
 	 * @see CcsGUIStatus#load
 	 * @see CcsGUIStatus#loadCCDConfig
+	 * @see #errorStream
+	 * @see #logStream
 	 */
 	private void initStatus() throws FileNotFoundException,IOException
 	{
+		String filename = null;
+		FileOutputStream fos = null;
+
 		status = new CcsGUIStatus();
 		status.load();
 		status.loadCCDConfig();
+	// change errorStream to files defined in loaded properties
+		filename = status.getProperty("ccs_gui.file.error");
+		if((filename != null)&&(filename.length()>0))
+		{
+			try
+			{
+				fos = new FileOutputStream(filename,true);
+			}
+			catch(IOException e)
+			{
+				error(this.getClass().getName()+":init:"+e);
+				fos = null;
+			}
+			if(fos != null)
+			{
+				// deprecated statement.
+				// This is the only way to set System error stream for runtime (JVM) errors.
+				System.setErr(new PrintStream(fos));
+				errorStream = new PrintWriter(fos,true);
+			}
+		}
+	// change logStream to files defined in loaded properties
+		filename = status.getProperty("ccs_gui.file.log");
+		if((filename != null)&&(filename.length()>0))
+		{
+			try
+			{
+				fos = new FileOutputStream(filename,true);
+			}
+			catch(IOException e)
+			{
+				error(this.getClass().getName()+":init:"+e);
+				fos = null;
+			}
+			if(fos != null)
+				logStream = new PrintWriter(fos,true);
+		}
 	}
 
 	/**
@@ -197,12 +240,17 @@ public class CcsGUI
 	private void initGUI()
 	{
 		Image image = null;
+		String titleString = null;
 
 	// create the frame level layout manager
 		GridBagLayout gridBagLayout = new GridBagLayout();
         	GridBagConstraints gridBagCon = new GridBagConstraints();
 	// Create the top-level container.
-		frame = new MinimumSizeFrame("CCS Interface",new Dimension(400,275));
+		if(ccsAddress != null)
+			titleString = new String("Ccs Interface:"+ccsAddress.getHostName());
+		else
+			titleString = new String("Ccs Interface:None");
+		frame = new MinimumSizeFrame(titleString,new Dimension(400,275));
 	// set icon image
 		image = Toolkit.getDefaultToolkit().getImage("lt_icon.gif");
 		frame.setIconImage(image);
@@ -1068,6 +1116,9 @@ public class CcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.11  2000/06/27 11:30:34  cjm
+// Limited number of lines in logTextArea, using a GUITextLengthLimiter.
+//
 // Revision 0.10  2000/06/19 08:50:28  cjm
 // Backup.
 //
