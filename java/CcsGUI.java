@@ -1,5 +1,5 @@
 // CcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.19 2003-06-06 15:44:31 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.20 2003-08-21 14:24:04 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -19,14 +19,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 0.19 $
+ * @version $Revision: 0.20 $
  */
 public class CcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.19 2003-06-06 15:44:31 cjm Exp $");
+	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.20 2003-08-21 14:24:04 cjm Exp $");
 	/**
 	 * The stream to write error messages to - defaults to System.err.
 	 */
@@ -75,7 +75,7 @@ public class CcsGUI
 	/**
 	 * Text area for logging.
 	 */
-	private JTextArea logTextArea = null;
+	private AttributedTextArea logTextArea = null;
 	/**
 	 * Field holding the maximum number of lines of text the log text area should have.
 	 * This field is used in the log method to stop the log text area getting so long IcsGUI runs
@@ -360,7 +360,7 @@ public class CcsGUI
 		currentCommandLabel = new JLabel("None");
 		lastStatusPanel.add(currentCommandLabel);
 	// remaining exposure time
-		label = new JLabel("Remaining Exposure Time:");
+		label = new JLabel("Remaining Exposure Time(ms):");
 		lastStatusPanel.add(label);
 		remainingExposureTimeLabel = new JLabel("0.000");
 		lastStatusPanel.add(remainingExposureTimeLabel);
@@ -434,7 +434,7 @@ public class CcsGUI
 		JScrollPane areaScrollPane = null;
         	GridBagConstraints gridBagCon = new GridBagConstraints();
 
-		logTextArea = new JTextArea("");
+		logTextArea = new AttributedTextArea(" ");
 		logTextArea.setLineWrap(true);
 		logTextArea.setWrapStyleWord(false);
 		logTextArea.setEditable(false);
@@ -787,8 +787,8 @@ public class CcsGUI
 	/**
 	 * Routine to write the string, terminted with a new-line, to the current log-file.
 	 * Also written to the log text area.
-	 * The actual appending is done in the swing thread, using an ngat.swing.GUITextAppender.
-	 * A ngat.swing.GUITextLengthLimiter is also invoked later, so that the logging text area
+	 * The actual appending is done in the swing thread, using an ngat.swing.GUIAttributedTextAreaAppender.
+	 * A ngat.swing.GUIAttributedTextAreaLengthLimiter is also invoked later, so that the logging text area
 	 * does not get so long it swallows all the memory.
 	 * @param s The string to write.
 	 * @see #logTextArea
@@ -798,8 +798,31 @@ public class CcsGUI
 	{
 		if(logTextArea != null)
 		{
-			SwingUtilities.invokeLater(new GUITextAppender(logTextArea,s+"\n",true));
-			SwingUtilities.invokeLater(new GUITextLengthLimiter(logTextArea,logTextAreaLineLimit,false));
+			SwingUtilities.invokeLater(new GUIAttributedTextAreaAppender(logTextArea,s+"\n",true));
+			SwingUtilities.invokeLater(new GUIAttributedTextAreaLengthLimiter(logTextArea,
+											  logTextAreaLineLimit,false));
+		}
+		logStream.println(s);
+	}
+
+	/**
+	 * Routine to write the string, terminted with a new-line, to the current log-file.
+	 * Also written to the log text area.
+	 * The actual appending is done in the swing thread, using an ngat.swing.GUIAttributedTextAreaAppender.
+	 * A ngat.swing.GUIAttributedTextAreaLengthLimiter is also invoked later, so that the logging text area
+	 * does not get so long it swallows all the memory.
+	 * @param s The string to write.
+	 * @param c The colour of the text to write.
+	 * @see #logTextArea
+	 * @see #logStream
+	 */
+	public void log(String s,Color c)
+	{
+		if(logTextArea != null)
+		{
+			SwingUtilities.invokeLater(new GUIAttributedTextAreaAppender(logTextArea,s+"\n",c,true));
+			SwingUtilities.invokeLater(new GUIAttributedTextAreaLengthLimiter(logTextArea,
+											  logTextAreaLineLimit,false));
 		}
 		logStream.println(s);
 	}
@@ -807,8 +830,8 @@ public class CcsGUI
 	/**
 	 * Routine to write the string, terminted with a new-line, to the current error-file.
 	 * The error is added to the log text area, the actual appending is done in the swing thread, 
-	 * using an ngat.swing.GUITextAppender.
-	 * A ngat.swing.GUITextLengthLimiter is also invoked later, so that the logging text area
+	 * using an ngat.swing.GUIAttributedTextAreaAppender.
+	 * A ngat.swing.GUIAttributedTextAreaLengthLimiter is also invoked later, so that the logging text area
 	 * does not get so long it swallows all the memory.
 	 * @param s The string to write.
 	 * @see #errorStream
@@ -817,8 +840,10 @@ public class CcsGUI
 	{
 		if(logTextArea != null)
 		{
-			SwingUtilities.invokeLater(new GUITextAppender(logTextArea,s+"\n",true));
-			SwingUtilities.invokeLater(new GUITextLengthLimiter(logTextArea,logTextAreaLineLimit,false));
+			SwingUtilities.invokeLater(new GUIAttributedTextAreaAppender(logTextArea,s+"\n",Color.red,
+										     true));
+			SwingUtilities.invokeLater(new GUIAttributedTextAreaLengthLimiter(logTextArea,
+											  logTextAreaLineLimit,false));
 		}
 		errorStream.println(s);
 	}
@@ -981,6 +1006,21 @@ public class CcsGUI
 		{
 			SwingUtilities.invokeLater(new GUILabelSetter(filterSelectedLabel,"lower:"+
 				lowerFilterString+" upper:"+upperFilterString));
+		}
+	}
+
+	/**
+	 * Method to set the selected filters label. If one of the parameters is null, the String
+	 * 'Unknown' is used instead. This is used for IRCam filter settings.
+	 * @param filterString The name of the filter wheel's selected filter.
+	 */
+	public void setFiltersSelectedLabel(String filterString)
+	{
+		if(filterString == null)
+			filterString = new String("Unknown");
+		if(filterSelectedLabel != null)
+		{
+			SwingUtilities.invokeLater(new GUILabelSetter(filterSelectedLabel,"filter:"+filterString));
 		}
 	}
 
@@ -1316,6 +1356,10 @@ public class CcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.19  2003/06/06 15:44:31  cjm
+// Changes toward Ccs -> Ics change.
+// CHanges on how/when property filenames are loaded.
+//
 // Revision 0.18  2003/03/26 15:39:44  cjm
 // Title and Icon changes.
 //
