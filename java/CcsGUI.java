@@ -1,5 +1,5 @@
 // CcsGUI.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.1 1999-11-22 09:53:49 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.2 1999-11-24 12:51:28 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -10,18 +10,19 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import ngat.message.base.*;
+import ngat.util.*;
 
 /**
  * This class is the start point for the Ccs GUI.
  * @author Chris Mottram
- * @version $Revision: 0.1 $
+ * @version $Revision: 0.2 $
  */
 public class CcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.1 1999-11-22 09:53:49 cjm Exp $");
+	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.2 1999-11-24 12:51:28 cjm Exp $");
 	/**
 	 * The stream to write error messages to - defaults to System.err.
 	 */
@@ -83,6 +84,10 @@ public class CcsGUI
 	 * Reference to the ISS server thread.
 	 */
 	private CcsGUIServer server = null;
+	/**
+	 * Thread scheduler.
+	 */
+	private CPUScheduler scheduler = null;
 
 	public CcsGUI()
 	{
@@ -278,7 +283,7 @@ System.err.println(UIManager.getLookAndFeel());
 
 		logTextArea = new JTextArea("");
 		logTextArea.setLineWrap(true);
-		logTextArea.setWrapStyleWord(true);
+		logTextArea.setWrapStyleWord(false);
 		logTextArea.setEditable(false);
 
 		areaScrollPane = new JScrollPane(logTextArea);
@@ -319,6 +324,11 @@ System.err.println(UIManager.getLookAndFeel());
 		menu.setMnemonic(KeyEvent.VK_G);
 		menu.getAccessibleContext().setAccessibleDescription("The General Menu");
 		menuBar.add(menu);
+        // Thread Monitor
+		menuItem = new JMenuItem("Thread Monitor",KeyEvent.VK_T);
+		menuItem.getAccessibleContext().setAccessibleDescription("Starts a thread monitor");
+		menuItem.addActionListener(menuItemListener);
+		menu.add(menuItem);
         // Exit
 		menuItem = new JMenuItem("Exit",KeyEvent.VK_X);
 		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X,ActionEvent.CTRL_MASK));
@@ -418,7 +428,7 @@ System.err.println(UIManager.getLookAndFeel());
 		submenu.setMnemonic(KeyEvent.VK_I);
         // ABORT
 		menuItem = new JMenuItem("Abort",KeyEvent.VK_A);
-		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A,ActionEvent.ALT_MASK));
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A,ActionEvent.CTRL_MASK));
 		menuItem.getAccessibleContext().setAccessibleDescription("Send an Abort command");
 		menuItem.addActionListener(menuItemListener);
 		submenu.add(menuItem);
@@ -497,13 +507,14 @@ System.err.println(UIManager.getLookAndFeel());
 
 	/**
  	 * The run routine. Sets the main frame visible. Starts the 
-	 * @see frame.
+	 * @see #frame.
 	 */
 	private void run()
 	{
+		scheduler = new CPUScheduler(100);// diddly ccs_gui.properties
 		server = new CcsGUIServer("CCS GUI ISS Server",issPortNumber);
 		server.setParent(this);
-//		server.setPriority(CcsConstants.CCS_THREAD_PRIORITY_SERVER);
+		scheduler.addThread(server);
 		server.start();
 		frame.pack();
 		frame.setSize(450,300);
@@ -517,7 +528,7 @@ System.err.println(UIManager.getLookAndFeel());
 	 */
 	public void exit(int n)
 	{
-		int tryCount = 0;
+		int tryCount = 0,i;
 
 		try
 		{
@@ -526,14 +537,26 @@ System.err.println(UIManager.getLookAndFeel());
 				log("Exiting program: wait for "+status.clientThreadListCount()+
 					" commands to finish processing.");
 				tryCount = 0;
-				while((status.clientThreadListCount()>0)&&(tryCount < 10))
+				while((status.clientThreadListCount()>0)&&(tryCount < 3))
 				{
-					Thread.sleep(10000);
 					log("There are "+status.clientThreadListCount()+
 						" commands still processing.");
+					for(i=0;i<status.clientThreadListCount();i++)
+					{
+						CcsGUIClientConnectionThread thread = null;
+
+						thread = status.clientThreadAt(i);
+						if(thread.isAlive() == false)
+						{
+							status.removeClientThread(thread);
+							i--;
+						}
+					}
+					if(status.clientThreadListCount()>0)
+						Thread.sleep(30000);
 					tryCount++;
 				}
-				if(tryCount == 10)
+				if(tryCount == 3)
 					error("Exiting program:Failed to wait for "+status.clientThreadListCount()+
 						" commands still processing.");
 			}
@@ -604,6 +627,16 @@ System.err.println(UIManager.getLookAndFeel());
 	}
 
 	/**
+	 * Return the GUI's thread scheduler.
+	 * @return The scheduler.
+	 * @see #scheduler
+	 */
+	public CPUScheduler getScheduler()
+	{
+		return scheduler;
+	}
+
+	/**
 	 * Method to send a command to the CCS.
 	 * @param command The command to send.
 	 */	
@@ -613,6 +646,7 @@ System.err.println(UIManager.getLookAndFeel());
 
 		thread = new CcsGUIClientConnectionThread(ccsAddress,ccsPortNumber,command);
 		thread.setParent(this);
+		scheduler.addThread(thread);
 		thread.start();
 		status.addClientThread(thread);
 	}
@@ -631,4 +665,7 @@ System.err.println(UIManager.getLookAndFeel());
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.1  1999/11/22 09:53:49  cjm
+// initial revision.
+//
 //
