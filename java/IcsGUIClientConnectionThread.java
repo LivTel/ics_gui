@@ -1,5 +1,5 @@
 // CcsGUIClientConnectionThread.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.5 2000-02-28 19:14:40 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.6 2000-03-02 12:09:36 cjm Exp $
 
 import java.lang.*;
 import java.io.*;
@@ -20,14 +20,14 @@ import ngat.message.ISS_INST.GET_STATUS_DONE;
  * It implements the generic ISS instrument command protocol.
  * It is used to send commands from the CcsGUI to the Ccs.
  * @author Chris Mottram
- * @version $Revision: 0.5 $
+ * @version $Revision: 0.6 $
  */
 public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.5 2000-02-28 19:14:40 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.6 2000-03-02 12:09:36 cjm Exp $");
 	/**
 	 * The CcsGUI object.
 	 */
@@ -215,7 +215,8 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	 */
 	private void printCalibrateDone(CALIBRATE_DONE calibrateDone)
 	{
-		parent.log("peakCounts:"+calibrateDone.getPeakCounts()+
+		parent.log("Filename:"+calibrateDone.getFilename()+
+			":peakCounts:"+calibrateDone.getPeakCounts()+
 			":meanCounts:"+calibrateDone.getMeanCounts());
 	}
 
@@ -226,7 +227,8 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	 */
 	private void printExposeDone(EXPOSE_DONE exposeDone)
 	{
-		parent.log("Seeing:"+exposeDone.getSeeing()+
+		parent.log("Filename:"+exposeDone.getFilename()+
+			":Seeing:"+exposeDone.getSeeing()+
 			":Brightest Counts:"+exposeDone.getCounts()+
 			":Brightest X Pixel:"+exposeDone.getXpix()+
 			":Brightest Y Pixel:"+exposeDone.getYpix());
@@ -234,6 +236,9 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.5  2000/02/28 19:14:40  cjm
+// Backup.
+//
 // Revision 0.4  2000/02/22 15:42:15  cjm
 // DONE subclass prints only occur on successful is true.
 //
