@@ -1,5 +1,5 @@
 // IcsGUIFilenameShowListener.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIFilenameShowListener.java,v 1.1 2001-07-10 18:21:28 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIFilenameShowListener.java,v 1.2 2001-07-12 10:13:56 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -18,14 +18,14 @@ import ngat.util.*;
  * to transfer the image to the CcsGUI's machine if necessary.
  * It calls a command specified in the config file to display the FITS image.
  * @author Chris Mottram
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class IcsGUIFilenameShowListener implements ActionListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIFilenameShowListener.java,v 1.1 2001-07-10 18:21:28 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIFilenameShowListener.java,v 1.2 2001-07-12 10:13:56 cjm Exp $");
 	/**
 	 * The instance of the main program.
 	 */
@@ -232,6 +232,8 @@ public class IcsGUIFilenameShowListener implements ActionListener
 
 			titPortNumber = status.getPropertyInteger("ccs_gui.net.default_TIT_port_number");
 			tempDirName = status.getProperty("ics_gui.fits.show.temp_dir");
+			if(tempDirName.endsWith(System.getProperty("file.separator")) == false)
+				tempDirName = tempDirName.concat(System.getProperty("file.separator"));
 			srcFile = new File(srcFilename);
 			destFile = new File(tempDirName+srcFile.getName());
 			titClient = new TitClient("CcsGUI",icsAddress.getHostAddress(),titPortNumber);
@@ -245,4 +247,7 @@ public class IcsGUIFilenameShowListener implements ActionListener
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2001/07/10 18:21:28  cjm
+// Initial revision
+//
 //
