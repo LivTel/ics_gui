@@ -1,5 +1,5 @@
 // CcsGUIServerConnectionThread.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIServerConnectionThread.java,v 0.4 2000-05-25 10:59:26 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIServerConnectionThread.java,v 0.5 2000-08-11 14:32:33 cjm Exp $
 import java.lang.*;
 import java.lang.reflect.InvocationTargetException;
 import java.io.*;
@@ -19,14 +19,14 @@ import ngat.swing.GUIMessageDialogShower;
  * This class extends the TCPServerConnectionThread class for the CcsGUI application. This
  * allows CcsGUI to emulate the ISS's response to the CCS sending it commands.
  * @author Chris Mottram
- * @version $Revision: 0.4 $
+ * @version $Revision: 0.5 $
  */
 public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIServerConnectionThread.java,v 0.4 2000-05-25 10:59:26 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIServerConnectionThread.java,v 0.5 2000-08-11 14:32:33 cjm Exp $");
 	/**
 	 * Default time taken to respond to a command.
 	 */
@@ -133,9 +133,9 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 	// setup return object.
 		if(command instanceof AG_START)
 		{
-			// do nothing 
 			AG_START_DONE agStartDone = new AG_START_DONE(command.getId());
 
+			parent.log(command.getClass().getName()+" received.");
 			agStartDone.setErrorNum(0);
 			agStartDone.setErrorString("");
 			agStartDone.setSuccessful(true);
@@ -143,9 +143,9 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 		}
 		if(command instanceof AG_STOP)
 		{
-			// do nothing 
 			AG_STOP_DONE agStopDone = new AG_STOP_DONE(command.getId());
 
+			parent.log(command.getClass().getName()+" received.");
 			agStopDone.setErrorNum(0);
 			agStopDone.setErrorString("");
 			agStopDone.setSuccessful(true);
@@ -153,10 +153,10 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 		}
 		if(command instanceof GET_FITS)
 		{
-			// do nothing 
 			GET_FITS_DONE getFitsDone = new GET_FITS_DONE(command.getId());
 			Hashtable hashTable = new Hashtable();
 
+			parent.log(command.getClass().getName()+" received.");
 		// As defined in the 'Liverpool Telescope Fits Keywords Specification'
 		// These are ISS keywords.
 			hashTable.put("TELESCOP","Liverpool 2m Telescope");
@@ -212,7 +212,6 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 		if(command instanceof MOVE_FOLD)
 		{
 			MOVE_FOLD moveFold = null;
-			// do nothing 
 			MOVE_FOLD_DONE moveFoldDone = new MOVE_FOLD_DONE(command.getId());
 
 			moveFold = (MOVE_FOLD)command;
@@ -226,9 +225,11 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 		}
 		if(command instanceof OFFSET_DEC)
 		{
-			// do nothing 
+			OFFSET_DEC offsetDecCommand = (OFFSET_DEC)command;
 			OFFSET_DEC_DONE offsetDecDone = new OFFSET_DEC_DONE(command.getId());
 
+			parent.log(command.getClass().getName()+" to "+
+				offsetDecCommand.getDecOffset()+".");
 			offsetDecDone.setErrorNum(0);
 			offsetDecDone.setErrorString("");
 			offsetDecDone.setSuccessful(true);
@@ -236,9 +237,11 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 		}
 		if(command instanceof OFFSET_FOCUS)
 		{
-			// do nothing 
+			OFFSET_FOCUS offsetFocusCommand = (OFFSET_FOCUS)command;
 			OFFSET_FOCUS_DONE offsetFocusDone = new OFFSET_FOCUS_DONE(command.getId());
 
+			parent.log(command.getClass().getName()+" to "+
+				offsetFocusCommand.getFocusOffset()+".");
 			offsetFocusDone.setErrorNum(0);
 			offsetFocusDone.setErrorString("");
 			offsetFocusDone.setSuccessful(true);
@@ -246,9 +249,11 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 		}
 		if(command instanceof OFFSET_RA)
 		{
-			// do nothing 
+			OFFSET_RA offsetRaCommand = (OFFSET_RA)command;
 			OFFSET_RA_DONE offsetRaDone = new OFFSET_RA_DONE(command.getId());
 
+			parent.log(command.getClass().getName()+" to "+
+				offsetRaCommand.getRaOffset()+".");
 			offsetRaDone.setErrorNum(0);
 			offsetRaDone.setErrorString("");
 			offsetRaDone.setSuccessful(true);
@@ -256,9 +261,11 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 		}
 		if(command instanceof OFFSET_ROTATOR)
 		{
-			// do nothing 
+			OFFSET_ROTATOR offsetRotatorCommand = (OFFSET_ROTATOR)command;
 			OFFSET_ROTATOR_DONE offsetRotatorDone = new OFFSET_ROTATOR_DONE(command.getId());
 
+			parent.log(command.getClass().getName()+" to "+
+				offsetRotatorCommand.getRotatorOffset()+".");
 			offsetRotatorDone.setErrorNum(0);
 			offsetRotatorDone.setErrorString("");
 			offsetRotatorDone.setSuccessful(true);
@@ -266,9 +273,11 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 		}
 		if(command instanceof SET_FOCUS)
 		{
-			// do nothing 
+			SET_FOCUS setFocusCommand = (SET_FOCUS)command;
 			SET_FOCUS_DONE setFocusDone = new SET_FOCUS_DONE(command.getId());
 
+			parent.log(command.getClass().getName()+" to "+
+				setFocusCommand.getFocus()+".");
 			setFocusDone.setErrorNum(0);
 			setFocusDone.setErrorString("");
 			setFocusDone.setSuccessful(true);
@@ -291,6 +300,9 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.4  2000/05/25 10:59:26  cjm
+// Fixed LONGITUD keyword.
+//
 // Revision 0.3  2000/05/23 15:31:45  cjm
 // Improved GET_FITS command response, FITS keywords returned now as per
 // LT FITS keywords specification.
