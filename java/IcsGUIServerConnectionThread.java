@@ -1,5 +1,5 @@
-// CcsGUIServerConnectionThread.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIServerConnectionThread.java,v 0.10 2001-09-12 19:28:14 cjm Exp $
+// CcsGUIServerConnectionThread.java
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIServerConnectionThread.java,v 0.11 2003-09-19 14:08:45 cjm Exp $
 import java.lang.*;
 import java.lang.reflect.InvocationTargetException;
 import java.io.*;
@@ -17,17 +17,17 @@ import ngat.message.ISS_INST.*;
 import ngat.swing.GUIMessageDialogShower;
 
 /**
- * This class extends the TCPServerConnectionThread class for the CcsGUI application. This
- * allows CcsGUI to emulate the ISS's response to the CCS sending it commands.
+ * This class extends the TCPServerConnectionThread class for the IcsGUI application. This
+ * allows IcsGUI to emulate the ISS's response to the CCS sending it commands.
  * @author Chris Mottram
- * @version $Revision: 0.10 $
+ * @version $Revision: 0.11 $
  */
 public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIServerConnectionThread.java,v 0.10 2001-09-12 19:28:14 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIServerConnectionThread.java,v 0.11 2003-09-19 14:08:45 cjm Exp $");
 	/**
 	 * Default time taken to respond to a command.
 	 */
@@ -37,9 +37,9 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 	 */
 	private final static String FITS_DEFAULTS_FILE_NAME = "./ccs_gui.fits.properties";
 	/**
-	 * The CcsGUI object.
+	 * The IcsGUI object.
 	 */
-	private CcsGUI parent = null;
+	private IcsGUI parent = null;
 
 	/**
 	 * Constructor of the thread. This just calls the superclass constructors.
@@ -54,7 +54,7 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 	 * Routine to set this objects pointer to the parent object.
 	 * @param c The parent object.
 	 */
-	public void setParent(CcsGUI c)
+	public void setParent(IcsGUI c)
 	{
 		this.parent = c;
 	}
@@ -88,7 +88,7 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 	/**
 	 * This method overrides the processCommand method in the ngat.net.TCPServerConnectionThread class.
 	 * It is called from the inherited run method. It is responsible for performing the commands
-	 * sent to it by the CcsGUI. 
+	 * sent to it by the IcsGUI. 
 	 * It should also construct the done object to describe the results of the command.
 	 */
 	protected void processCommand()
@@ -112,6 +112,12 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 			try
 			{
 				sendAcknowledge(infiniteAcknowledge);
+		        // audio feedback
+				if(parent.getAudioFeedback())
+				{
+					parent.getAudioThread().play(parent.getStatus().
+							     getProperty("ics_gui.audio.event.iss-message"));
+				}
 			// bring up a dialog.
 				if(command instanceof SET_FOCUS)
 				{
@@ -158,7 +164,7 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 				parent.error("Bringing up message dialog for command:"+command.getClass().getName()+
 					" failed:"+e);
 			}
-		}
+		}// end if get ISS message dialog
 	// setup return object.
 		if(command instanceof AG_START)
 		{
@@ -276,7 +282,7 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 	 * This method is called when the thread generates an error.
 	 * Currently, this just prints the string using the parents error method.
 	 * @param errorString The error string.
-	 * @see CcsGUI#error
+	 * @see IcsGUI#error
 	 * @see #parent
 	 */
 	protected void processError(String errorString)
@@ -290,8 +296,8 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 	 * to the parents error stream.
 	 * @param errorString The error string.
 	 * @param exception The exception that was thrown.
-	 * @see CcsGUI#error
-	 * @see CcsGUI#getErrorStream
+	 * @see IcsGUI#error
+	 * @see IcsGUI#getErrorStream
 	 * @see #parent
 	 */
 	protected void processError(String errorString,Exception exception)
@@ -302,6 +308,9 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.10  2001/09/12 19:28:14  cjm
+// Updated for new OFFSET_RA_DEC command.
+//
 // Revision 0.9  2001/07/10 18:21:28  cjm
 // Changed GET_FITS implementation to use FitsHeaderDefaults file.
 // errors print a stack trace

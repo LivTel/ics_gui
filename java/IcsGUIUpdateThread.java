@@ -1,5 +1,5 @@
 // CcsGUIUpdateThread.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIUpdateThread.java,v 0.6 2003-07-15 16:20:01 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIUpdateThread.java,v 0.7 2003-09-19 14:08:45 cjm Exp $
 
 import java.lang.*;
 /**
@@ -8,18 +8,18 @@ import java.lang.*;
  * It then calls parent.sendCommand(GET_STATUS) to update the GUI's status.
  * This continues until the thread is quit.
  * @author Chris Mottram
- * @version $Revision: 0.6 $
+ * @version $Revision: 0.7 $
  */
 public class CcsGUIUpdateThread extends Thread
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIUpdateThread.java,v 0.6 2003-07-15 16:20:01 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIUpdateThread.java,v 0.7 2003-09-19 14:08:45 cjm Exp $");
 	/**
-	 * The CcsGUI object.
+	 * The IcsGUI object.
 	 */
-	private CcsGUI parent = null;
+	private IcsGUI parent = null;
 	/**
 	 * The time to sleep (in milliseconds) between spawning GET_STATUS calls.
 	 */
@@ -35,7 +35,7 @@ public class CcsGUIUpdateThread extends Thread
 	 * @param p The parent object.
 	 * @param time The time to wait between calls to GET_STATUS.
 	 */
-	public CcsGUIUpdateThread(CcsGUI p,long time)
+	public CcsGUIUpdateThread(IcsGUI p,long time)
 	{
 		super();
 		parent = p;
@@ -50,7 +50,7 @@ public class CcsGUIUpdateThread extends Thread
 	 * updates the relevant GUI elements. The thread then sleeps for the autoUpdateTime,
 	 * @see #quit
 	 * @see #autoUpdateTime
-	 * @see CcsGUI#sendCommand
+	 * @see IcsGUI#sendCommand
 	 */
 	public void run()
 	{
@@ -112,6 +112,9 @@ public class CcsGUIUpdateThread extends Thread
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.6  2003/07/15 16:20:01  cjm
+// Fixed documentation bug.
+//
 // Revision 0.5  2000/07/03 10:33:09  cjm
 // Level of GET_STATUS now determined by
 // ccs_gui.auto_update.get_status.level property.

@@ -1,5 +1,5 @@
-// IcsGUIFilenameShowListener.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIFilenameShowListener.java,v 1.3 2001-07-31 09:35:41 cjm Exp $
+// IcsGUIFilenameShowListener.java
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIFilenameShowListener.java,v 1.4 2003-09-19 14:08:45 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -13,25 +13,25 @@ import ngat.net.TitClient;
 import ngat.util.*;
 
 /**
- * This class is an ActionListener for the CcsGUI Show Filename push button. 
- * It checks CcsGUI's hostname against the Ccs's hostname, and uses an instance of TitClient
- * to transfer the image to the CcsGUI's machine if necessary.
+ * This class is an ActionListener for the IcsGUI Show Filename push button. 
+ * It checks IcsGUI's hostname against the Ccs's hostname, and uses an instance of TitClient
+ * to transfer the image to the IcsGUI's machine if necessary.
  * It calls a command specified in the config file to display the FITS image.
  * @author Chris Mottram
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class IcsGUIFilenameShowListener implements ActionListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIFilenameShowListener.java,v 1.3 2001-07-31 09:35:41 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIFilenameShowListener.java,v 1.4 2003-09-19 14:08:45 cjm Exp $");
 	/**
 	 * The instance of the main program.
 	 */
-	private CcsGUI parent = null;
+	private IcsGUI parent = null;
 	/**
-	 * A copy of the CcsGUI's reference to it's status object.
+	 * A copy of the IcsGUI's reference to it's status object.
 	 */
 	private CcsGUIStatus status = null;
 
@@ -42,7 +42,7 @@ public class IcsGUIFilenameShowListener implements ActionListener
 	 * @see #parent
 	 * @see #status
 	 */
-	public IcsGUIFilenameShowListener(CcsGUI p)
+	public IcsGUIFilenameShowListener(IcsGUI p)
 	{
 		super();
 
@@ -54,7 +54,7 @@ public class IcsGUIFilenameShowListener implements ActionListener
 	 * Routine that is called when the show button is pressed.
 	 * The following operations are performed:
 	 * <ul>
-	 * <li>The current filename is got from the CcsGUI status window. It is checked to ensure it is valid.
+	 * <li>The current filename is got from the IcsGUI status window. It is checked to ensure it is valid.
 	 * <li>A FilenameShower thread is started to do the rest of the processing.
 	 * </ul>
 	 */
@@ -112,16 +112,16 @@ public class IcsGUIFilenameShowListener implements ActionListener
 		 * The following operations are performed:
 		 * <ul>
 		 * <li>The address of the machine the Ccs is on is checked against the address of the machine the 
-		 * 	CcsGUI is on.
+		 * 	IcsGUI is on.
 		 * 	If they are different, the <i>copyFile</i> method is invoked to copy the FITS file to the
-		 * 	CcsGUI machine.
+		 * 	IcsGUI machine.
 		 * <li>The <b>ics_gui.fits.show.command</b> property is queried to get the command to show the FITS
 		 * 	file. An instance of ExecuteCommand is created and run to run this command. The return value
 		 * 	is checked.
 		 * </ul>
 		 * @see #copyFile
-		 * @see CcsGUI#getFilename
-		 * @see CcsGUI#getCcsAddress
+		 * @see IcsGUI#getFilename
+		 * @see IcsGUI#getCcsAddress
 		 * @see ngat.util.ExecuteCommand
 		 */
 		public void run()
@@ -133,7 +133,7 @@ public class IcsGUIFilenameShowListener implements ActionListener
 			ExecuteCommand command = null;
 			int retval;
 
-		// Check - Is the CcsGUI on the same machine as the Ccs?
+		// Check - Is the IcsGUI on the same machine as the Ccs?
 			icsAddress = parent.getCcsAddress();
 			try
 			{
@@ -198,24 +198,24 @@ public class IcsGUIFilenameShowListener implements ActionListener
 
 		/** 
 		 * This method copies a file on the machine the Ics is running on, to a file on the machine
-		 * the CcsGUI is running on. It assumes the Ics is running a TitServer.
+		 * the IcsGUI is running on. It assumes the Ics is running a TitServer.
 		 * The following processing occurs:
 		 * <ul>
 		 * <li>The TIT port number is retrieved from the <b>ccs_gui.net.default_TIT_port_number</b> property.
 		 * <li>A temporary directory is retrieved from the <b>ics_gui.fits.show.temp_dir</b> property.
-		 * 	This exists on the CcsGUI machine and must be terminated by a path seperator.
+		 * 	This exists on the IcsGUI machine and must be terminated by a path seperator.
 		 * <li>A destination filename is constructed using the temporary directory and the source filename's
 		 * 	name (without it's path component).
 		 * <li>A TitClient instance is constructed using the passed in icsAddress and the TIT port number.
 		 * <li>The file is retrieved using the TitClient instance, from the srcFilename to the
 		 * 	destination filename.
-		 * <li>The destination file's <b>deleteOnExit</b> method is called. This means the CcsGUI will delete
+		 * <li>The destination file's <b>deleteOnExit</b> method is called. This means the IcsGUI will delete
 		 * 	this temporary copy of the FITS file when it exits.
 		 * <li>The destination filename is returned as a string.
 		 * </ul>
 		 * @param icsAddress The address of the machine the Ics process is running on.
 		 * @param srcFilename A string representing the absolute filename of the Ics computer.
-		 * @return A string representing the absolute filename of the copied file on the CcsGUI computer
+		 * @return A string representing the absolute filename of the copied file on the IcsGUI computer
 		 * 	is returned.
 		 * @exception IOException Thrown if an IO error occurs when transfering the FITS file.
 		 * @exception NumberFormatException Thrown if the property containing the TIT port number is not a 
@@ -236,9 +236,9 @@ public class IcsGUIFilenameShowListener implements ActionListener
 				tempDirName = tempDirName.concat(System.getProperty("file.separator"));
 			srcFile = new File(srcFilename);
 			destFile = new File(tempDirName+srcFile.getName());
-			titClient = new TitClient("CcsGUI",icsAddress.getHostAddress(),titPortNumber);
+			titClient = new TitClient("IcsGUI",icsAddress.getHostAddress(),titPortNumber);
 			titClient.request(srcFilename,destFile.toString());
-		// warning, this next line means this copied file is deleted when CcsGUI exits
+		// warning, this next line means this copied file is deleted when IcsGUI exits
 			destFile.deleteOnExit();
 			return destFile.toString();
 		}
@@ -247,6 +247,9 @@ public class IcsGUIFilenameShowListener implements ActionListener
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2001/07/31 09:35:41  cjm
+// Replaced StringUtilites with StringUtilities.
+//
 // Revision 1.2  2001/07/12 10:13:56  cjm
 // Added seperator checking to temporary directory, so that
 // if the property containg the temporary directory does not

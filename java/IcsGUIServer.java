@@ -1,5 +1,5 @@
-// CcsGUIServer.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIServer.java,v 0.3 2001-07-10 18:21:28 cjm Exp $
+// CcsGUIServer.java
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIServer.java,v 0.4 2003-09-19 14:08:45 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -7,23 +7,23 @@ import java.net.*;
 import ngat.net.*;
 
 /**
- * This class extends the TCPServer class for the CcsGUI application. The CcsGUI sends
+ * This class extends the TCPServer class for the IcsGUI application. The IcsGUI sends
  * commands to the Ccs. Some Ccs commands involve sending commands back to the ISS, and
  * this class is designed to catch these requests and to spawn a CcsGUIServerConnectionThread to deal with them.
  * @author Chris Mottram
- * @version $Revision: 0.3 $
+ * @version $Revision: 0.4 $
  */
 public class CcsGUIServer extends TCPServer
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIServer.java,v 0.3 2001-07-10 18:21:28 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIServer.java,v 0.4 2003-09-19 14:08:45 cjm Exp $");
 	/**
-	 * Field holding the instance of the CcsGUI currently executing, 
+	 * Field holding the instance of the IcsGUI currently executing, 
 	 * so we can pass this to spawned threads.
 	 */
-	private CcsGUI parent = null;
+	private IcsGUI parent = null;
 
 	/**
 	 * The constructor. Call the inherited constrctor.
@@ -38,7 +38,7 @@ public class CcsGUIServer extends TCPServer
 	 * @param o The parent object.
 	 * @see #parent
 	 */
-	public void setParent(CcsGUI o)
+	public void setParent(IcsGUI o)
 	{
 		this.parent = o;
 	}
@@ -61,7 +61,7 @@ public class CcsGUIServer extends TCPServer
 	 * Overwritten processError method, that receives error messages when an error occurs.
 	 * The error is dealt with using the parent's error method.
 	 * @param errorString The error string generated.
-	 * @see CcsGUI#error
+	 * @see IcsGUI#error
 	 */
 	protected void processError(String errorString)
 	{
@@ -74,8 +74,8 @@ public class CcsGUIServer extends TCPServer
 	 * to the parents error stream.
 	 * @param errorString The error string.
 	 * @param exception The exception that was thrown.
-	 * @see CcsGUI#error
-	 * @see CcsGUI#getErrorStream
+	 * @see IcsGUI#error
+	 * @see IcsGUI#getErrorStream
 	 * @see #parent
 	 */
 	protected void processError(String errorString,Exception exception)
@@ -86,6 +86,9 @@ public class CcsGUIServer extends TCPServer
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.3  2001/07/10 18:21:28  cjm
+// errors now print stack trace.
+//
 // Revision 0.2  2001/02/13 10:27:47  cjm
 // Added processError method to put errors into the logging box.
 //

@@ -1,5 +1,5 @@
-// CcsGUIUpdateListener.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIUpdateListener.java,v 0.1 1999-12-08 10:42:37 cjm Exp $
+// CcsGUIUpdateListener.java
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIUpdateListener.java,v 0.2 2003-09-19 14:08:45 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -9,24 +9,24 @@ import java.awt.event.*;
 import javax.swing.*;
 
 /**
- * This class is an ActionListener for the CcsGUI auto-update checkbox. It starts a thread
+ * This class is an ActionListener for the IcsGUI auto-update checkbox. It starts a thread
  * to call the Ccs with a GET_STATUS command when the check-box is checked. It stops the thread
  * when the checkbox in un-checked.
  * @author Chris Mottram
- * @version $Revision: 0.1 $
+ * @version $Revision: 0.2 $
  */
 public class CcsGUIUpdateListener implements ActionListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIUpdateListener.java,v 0.1 1999-12-08 10:42:37 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIUpdateListener.java,v 0.2 2003-09-19 14:08:45 cjm Exp $");
 	/**
 	 * The instance of the main program.
 	 */
-	private CcsGUI parent = null;
+	private IcsGUI parent = null;
 	/**
-	 * Thread that calls CcsGUI.sendCommand(GET_STATUS) every time status needs to be updated.
+	 * Thread that calls IcsGUI.sendCommand(GET_STATUS) every time status needs to be updated.
 	 */
 	private CcsGUIUpdateThread updateThread = null;
 
@@ -35,7 +35,7 @@ public class CcsGUIUpdateListener implements ActionListener
 	 * @param p The parent object which owns the menu items.
 	 * @see #parent
 	 */
-	public CcsGUIUpdateListener(CcsGUI p)
+	public CcsGUIUpdateListener(IcsGUI p)
 	{
 		super();
 
@@ -50,7 +50,7 @@ public class CcsGUIUpdateListener implements ActionListener
 	 * If the time is invalid, the checkbox is set back to un-selected.
 	 * If the new state is unset, the previously created thread is stopped and reset to null.
 	 * @param event The event that caused this call to the listener.
-	 * @see CcsGUI#getAutoUpdateTime
+	 * @see IcsGUI#getAutoUpdateTime
 	 * @see CcsGUIUpdateThread
 	 * @see CcsGUIUpdateThread#quit
 	 */
@@ -86,4 +86,7 @@ public class CcsGUIUpdateListener implements ActionListener
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.1  1999/12/08 10:42:37  cjm
+// initial revision.
+//
 //
