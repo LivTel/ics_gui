@@ -1,5 +1,5 @@
 // CcsGUI.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.15 2001-07-10 18:21:28 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/CcsGUI.java,v 0.16 2002-05-23 12:44:53 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -19,14 +19,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ccs GUI.
  * @author Chris Mottram
- * @version $Revision: 0.15 $
+ * @version $Revision: 0.16 $
  */
 public class CcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.15 2001-07-10 18:21:28 cjm Exp $");
+	public final static String RCSID = new String("$Id: CcsGUI.java,v 0.16 2002-05-23 12:44:53 cjm Exp $");
 	/**
 	 * The stream to write error messages to - defaults to System.err.
 	 */
@@ -516,6 +516,12 @@ public class CcsGUI
 		menuItem.getAccessibleContext().setAccessibleDescription("Send an Dark command");
 		menuItem.addActionListener(menuItemListener);
 		submenu.add(menuItem);
+        // DAY_CALIBRATE
+		menuItem = new JMenuItem("Day Calibrate",KeyEvent.VK_Y);
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y,ActionEvent.CTRL_MASK));
+		menuItem.getAccessibleContext().setAccessibleDescription("Send an Daylight Calibrate command");
+		menuItem.addActionListener(menuItemListener);
+		submenu.add(menuItem);
         // LAMPFLAT
 		menuItem = new JMenuItem("Lamp Flat",KeyEvent.VK_L);
 		menuItem.getAccessibleContext().setAccessibleDescription("Send an Lamp Flat command");
@@ -524,6 +530,12 @@ public class CcsGUI
         // SKYFLAT
 		menuItem = new JMenuItem("Sky Flat",KeyEvent.VK_S);
 		menuItem.getAccessibleContext().setAccessibleDescription("Send an Sky Flat command");
+		menuItem.addActionListener(menuItemListener);
+		submenu.add(menuItem);
+        // TWILIGHT_CALIBRATE
+		menuItem = new JMenuItem("Twilight Calibrate",KeyEvent.VK_W);
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W,ActionEvent.CTRL_MASK));
+		menuItem.getAccessibleContext().setAccessibleDescription("Send an Twilight Calibrate command");
 		menuItem.addActionListener(menuItemListener);
 		submenu.add(menuItem);
 	// add CALIBRATE submenu
@@ -1240,6 +1252,15 @@ public class CcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.15  2001/07/10 18:21:28  cjm
+// filenameLabel added.
+// Label strings changed.
+// filenameButton added.
+// ics_gui.auto_update.min_time added.
+// getCcsAddress added.
+// setFiltersSelectedLabel for Nu-View added.
+// getFilename added.
+//
 // Revision 0.14  2001/02/27 13:45:40  cjm
 // Modified keyboard shortcuts.
 //
