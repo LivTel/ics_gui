@@ -1,5 +1,5 @@
 // IcsGUIConfigProperties.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.6 2002-12-16 18:35:51 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.7 2003-07-15 16:20:01 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -11,14 +11,14 @@ import ngat.phase2.*;
  * in a Java properties file and this class extends java.util.Properties
  * @see java.util.Properties
  * @author Chris Mottram
- * @version $Revision: 0.6 $
+ * @version $Revision: 0.7 $
  */
 public class IcsGUIConfigProperties extends Properties
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.6 2002-12-16 18:35:51 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.7 2003-07-15 16:20:01 cjm Exp $");
 	/**
 	 * Configuration type specifier:CCD (RATCam).
 	 */
@@ -175,6 +175,9 @@ public class IcsGUIConfigProperties extends Properties
 			case CONFIG_TYPE_SPECTROGRAPH_NUVIEW:
 				c = getNuViewConfigById(id);
 				break;
+			case CONFIG_TYPE_INFRA_RED_SUPIRCAM:
+				c = getIRCamConfigById(id);
+				break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":getConfigById:Id "
 					+id+" type "+type+" not a supported type of configuration.");
@@ -248,6 +251,9 @@ public class IcsGUIConfigProperties extends Properties
 				remove(configIdStringYBin(id));
 				remove(configIdStringWavelength(id));
 				break;
+			case CONFIG_TYPE_INFRA_RED_SUPIRCAM:
+				remove(configIdStringFilterWheel(id));
+				break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":deleteId:Id "
 					+id+" type "+type+" not a supported type of configuration.");
@@ -308,6 +314,10 @@ public class IcsGUIConfigProperties extends Properties
 					remove(configIdStringYBin(i));
 					setConfigWavelength(i-1,getConfigWavelength(i));
 					remove(configIdStringWavelength(i));
+					break;
+			case CONFIG_TYPE_INFRA_RED_SUPIRCAM:
+					setConfigFilterWheel(i-1,getConfigFilterWheel(i));
+					remove(configIdStringFilterWheel(i));
 					break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":deleteId:Id "
@@ -613,6 +623,29 @@ public class IcsGUIConfigProperties extends Properties
 		//put(configIdStringWavelength(id),Double.toString(wavelength));
 	// jdk 1.2.x
 		setProperty(configIdStringWavelength(id),Double.toString(wavelength));
+	}
+
+	/**
+	 * Method to get the filter wheel string of configuration id id (INFRA_RED_SUPIRCAM).
+	 * @param id The id of the configuration.
+	 * @return The configuration filter wheel string.
+	 */
+	public String getConfigFilterWheel(int id)
+	{
+		return getProperty(configIdStringFilterWheel(id));
+	}
+
+	/**
+	 * Method to set the upper filter wheel string of configuration id id (INFRA_RED_SUPIRCAM).
+	 * @param id The id of the configuration.
+	 * @param s The configuration filter wheel string.
+	 */
+	public void setConfigFilterWheel(int id,String s)
+	{
+	// jdk 1.1.x
+		//put(configIdStringUpperFilterWheel(id),s);
+	// jdk 1.2.x
+		setProperty(configIdStringFilterWheel(id),s);
 	}
 
 	/**
@@ -947,6 +980,42 @@ public class IcsGUIConfigProperties extends Properties
 		return c;
 	}
 
+	/**
+	 * Method to return a IRCamConfig, constructed from the information against id id.
+	 * @param id The Id number.
+	 * @return The constructed IRCamConfig.
+	 * @exception NumberFormatException Thrown if a numeric parameter is not returned from the properties
+	 * 	file as a legal number.
+	 * @exception IllegalArgumentException Thrown if the config id specified does not have a legal type.
+	 */
+	private IRCamConfig getIRCamConfigById(int id) throws NumberFormatException, IllegalArgumentException
+	{
+		IRCamConfig c = null;
+		IRCamDetector detector = null;
+
+	// check type
+		if(getConfigType(id) != CONFIG_TYPE_INFRA_RED_SUPIRCAM)
+		{
+			throw new IllegalArgumentException(this.getClass().getName()+":getIRCamConfigById:Id "
+				+id+" not a configuration of type Infra Red (SupIRCam).");
+		}
+	// construct IRCamConfig
+		c = new IRCamConfig(getConfigName(id));
+		c.setFilterWheel(getConfigFilterWheel(id));
+	// setup detector
+		detector = new IRCamDetector();
+		detector.setXBin(1);
+		detector.setYBin(1);
+		// note, other Detector fields not set, as they are not used by the instrument.
+	// don't set windows into detector, use default windows.
+	// Note flags are held IN the window list, so must setWindowFlags AFTER detector windows set
+		detector.setWindowFlags(0);
+	// set detector into config
+		c.setDetector(0,detector);
+	// return config
+		return c;
+	}
+
 // method to check values in the property file.
 	/**
 	 * Method to check whether a number is a legal configuration type number.
@@ -1062,6 +1131,17 @@ public class IcsGUIConfigProperties extends Properties
 	private String configIdStringWavelength(int id)
 	{
 		return new String(configIdString(id)+"filterWavelength");
+	}
+
+	/**
+	 * Method to return a key for the filter wheel for a particular config id.
+	 * @param id The config id.
+	 * @return The key string.
+	 * @see #configIdString
+	 */
+	private String configIdStringFilterWheel(int id)
+	{
+		return new String(configIdString(id)+"filterWheel");
 	}
 
 	/**
@@ -1225,6 +1305,9 @@ public class IcsGUIConfigProperties extends Properties
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.6  2002/12/16 18:35:51  cjm
+// Changed NPCCDConfig to CCDConfig
+//
 // Revision 0.5  2001/07/10 18:21:28  cjm
 // Added ability to save Nu_View and MES configurations.
 //

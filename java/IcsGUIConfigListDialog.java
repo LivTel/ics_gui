@@ -1,5 +1,5 @@
-// IcsGUIConfigListDialog.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigListDialog.java,v 0.3 2001-07-10 18:21:28 cjm Exp $
+// IcsGUIConfigListDialog.java
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigListDialog.java,v 0.4 2003-07-15 16:20:01 cjm Exp $
 import java.lang.*;
 import java.util.*;
 import java.awt.*;
@@ -18,7 +18,7 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public static String RCSID = new String("$Id: IcsGUIConfigListDialog.java,v 0.3 2001-07-10 18:21:28 cjm Exp $");
+	public static String RCSID = new String("$Id: IcsGUIConfigListDialog.java,v 0.4 2003-07-15 16:20:01 cjm Exp $");
 	/**
 	 * String to go on buttons.
 	 */
@@ -74,6 +74,10 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	 * The Add/Amend dialog to use when Add or Amend is selected for a NuView configuration.
 	 */
 	private IcsGUILowResSpecConfigAADialog addAmendNuViewDialog = null;
+	/**
+	 * The Add/Amend dialog to use when Add or Amend is selected for a NuView configuration.
+	 */
+	private IcsGUIIRCamConfigAADialog addAmendIRCamDialog = null;
 	/**
 	 * The config dialog that caused this dialog to be managed.
 	 */
@@ -137,6 +141,9 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	// create a NuView add/amend dialog
 		addAmendNuViewDialog = new IcsGUILowResSpecConfigAADialog(owner,c);
 		addAmendNuViewDialog.addCcsConfigAADialogListener(this);
+	// create a IRCam add/amend dialog
+		addAmendIRCamDialog = new IcsGUIIRCamConfigAADialog(owner,c);
+		addAmendIRCamDialog.addCcsConfigAADialogListener(this);
 	}
 
 	/**
@@ -233,8 +240,12 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 						addAmendNuViewDialog.pack();
 						addAmendNuViewDialog.add();
 						break;
-					case IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_MES:
 					case IcsGUIConfigProperties.CONFIG_TYPE_INFRA_RED_SUPIRCAM:
+						addAmendIRCamDialog.setLocation(getX()+getWidth(),getY());
+						addAmendIRCamDialog.pack();
+						addAmendIRCamDialog.add();
+						break;
+					case IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_MES:
 					default:
 						JOptionPane.showMessageDialog((Component)null,
 							(Object)("Add operation not supported yet"),
@@ -261,8 +272,12 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 						addAmendNuViewDialog.pack();
 						addAmendNuViewDialog.amend(id);
 						break;
-					case IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_MES:
 					case IcsGUIConfigProperties.CONFIG_TYPE_INFRA_RED_SUPIRCAM:
+						addAmendIRCamDialog.setLocation(getX()+getWidth(),getY());
+						addAmendIRCamDialog.pack();
+						addAmendIRCamDialog.amend(id);
+						break;
+					case IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_MES:
 					default:
 						JOptionPane.showMessageDialog((Component)null,
 							(Object)("Amend type not supported"),
@@ -465,6 +480,9 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.3  2001/07/10 18:21:28  cjm
+// Added ability to Add/Amend/Delete Nu-View and MES configurations.
+//
 // Revision 0.2  2000/11/30 18:47:44  cjm
 // Made generic for other instruments.
 //
