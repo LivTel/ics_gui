@@ -1,5 +1,5 @@
 # Makefile -*- mode: Fundamental;-*-
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.2 1999-11-29 11:41:48 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.3 1999-11-30 11:25:54 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -11,7 +11,7 @@ DOCFLAGS 	= -version -author -private
 # note - only MAIN_SRCS checked in/out
 # note - DIALOG_SRCS are deleted on clean target to ensure they are re-built
 SRCS 		= $(MAIN_SRCS) $(DIALOG_SRCS)
-MAIN_SRCS	= CcsGUI.java CcsGUIStatus.java CcsGUIMenuItemListener.java GUIDialogListener.java CcsGUIDialogListener.java CcsCommandDialog.java CcsGUIServer.java CcsGUIServerConnectionThread.java CcsGUIClientConnectionThread.java CcsCCDConfigProperties.java CcsCCDConfigListDialog.java CcsGUIConfigButtonListener.java
+MAIN_SRCS	= CcsGUI.java CcsGUIStatus.java CcsGUIWindowListener.java CcsGUIMenuItemListener.java GUIDialogListener.java CcsGUIDialogListener.java CcsCommandDialog.java CcsGUIServer.java CcsGUIServerConnectionThread.java CcsGUIClientConnectionThread.java CcsCCDConfigProperties.java CcsCCDConfigListDialog.java CcsGUIConfigButtonListener.java
 DIALOG_SRCS	= ACQUIREDialog.java $(CALIBRATE_DIALOG_SRCS) $(EXPOSE_DIALOG_SRCS) $(INTERRUPT_DIALOG_SRCS) $(SETUP_DIALOG_SRCS)
 CALIBRATE_DIALOG_SRCS	= ARCDialog.java BIASDialog.java DARKDialog.java LAMPFLATDialog.java SKYFLATDialog.java
 EXPOSE_DIALOG_SRCS	= GLANCEDialog.java MOVIEDialog.java MULTRUNDialog.java RUNATDialog.java SAVEDialog.java
@@ -50,6 +50,9 @@ tidy:
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.2  1999/11/29 11:41:48  cjm
+# Removed source files now in ngat.swing;
+#
 # Revision 0.1  1999/11/22 09:53:49  cjm
 # initial revision.
 #
