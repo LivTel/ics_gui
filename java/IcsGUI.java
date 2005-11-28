@@ -1,9 +1,9 @@
 // IcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.9 2004-08-05 16:54:41 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.10 2005-11-28 14:10:00 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
-import java.text.DecimalFormat;
+import java.text.*;
 import java.util.*;
 
 import java.awt.*;
@@ -21,14 +21,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class IcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.9 2004-08-05 16:54:41 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.10 2005-11-28 14:10:00 cjm Exp $");
 	/**
 	 * Internal constant used when converting temperatures in centigrade (from the CCD controller) to Kelvin.
 	 */
@@ -41,6 +41,10 @@ public class IcsGUI
 	 * The stream to write log messages to - defaults to System.out.
 	 */
 	private PrintWriter logStream = new PrintWriter(System.out,true);
+	/** 
+	 * Simple date format in a style similar to ISO 8601.
+	 */
+	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd 'T' HH:mm:ss.SSS z");
 	/**
 	 * Top level frame for the program.
 	 */
@@ -187,7 +191,9 @@ public class IcsGUI
 	{
 		MetalLookAndFeel metalLookAndFeel = null;
 
+		System.err.println("Starting IcsGUI...");
 	// setup LTMetalTheme
+		System.err.println("Setting LT Metal Theme...");
 		try
 		{
 			Class cl = Class.forName(UIManager.getCrossPlatformLookAndFeelClassName());
@@ -200,15 +206,20 @@ public class IcsGUI
 			System.err.println("UIManager.setLookAndFeel failed:"+e);
 		}
 	// create and display a splash screen whilst we are initialising
+		System.err.println("Starting splash screen...");
 		ngat.swing.SplashScreen splashScreen = new ngat.swing.SplashScreen(350,200,"lt.gif",
 			"Liverpool John Moores University",null);
 		splashScreen.show(30000);
 	// construct gui main object
+		System.err.println("Constructing IcsGUI...");
 		IcsGUI icsGUI = new IcsGUI();
 		try
 		{
+			icsGUI.log("Parsing Property Filename.");
 			icsGUI.parsePropertyFilenameArgument(args);
+			icsGUI.log("Initialising Status.");
 			icsGUI.initStatus();
+			icsGUI.log("Parsing command line arguments.");
 			icsGUI.parseArguments(args);
 		}
 		catch(Exception e)
@@ -216,9 +227,13 @@ public class IcsGUI
 			icsGUI.error(e.toString());
 			System.exit(1);
 		}
+		icsGUI.log("Intialising GUI.");
 		icsGUI.initGUI();
+		icsGUI.log("Intialising Audio.");
 		icsGUI.initAudio();
+		icsGUI.log("Calling main run.");
 		icsGUI.run();
+		icsGUI.log("End of main.");
 	}
 
 	/**
@@ -900,9 +915,12 @@ public class IcsGUI
 	 * The actual appending is done in the swing thread, using an ngat.swing.GUIAttributedTextAreaAppender.
 	 * A ngat.swing.GUIAttributedTextAreaLengthLimiter is also invoked later, so that the logging text area
 	 * does not get so long it swallows all the memory.
+	 * The log entry to file has the current date pre-prended to it, formatted using simpleDateFormat.
+	 * Note until logStream is pointed to a file, logs are written to stdout.
 	 * @param s The string to write.
 	 * @see #logTextArea
 	 * @see #logStream
+	 * @see #simpleDateFormat
 	 */
 	public void log(String s)
 	{
@@ -912,7 +930,7 @@ public class IcsGUI
 			SwingUtilities.invokeLater(new GUIAttributedTextAreaLengthLimiter(logTextArea,
 						   logTextAreaLineLimit,logTextAreaDeleteLength,false));
 		}
-		logStream.println(s);
+		logStream.println(simpleDateFormat.format(new Date())+" : "+s);
 	}
 
 	/**
@@ -921,10 +939,13 @@ public class IcsGUI
 	 * The actual appending is done in the swing thread, using an ngat.swing.GUIAttributedTextAreaAppender.
 	 * A ngat.swing.GUIAttributedTextAreaLengthLimiter is also invoked later, so that the logging text area
 	 * does not get so long it swallows all the memory.
+	 * The log entry to file has the current date pre-prended to it, formatted using simpleDateFormat.
+	 * Note until logStream is pointed to a file, logs are written to stdout.
 	 * @param s The string to write.
 	 * @param c The colour of the text to write.
 	 * @see #logTextArea
 	 * @see #logStream
+	 * @see #simpleDateFormat
 	 */
 	public void log(String s,Color c)
 	{
@@ -934,7 +955,7 @@ public class IcsGUI
 			SwingUtilities.invokeLater(new GUIAttributedTextAreaLengthLimiter(logTextArea,
 											  logTextAreaLineLimit,false));
 		}
-		logStream.println(s);
+		logStream.println(simpleDateFormat.format(new Date())+" : "+s);
 	}
 
 	/**
@@ -943,8 +964,11 @@ public class IcsGUI
 	 * using an ngat.swing.GUIAttributedTextAreaAppender.
 	 * A ngat.swing.GUIAttributedTextAreaLengthLimiter is also invoked later, so that the logging text area
 	 * does not get so long it swallows all the memory.
+	 * The error log entry to file has the current date pre-prended to it, formatted using simpleDateFormat.
+	 * Note until errorStream is pointed to a file, error logs are written to stderr.
 	 * @param s The string to write.
 	 * @see #errorStream
+	 * @see #simpleDateFormat
 	 */
 	public void error(String s)
 	{
@@ -955,7 +979,7 @@ public class IcsGUI
 			SwingUtilities.invokeLater(new GUIAttributedTextAreaLengthLimiter(logTextArea,
 											  logTextAreaLineLimit,false));
 		}
-		errorStream.println(s);
+		errorStream.println(simpleDateFormat.format(new Date())+" : "+s);
 	}
 
 	/**
@@ -1519,6 +1543,9 @@ public class IcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.9  2004/08/05 16:54:41  cjm
+// Added delete length property.
+//
 // Revision 1.8  2004/06/15 19:15:39  cjm
 // Changed audio feedback and added new ones.
 //
