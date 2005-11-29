@@ -1,5 +1,5 @@
 // IcsGUIConfigProperties.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.10 2003-11-17 19:06:44 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.11 2005-11-29 16:31:40 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -11,14 +11,14 @@ import ngat.phase2.*;
  * in a Java properties file and this class extends java.util.Properties
  * @see java.util.Properties
  * @author Chris Mottram
- * @version $Revision: 0.10 $
+ * @version $Revision: 0.11 $
  */
 public class IcsGUIConfigProperties extends Properties
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.10 2003-11-17 19:06:44 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.11 2005-11-29 16:31:40 cjm Exp $");
 	/**
 	 * Configuration type specifier:CCD (RATCam).
 	 */
@@ -40,15 +40,21 @@ public class IcsGUIConfigProperties extends Properties
 	 */
 	public final static int CONFIG_TYPE_SPECTROGRAPH_FTSPEC = 4;
 	/**
+	 * Configuration type specifier:Polarimeter (Ringo Star).
+	 */
+	public final static int CONFIG_TYPE_POLARIMETER_RINGOSTAR = 5;
+	/**
 	 * List of legal values that can be held in the config type field.
 	 * @see #CONFIG_TYPE_CCD_RATCAM
 	 * @see #CONFIG_TYPE_SPECTROGRAPH_MES
 	 * @see #CONFIG_TYPE_SPECTROGRAPH_NUVIEW
 	 * @see #CONFIG_TYPE_INFRA_RED_SUPIRCAM
 	 * @see #CONFIG_TYPE_SPECTROGRAPH_FTSPEC
+	 * @see #CONFIG_TYPE_POLARIMETER_RINGOSTAR
 	 */
 	public final static int CONFIG_TYPE_LIST[] = {CONFIG_TYPE_CCD_RATCAM,CONFIG_TYPE_SPECTROGRAPH_MES,
-		CONFIG_TYPE_SPECTROGRAPH_NUVIEW,CONFIG_TYPE_INFRA_RED_SUPIRCAM,CONFIG_TYPE_SPECTROGRAPH_FTSPEC};
+		CONFIG_TYPE_SPECTROGRAPH_NUVIEW,CONFIG_TYPE_INFRA_RED_SUPIRCAM,CONFIG_TYPE_SPECTROGRAPH_FTSPEC,
+						      CONFIG_TYPE_POLARIMETER_RINGOSTAR};
 	/**
 	 * Filename for properties file.
 	 */
@@ -163,6 +169,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * @see #getNuViewConfigById
 	 * @see #getIRCamConfigById
 	 * @see #getFTSpecConfigById
+	 * @see #getPolarimeterConfigById
 	 */
 	public InstrumentConfig getConfigById(int id) throws NumberFormatException, IllegalArgumentException
 	{
@@ -187,6 +194,9 @@ public class IcsGUIConfigProperties extends Properties
 				break;
 			case CONFIG_TYPE_SPECTROGRAPH_FTSPEC:
 				c = getFTSpecConfigById(id);
+				break;
+			case CONFIG_TYPE_POLARIMETER_RINGOSTAR:
+				c = getPolarimeterConfigById(id);
 				break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":getConfigById:Id "
@@ -268,6 +278,10 @@ public class IcsGUIConfigProperties extends Properties
 				remove(configIdStringXBin(id));
 				remove(configIdStringYBin(id));
 				break;
+			case CONFIG_TYPE_POLARIMETER_RINGOSTAR:
+				remove(configIdStringXBin(id));
+				remove(configIdStringYBin(id));
+				break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":deleteId:Id "
 					+id+" type "+type+" not a supported type of configuration.");
@@ -334,6 +348,12 @@ public class IcsGUIConfigProperties extends Properties
 					remove(configIdStringFilterWheel(i));
 					break;
 			case CONFIG_TYPE_SPECTROGRAPH_FTSPEC:
+					setConfigXBin(i-1,getConfigXBin(i));
+					remove(configIdStringXBin(i));
+					setConfigYBin(i-1,getConfigYBin(i));
+					remove(configIdStringYBin(i));
+					break;
+			case CONFIG_TYPE_POLARIMETER_RINGOSTAR:
 					setConfigXBin(i-1,getConfigXBin(i));
 					remove(configIdStringXBin(i));
 					setConfigYBin(i-1,getConfigYBin(i));
@@ -1082,6 +1102,44 @@ public class IcsGUIConfigProperties extends Properties
 		return c;
 	}
 
+	/**
+	 * Method to return a PolarimeterConfig, constructed from the information against id id.
+	 * @param id The Id number.
+	 * @return The constructed PolarimeterConfig.
+	 * @exception NumberFormatException Thrown if a numeric parameter is not returned from the properties
+	 * 	file as a legal number.
+	 * @exception IllegalArgumentException Thrown if the config id specified does not have a legal type.
+	 */
+	private PolarimeterConfig getPolarimeterConfigById(int id) throws NumberFormatException, 
+									 IllegalArgumentException
+	{
+		PolarimeterConfig c = null;
+		PolarimeterDetector detector = null;
+
+	// check type
+		if(getConfigType(id) != CONFIG_TYPE_POLARIMETER_RINGOSTAR)
+		{
+			throw new IllegalArgumentException(this.getClass().getName()+":getPolarimeterConfigById:Id "
+				+id+" not a configuration of type Polarimeter (Ringo Star).");
+		}
+	// construct PolarimeterConfig
+		c = new PolarimeterConfig(getConfigName(id));
+		c.setCalibrateBefore(getConfigCalibrateBefore(id));
+		c.setCalibrateAfter(getConfigCalibrateAfter(id));
+	// setup detector
+		detector = new PolarimeterDetector();
+		detector.setXBin(getConfigXBin(id));
+		detector.setYBin(getConfigYBin(id));
+		// note, other Detector fields not set, as they are not used by the instrument.
+	// don't set windows into detector, use default windows.
+	// Note flags are held IN the window list, so must setWindowFlags AFTER detector windows set
+		detector.setWindowFlags(0);
+	// set detector into config
+		c.setDetector(0,detector);
+	// return config
+		return c;
+	}
+
 // method to check values in the property file.
 	/**
 	 * Method to check whether a number is a legal configuration type number.
@@ -1371,6 +1429,11 @@ public class IcsGUIConfigProperties extends Properties
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.10  2003/11/17 19:06:44  cjm
+// Added InstrumentConfig setCalibrateBefore and setCalibrateAfter when
+// calling getXXXConfigById so all InstrumentConfig sub-classes have calibrateBefore and calibrateAfter
+// flags properly set (only IRCamConfig had this previously).
+//
 // Revision 0.9  2003/11/14 15:02:12  cjm
 // Added FTSpec / FixedFormatSpecConfig code.
 //
