@@ -1,5 +1,5 @@
 # Makefile
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.31 2004-10-13 19:53:40 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.32 2005-11-29 17:04:39 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -20,7 +20,7 @@ MAIN_SRCS	= IcsGUI.java CcsGUIStatus.java CcsGUIWindowListener.java CcsGUIMenuIt
 SERVER_SRCS	= CcsGUIServer.java CcsGUIServerConnectionThread.java
 CONFIG_SRCS	= IcsGUIConfigProperties.java IcsGUIConfigListDialog.java CcsGUIConfigButtonListener.java \
 		IcsGUICCDConfigAADialog.java IcsGUILowResSpecConfigAADialog.java IcsGUIIRCamConfigAADialog.java \
-		IcsGUIFixedFormatSpecConfigAADialog.java CcsConfigAADialogListener.java 
+		IcsGUIFixedFormatSpecConfigAADialog.java IcsGUIPolarimeterConfigAADialog.java CcsConfigAADialogListener.java 
 UPDATE_SRCS	= CcsGUIUpdateListener.java CcsGUIUpdateThread.java
 
 DIALOG_SRCS	= ACQUIREDialog.java $(CALIBRATE_DIALOG_SRCS) $(EXPOSE_DIALOG_SRCS) $(INTERRUPT_DIALOG_SRCS) $(SETUP_DIALOG_SRCS)
@@ -42,25 +42,30 @@ CCS_GUI_PROPERTY_SRCS	= ltccd1.ccs_gui.properties \
 	ltobs9.supircam.ccs_gui.properties \
 	ltobs9.spectrograph.scs_gui.properties ltobs9.ftspec.ics_gui.properties ltobs9.nuview1.ics_gui.properties \
 	supircam1.ccs_gui.properties supircam2.ccs_gui.properties ftspec1.ccs_gui.properties \
-	spectrograph.ccs_gui.properties nuview1.ccs_gui.properties \
+	spectrograph.ccs_gui.properties nuview1.ccs_gui.properties ratcam1.ics_gui.properties \
 	lttmc.ccs_gui.properties ftntmc.ccs_gui.properties ftstmc.ccs_gui.properties
 CCS_GUI_CONFIG_PROPERTY_SRCS = ltccd1.ccs_gui_config.properties ltccd2.ccs_gui_config.properties \
 	ltccd3.ccs_gui_config.properties ftccd1.ccs_gui_config.properties ftccd2.ccs_gui_config.properties \
 	supircam1.ccs_gui_config.properties supircam2.ccs_gui_config.properties \
 	ftspec1.ccs_gui_config.properties spectrograph.ccs_gui_config.properties nuview1.ccs_gui_config.properties \
-	lttmc.ccs_gui_config.properties ftntmc.ccs_gui_config.properties ftstmc.ccs_gui_config.properties
+	lttmc.ccs_gui_config.properties ftntmc.ccs_gui_config.properties ftstmc.ccs_gui_config.properties \
+	ratcam1.ccs_gui_config.properties
 CCS_GUI_FITS_PROPERTY_SRCS = ltccd1.ccs_gui.fits.properties ltccd2.ccs_gui.fits.properties \
 	ltccd3.ccs_gui.fits.properties ftccd1.ccs_gui.fits.properties ftccd2.ccs_gui.fits.properties \
 	ftspec1.ccs_gui.fits.properties spectrograph.ccs_gui.fits.properties nuview1.ccs_gui.fits.properties \
-	lttmc.ccs_gui.fits.properties ftntmc.ccs_gui.fits.properties ftstmc.ccs_gui.fits.properties
+	lttmc.ccs_gui.fits.properties ftntmc.ccs_gui.fits.properties ftstmc.ccs_gui.fits.properties \
+	ratcam1.ccs_gui.fits.properties 
 PROPERTY_OBJS	= $(PROPERTY_SRCS:%.properties=$(BINDIR)/%.properties)
 
 SCRIPT_SRCS	= icsgui scsgui ccsgui xv_wrapper.csh
 SCRIPT_OBJS	= $(SCRIPT_SRCS:%=$(BINDIR)/%)
 
 GIF_SRCS	= lt.gif lt_icon.gif ratcam.gif ratcam_ltccd1.gif ratcam_ftccd1.gif ratcam_ftccd2.gif \
-		ratcam_ltccd2.gif ratcam_ltccd3.gif supircam.gif ftspec.gif
+		ratcam_ltccd2.gif ratcam_ltccd3.gif supircam.gif ftspec.gif nuview_capella.gif
 GIF_OBJS	= $(GIF_SRCS:%=$(BINDIR)/%)
+
+JPG_SRCS	= ringo-BD64106.jpg
+JPG_OBJS	= $(JPG_SRCS:%=$(BINDIR)/%)
 
 SOUND_SRCS	= wav/command_completed.wav wav/command_failed.wav wav/filename.wav \
 		wav/welcome.wav wav/iss_message.wav \
@@ -70,7 +75,7 @@ SOUND_OBJS	= $(SOUND_SRCS:%=$(BINDIR)/%)
 
 
 
-top: $(OBJS) properties gifs scripts sounds docs
+top: $(OBJS) properties gifs jpgs scripts sounds docs
 
 #
 # java sources
@@ -112,6 +117,14 @@ $(BINDIR)/%.gif: %.gif
 	$(CP) $< $@
 
 #
+# jpgs
+#
+jpgs: $(JPG_OBJS) 
+
+$(BINDIR)/%.jpg: %.jpg
+	$(CP) $< $@
+
+#
 # sounds
 #
 sounds: $(SOUND_OBJS) 
@@ -144,6 +157,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.31  2004/10/13 19:53:40  cjm
+# Added supircam2.
+#
 # Revision 0.30  2004/09/23 12:43:33  cjm
 # Added fts configs.
 #
