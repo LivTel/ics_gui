@@ -1,5 +1,24 @@
+/*   
+    Copyright 2006, Astrophysics Research Institute, Liverpool John Moores University.
+
+    This file is part of CcsGUI.
+
+    CcsGUI is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    CcsGUI is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with CcsGUI; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+*/
 // IcsGUIConfigProperties.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.11 2005-11-29 16:31:40 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.12 2006-05-16 17:12:24 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -11,14 +30,14 @@ import ngat.phase2.*;
  * in a Java properties file and this class extends java.util.Properties
  * @see java.util.Properties
  * @author Chris Mottram
- * @version $Revision: 0.11 $
+ * @version $Revision: 0.12 $
  */
 public class IcsGUIConfigProperties extends Properties
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.11 2005-11-29 16:31:40 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.12 2006-05-16 17:12:24 cjm Exp $");
 	/**
 	 * Configuration type specifier:CCD (RATCam).
 	 */
@@ -1429,6 +1448,9 @@ public class IcsGUIConfigProperties extends Properties
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.11  2005/11/29 16:31:40  cjm
+// Added Polarimeter (Ringo Star) support.
+//
 // Revision 0.10  2003/11/17 19:06:44  cjm
 // Added InstrumentConfig setCalibrateBefore and setCalibrateAfter when
 // calling getXXXConfigById so all InstrumentConfig sub-classes have calibrateBefore and calibrateAfter

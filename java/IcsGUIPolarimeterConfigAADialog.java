@@ -1,5 +1,24 @@
+/*   
+    Copyright 2006, Astrophysics Research Institute, Liverpool John Moores University.
+
+    This file is part of CcsGUI.
+
+    CcsGUI is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    CcsGUI is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with CcsGUI; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+*/
 // IcsGUIPolarimeterConfigAADialog.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIPolarimeterConfigAADialog.java,v 1.1 2005-11-29 16:31:44 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIPolarimeterConfigAADialog.java,v 1.2 2006-05-16 17:12:29 cjm Exp $
 import java.lang.*;
 import java.util.*;
 import java.awt.*;
@@ -13,14 +32,14 @@ import ngat.swing.*;
 /**
  * This class provides an Add and Amend facility for Polarimeter Configurations.
  * @author Chris Mottram
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class IcsGUIPolarimeterConfigAADialog extends JDialog implements ActionListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIPolarimeterConfigAADialog.java,v 1.1 2005-11-29 16:31:44 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIPolarimeterConfigAADialog.java,v 1.2 2006-05-16 17:12:29 cjm Exp $");
 	/**
 	 * Button height.
 	 */
@@ -253,6 +272,9 @@ public class IcsGUIPolarimeterConfigAADialog extends JDialog implements ActionLi
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2005/11/29 16:31:44  cjm
+// Initial revision
+//
 // Revision 1.1  2003/11/14 15:02:12  cjm
 // Initial revision
 //

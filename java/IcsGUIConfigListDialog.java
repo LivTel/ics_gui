@@ -1,5 +1,24 @@
+/*   
+    Copyright 2006, Astrophysics Research Institute, Liverpool John Moores University.
+
+    This file is part of CcsGUI.
+
+    CcsGUI is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    CcsGUI is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with CcsGUI; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+*/
 // IcsGUIConfigListDialog.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigListDialog.java,v 0.10 2005-11-29 16:31:31 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigListDialog.java,v 0.11 2006-05-16 17:12:23 cjm Exp $
 import java.lang.*;
 import java.util.*;
 import java.awt.*;
@@ -18,7 +37,7 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public static String RCSID = new String("$Id: IcsGUIConfigListDialog.java,v 0.10 2005-11-29 16:31:31 cjm Exp $");
+	public static String RCSID = new String("$Id: IcsGUIConfigListDialog.java,v 0.11 2006-05-16 17:12:23 cjm Exp $");
 	/**
 	 * String to go on buttons.
 	 */
@@ -593,6 +612,9 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.10  2005/11/29 16:31:31  cjm
+// Added Polarimeter (Ringo Star) support.
+//
 // Revision 0.9  2004/01/15 15:53:19  cjm
 // Commented out remoteX fix that won't compile on Solaris Java 1.2.
 //

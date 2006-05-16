@@ -1,5 +1,24 @@
+/*   
+    Copyright 2006, Astrophysics Research Institute, Liverpool John Moores University.
+
+    This file is part of CcsGUI.
+
+    CcsGUI is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    CcsGUI is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with CcsGUI; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+*/
 // IcsGUIFilenameShowListener.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIFilenameShowListener.java,v 1.4 2003-09-19 14:08:45 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIFilenameShowListener.java,v 1.5 2006-05-16 17:12:25 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -18,14 +37,14 @@ import ngat.util.*;
  * to transfer the image to the IcsGUI's machine if necessary.
  * It calls a command specified in the config file to display the FITS image.
  * @author Chris Mottram
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class IcsGUIFilenameShowListener implements ActionListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIFilenameShowListener.java,v 1.4 2003-09-19 14:08:45 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIFilenameShowListener.java,v 1.5 2006-05-16 17:12:25 cjm Exp $");
 	/**
 	 * The instance of the main program.
 	 */
@@ -247,6 +266,9 @@ public class IcsGUIFilenameShowListener implements ActionListener
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.4  2003/09/19 14:08:45  cjm
+// Changed CcsGUI to IcsGUI.
+//
 // Revision 1.3  2001/07/31 09:35:41  cjm
 // Replaced StringUtilites with StringUtilities.
 //

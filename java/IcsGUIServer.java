@@ -1,5 +1,24 @@
+/*   
+    Copyright 2006, Astrophysics Research Institute, Liverpool John Moores University.
+
+    This file is part of CcsGUI.
+
+    CcsGUI is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    CcsGUI is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with CcsGUI; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+*/
 // CcsGUIServer.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIServer.java,v 0.4 2003-09-19 14:08:45 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIServer.java,v 0.5 2006-05-16 17:12:16 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -11,14 +30,14 @@ import ngat.net.*;
  * commands to the Ccs. Some Ccs commands involve sending commands back to the ISS, and
  * this class is designed to catch these requests and to spawn a CcsGUIServerConnectionThread to deal with them.
  * @author Chris Mottram
- * @version $Revision: 0.4 $
+ * @version $Revision: 0.5 $
  */
 public class CcsGUIServer extends TCPServer
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIServer.java,v 0.4 2003-09-19 14:08:45 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIServer.java,v 0.5 2006-05-16 17:12:16 cjm Exp $");
 	/**
 	 * Field holding the instance of the IcsGUI currently executing, 
 	 * so we can pass this to spawned threads.
@@ -86,6 +105,9 @@ public class CcsGUIServer extends TCPServer
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.4  2003/09/19 14:08:45  cjm
+// Changed CcsGUI to IcsGUI.
+//
 // Revision 0.3  2001/07/10 18:21:28  cjm
 // errors now print stack trace.
 //

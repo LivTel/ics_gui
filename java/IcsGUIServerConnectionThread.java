@@ -1,5 +1,24 @@
+/*   
+    Copyright 2006, Astrophysics Research Institute, Liverpool John Moores University.
+
+    This file is part of CcsGUI.
+
+    CcsGUI is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    CcsGUI is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with CcsGUI; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+*/
 // CcsGUIServerConnectionThread.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIServerConnectionThread.java,v 0.11 2003-09-19 14:08:45 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIServerConnectionThread.java,v 0.12 2006-05-16 17:12:16 cjm Exp $
 import java.lang.*;
 import java.lang.reflect.InvocationTargetException;
 import java.io.*;
@@ -20,14 +39,14 @@ import ngat.swing.GUIMessageDialogShower;
  * This class extends the TCPServerConnectionThread class for the IcsGUI application. This
  * allows IcsGUI to emulate the ISS's response to the CCS sending it commands.
  * @author Chris Mottram
- * @version $Revision: 0.11 $
+ * @version $Revision: 0.12 $
  */
 public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIServerConnectionThread.java,v 0.11 2003-09-19 14:08:45 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIServerConnectionThread.java,v 0.12 2006-05-16 17:12:16 cjm Exp $");
 	/**
 	 * Default time taken to respond to a command.
 	 */
@@ -308,6 +327,9 @@ public class CcsGUIServerConnectionThread extends TCPServerConnectionThread
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.11  2003/09/19 14:08:45  cjm
+// Changed CcsGUI to IcsGUI.
+//
 // Revision 0.10  2001/09/12 19:28:14  cjm
 // Updated for new OFFSET_RA_DEC command.
 //
