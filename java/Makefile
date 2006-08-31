@@ -1,5 +1,5 @@
 # Makefile
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.34 2006-06-26 15:33:22 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.35 2006-08-31 14:20:19 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -44,7 +44,7 @@ CCS_GUI_PROPERTY_SRCS	= ltccd1.ccs_gui.properties \
 	supircam1.ccs_gui.properties supircam2.ccs_gui.properties \
 	ftspec1.ccs_gui.properties ftspec2.ccs_gui.properties \
 	spectrograph.ccs_gui.properties nuview1.ccs_gui.properties ratcam1.ccs_gui.properties \
-	lttmc.ccs_gui.properties ftntmc.ccs_gui.properties ftstmc.ccs_gui.properties
+	lttmc.ccs_gui.properties ftntmc.ccs_gui.properties ftstmc.ccs_gui.properties ftsocc.ccs_gui.properties
 CCS_GUI_CONFIG_PROPERTY_SRCS = ltccd1.ccs_gui_config.properties ltccd2.ccs_gui_config.properties \
 	ltccd3.ccs_gui_config.properties ftccd1.ccs_gui_config.properties ftccd2.ccs_gui_config.properties \
 	supircam1.ccs_gui_config.properties supircam2.ccs_gui_config.properties \
@@ -160,6 +160,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.34  2006/06/26 15:33:22  cjm
+# Added ftspec2.
+#
 # Revision 0.33  2005/11/29 19:07:41  cjm
 # Changed ratcam1.ics_gui.properties to ratcam1.ccs_gui.properties.
 #
