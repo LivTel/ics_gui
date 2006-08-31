@@ -1,6 +1,6 @@
 #!/bin/csh
-# $Header: /home/cjm/cvs/ics_gui/scripts/icsgui_make_deployment,v 1.4 2004-09-14 09:25:55 cjm Exp $
-# Version: $Revision: 1.4 $
+# $Header: /home/cjm/cvs/ics_gui/scripts/icsgui_make_deployment,v 1.5 2006-08-31 14:23:10 cjm Exp $
+# Version: $Revision: 1.5 $
 # By $Author: cjm $
 # Make a deployment tar file.
 # This contains:
@@ -27,6 +27,7 @@ switch ( ${machine_name} )
 	set camera_name = "fartcam"
 	breaksw
     case "ftstmc":
+    case "ftsocc":
 	set camera_name = "dillcamsouth"
 	breaksw
     default:
@@ -145,7 +146,7 @@ echo "${java_class_dir_count} Java class directories copied."
 # C libraries
 #
 echo "Copying C libraries..."
-set clib_list = "libcfitsio.so libdprt_libfits.so liblt_filenames.so libngatastro.so libngatfits.so libngatutil.so librjs_dprt.so libtarga.so"
+set clib_list = "libcfitsio.so libngatastro.so libngatfits.so libngatutil.so libtarga.so"
 # libsla.so only needed if libccd compiled with SLALIB 
 set clib_count = 0
 foreach clib ( ${clib_list} )
