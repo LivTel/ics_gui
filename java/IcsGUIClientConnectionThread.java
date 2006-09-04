@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // CcsGUIClientConnectionThread.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.22 2006-05-16 17:12:12 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.23 2006-09-04 15:32:24 cjm Exp $
 
 import java.awt.*;
 import java.lang.*;
@@ -37,14 +37,14 @@ import ngat.util.StringUtilities;
  * It implements the generic ISS instrument command protocol.
  * It is used to send commands from the CcsGUI to the Ccs.
  * @author Chris Mottram
- * @version $Revision: 0.22 $
+ * @version $Revision: 0.23 $
  */
 public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.22 2006-05-16 17:12:12 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.23 2006-09-04 15:32:24 cjm Exp $");
 	/**
 	 * The CcsGUI object.
 	 */
@@ -323,7 +323,8 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 		parent.setCurrentCommandLabel((String)(displayInfo.get("currentCommand")));
 	// set filters selected status
 		if(instrumentString.equals("RATCam")||instrumentString.equals("FARTCam")||
-		   instrumentString.equals("DillCam")||instrumentString.equals("DillCamSouth"))
+		   instrumentString.equals("DillCam")||instrumentString.equals("DillCamSouth")||
+		   instrumentString.equals("HawkCam"))
 		{
 			parent.setFiltersSelectedLabel((String)(displayInfo.get("Filter Wheel:0")),
 				(String)(displayInfo.get("Filter Wheel:1")));
@@ -443,6 +444,9 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.22  2006/05/16 17:12:12  cjm
+// gnuify: Added GNU General Public License.
+//
 // Revision 0.21  2004/06/15 19:15:22  cjm
 // Changed audio feedback and added new feedbacks.
 //
