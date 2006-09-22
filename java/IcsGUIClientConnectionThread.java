@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // CcsGUIClientConnectionThread.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.23 2006-09-04 15:32:24 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.24 2006-09-22 11:30:35 cjm Exp $
 
 import java.awt.*;
 import java.lang.*;
@@ -37,14 +37,14 @@ import ngat.util.StringUtilities;
  * It implements the generic ISS instrument command protocol.
  * It is used to send commands from the CcsGUI to the Ccs.
  * @author Chris Mottram
- * @version $Revision: 0.23 $
+ * @version $Revision: 0.24 $
  */
 public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.23 2006-09-04 15:32:24 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.24 2006-09-22 11:30:35 cjm Exp $");
 	/**
 	 * The CcsGUI object.
 	 */
@@ -290,14 +290,18 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	 */
 	private void printGetStatusDone(GET_STATUS_DONE getStatusDone)
 	{
+		CcsGUIStatus status = null;
 		Hashtable displayInfo = null;
 		String instrumentString = null;
+		String filterTypeString = null;
 		Integer integer = null;
 		Long longObject = null;
 		Double ccdTemperature = null;
 		int exposureCount,exposureNumber;
 		long exposureLength,elapsedExposureTime;
 
+	// get status object
+		status = parent.getStatus();
 	// current mode
 		parent.log("The current mode:"+getStatusDone.getCurrentMode()+".");
 		parent.setCCDStatusLabel(getStatusDone.getCurrentMode());
@@ -322,28 +326,37 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	// set current command status
 		parent.setCurrentCommandLabel((String)(displayInfo.get("currentCommand")));
 	// set filters selected status
-		if(instrumentString.equals("RATCam")||instrumentString.equals("FARTCam")||
-		   instrumentString.equals("DillCam")||instrumentString.equals("DillCamSouth")||
-		   instrumentString.equals("HawkCam"))
+		filterTypeString = status.getProperty("ics_gui.get_status.filter_type."+instrumentString);
+		if(filterTypeString == null)
+		{
+			parent.setFiltersSelectedLabel("UNKNOWN");
+			parent.log("Filter type string was null for:ics_gui.get_status.filter_type."+instrumentString);
+		}
+		else if(filterTypeString.equals("TWO_WHEELS"))
 		{
 			parent.setFiltersSelectedLabel((String)(displayInfo.get("Filter Wheel:0")),
 				(String)(displayInfo.get("Filter Wheel:1")));
 		}
-		else if(instrumentString.equals("Nu-View"))
+		else if(filterTypeString.equals("WAVELENGTH"))
 		{
 			parent.setFiltersSelectedLabel((Double)(displayInfo.get("Filter Wavelength")));
 		}
-		else if(instrumentString.equals("MES"))
+		else if(filterTypeString.equals("POSITION"))
 		{
 			parent.setFiltersSelectedLabel((Integer)(displayInfo.get("Filter Position")));
 		}
-		else if(instrumentString.equals("SupIRCam"))
+		else if(filterTypeString.equals("ONE_WHEEL"))
 		{
 			parent.setFiltersSelectedLabel((String)(displayInfo.get("Filter Wheel:0")));
 		}
-		else if(instrumentString.equals("FTSPec"))
+		else if(filterTypeString.equals("FIXED"))
 		{
 			parent.setFiltersSelectedLabel((String)("Fixed"));
+		}
+		else
+		{
+			parent.setFiltersSelectedLabel("UNKNOWN");
+			parent.log("Unknown filter type string:"+filterTypeString);
 		}
 	// set remaining exposures status
 		integer = (Integer)(displayInfo.get("Exposure Count"));
@@ -444,6 +457,9 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.23  2006/09/04 15:32:24  cjm
+// Added HawkCam.
+//
 // Revision 0.22  2006/05/16 17:12:12  cjm
 // gnuify: Added GNU General Public License.
 //
