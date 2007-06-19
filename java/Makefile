@@ -1,5 +1,5 @@
 # Makefile
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.35 2006-08-31 14:20:19 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.36 2007-06-19 15:01:17 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -36,7 +36,8 @@ DOCS 		= $(SRCS:%.java=$(DOCSDIR)/%.html)
 
 PROPERTY_SRCS	= $(CCS_GUI_PROPERTY_SRCS) $(CCS_GUI_CONFIG_PROPERTY_SRCS) $(CCS_GUI_FITS_PROPERTY_SRCS)
 CCS_GUI_PROPERTY_SRCS	= ltccd1.ccs_gui.properties \
-	ltccd2.ccs_gui.properties ltccd3.ccs_gui.properties ftccd1.ccs_gui.properties ftccd2.ccs_gui.properties \
+	ltccd2.ccs_gui.properties ltccd3.ccs_gui.properties ltccd4.ccs_gui.properties \
+	ftccd1.ccs_gui.properties ftccd2.ccs_gui.properties \
 	spectrograph.scs_gui.properties \
 	ltobs9.ratcam.ccs_gui.properties ltobs9.fartcam.ccs_gui.properties ltobs9.dillcamsouth.ccs_gui.properties \
 	ltobs9.supircam.ccs_gui.properties \
@@ -46,14 +47,16 @@ CCS_GUI_PROPERTY_SRCS	= ltccd1.ccs_gui.properties \
 	spectrograph.ccs_gui.properties nuview1.ccs_gui.properties ratcam1.ccs_gui.properties \
 	lttmc.ccs_gui.properties ftntmc.ccs_gui.properties ftstmc.ccs_gui.properties ftsocc.ccs_gui.properties
 CCS_GUI_CONFIG_PROPERTY_SRCS = ltccd1.ccs_gui_config.properties ltccd2.ccs_gui_config.properties \
-	ltccd3.ccs_gui_config.properties ftccd1.ccs_gui_config.properties ftccd2.ccs_gui_config.properties \
+	ltccd3.ccs_gui_config.properties ltccd4.ccs_gui_config.properties \
+	ftccd1.ccs_gui_config.properties ftccd2.ccs_gui_config.properties \
 	supircam1.ccs_gui_config.properties supircam2.ccs_gui_config.properties \
 	ftspec1.ccs_gui_config.properties ftspec2.ccs_gui_config.properties \
 	spectrograph.ccs_gui_config.properties nuview1.ccs_gui_config.properties \
 	lttmc.ccs_gui_config.properties ftntmc.ccs_gui_config.properties ftstmc.ccs_gui_config.properties \
 	ratcam1.ccs_gui_config.properties
 CCS_GUI_FITS_PROPERTY_SRCS = ltccd1.ccs_gui.fits.properties ltccd2.ccs_gui.fits.properties \
-	ltccd3.ccs_gui.fits.properties ftccd1.ccs_gui.fits.properties ftccd2.ccs_gui.fits.properties \
+	ltccd3.ccs_gui.fits.properties ltccd4.ccs_gui.fits.properties \
+	ftccd1.ccs_gui.fits.properties ftccd2.ccs_gui.fits.properties \
 	ftspec1.ccs_gui.fits.properties ftspec2.ccs_gui.fits.properties \
 	spectrograph.ccs_gui.fits.properties nuview1.ccs_gui.fits.properties \
 	lttmc.ccs_gui.fits.properties ftntmc.ccs_gui.fits.properties ftstmc.ccs_gui.fits.properties \
@@ -160,6 +163,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.35  2006/08/31 14:20:19  cjm
+# Added ftsocc.ccs_gui.properties.
+#
 # Revision 0.34  2006/06/26 15:33:22  cjm
 # Added ftspec2.
 #
