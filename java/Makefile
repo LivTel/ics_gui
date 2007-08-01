@@ -1,5 +1,5 @@
 # Makefile
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.36 2007-06-19 15:01:17 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.37 2007-08-01 13:55:53 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -20,14 +20,18 @@ MAIN_SRCS	= IcsGUI.java CcsGUIStatus.java CcsGUIWindowListener.java CcsGUIMenuIt
 SERVER_SRCS	= CcsGUIServer.java CcsGUIServerConnectionThread.java
 CONFIG_SRCS	= IcsGUIConfigProperties.java IcsGUIConfigListDialog.java CcsGUIConfigButtonListener.java \
 		IcsGUICCDConfigAADialog.java IcsGUILowResSpecConfigAADialog.java IcsGUIIRCamConfigAADialog.java \
-		IcsGUIFixedFormatSpecConfigAADialog.java IcsGUIPolarimeterConfigAADialog.java CcsConfigAADialogListener.java 
+		IcsGUIFixedFormatSpecConfigAADialog.java IcsGUIPolarimeterConfigAADialog.java \
+		IcsGUIFrodoSpecConfigAADialog.java CcsConfigAADialogListener.java 
 UPDATE_SRCS	= CcsGUIUpdateListener.java CcsGUIUpdateThread.java
 
 DIALOG_SRCS	= ACQUIREDialog.java $(CALIBRATE_DIALOG_SRCS) $(EXPOSE_DIALOG_SRCS) $(INTERRUPT_DIALOG_SRCS) $(SETUP_DIALOG_SRCS)
 
 CALIBRATE_DIALOG_SRCS	= ARCDialog.java BIASDialog.java DARKDialog.java DAY_CALIBRATEDialog.java LAMPFLATDialog.java \
-			SKYFLATDialog.java TWILIGHT_CALIBRATEDialog.java
-EXPOSE_DIALOG_SRCS	= GLANCEDialog.java MOVIEDialog.java MULTRUNDialog.java RUNATDialog.java SAVEDialog.java
+			SKYFLATDialog.java TWILIGHT_CALIBRATEDialog.java \
+			FRODOSPEC_BIASDialog.java FRODOSPEC_DARKDialog.java FRODOSPEC_DAY_CALIBRATEDialog.java \
+			FRODOSPEC_TWILIGHT_CALIBRATEDialog.java 
+EXPOSE_DIALOG_SRCS	= GLANCEDialog.java MOVIEDialog.java MULTRUNDialog.java RUNATDialog.java SAVEDialog.java \
+	FRODOSPEC_GLANCEDialog.java FRODOSPEC_MULTRUNDialog.java FRODOSPEC_RUNATDialog.java
 INTERRUPT_DIALOG_SRCS	= ABORTDialog.java GET_STATUSDialog.java PAUSEDialog.java REBOOTDialog.java RESUMEDialog.java STOPDialog.java
 SETUP_DIALOG_SRCS	= CONFIGDialog.java LAMPFOCUSDialog.java SET_LOGGINGDialog.java STARFOCUSDialog.java TELFOCUSDialog.java TESTDialog.java
 
@@ -40,12 +44,13 @@ CCS_GUI_PROPERTY_SRCS	= ltccd1.ccs_gui.properties \
 	ftccd1.ccs_gui.properties ftccd2.ccs_gui.properties \
 	spectrograph.scs_gui.properties \
 	ltobs9.ratcam.ccs_gui.properties ltobs9.fartcam.ccs_gui.properties ltobs9.dillcamsouth.ccs_gui.properties \
-	ltobs9.supircam.ccs_gui.properties \
-	ltobs9.spectrograph.scs_gui.properties ltobs9.ftspec.ics_gui.properties ltobs9.nuview1.ics_gui.properties \
+	ltobs9.supircam.ccs_gui.properties ltobs9.spectrograph.scs_gui.properties ltobs9.frodospec.ccs_gui.properties \
+	ltobs9.ftspec.ics_gui.properties ltobs9.nuview1.ics_gui.properties \
 	supircam1.ccs_gui.properties supircam2.ccs_gui.properties \
 	ftspec1.ccs_gui.properties ftspec2.ccs_gui.properties \
 	spectrograph.ccs_gui.properties nuview1.ccs_gui.properties ratcam1.ccs_gui.properties \
-	lttmc.ccs_gui.properties ftntmc.ccs_gui.properties ftstmc.ccs_gui.properties ftsocc.ccs_gui.properties
+	lttmc.ccs_gui.properties ftntmc.ccs_gui.properties ftstmc.ccs_gui.properties ftsocc.ccs_gui.properties \
+	frodospec1.ccs_gui.properties
 CCS_GUI_CONFIG_PROPERTY_SRCS = ltccd1.ccs_gui_config.properties ltccd2.ccs_gui_config.properties \
 	ltccd3.ccs_gui_config.properties ltccd4.ccs_gui_config.properties \
 	ftccd1.ccs_gui_config.properties ftccd2.ccs_gui_config.properties \
@@ -53,14 +58,14 @@ CCS_GUI_CONFIG_PROPERTY_SRCS = ltccd1.ccs_gui_config.properties ltccd2.ccs_gui_c
 	ftspec1.ccs_gui_config.properties ftspec2.ccs_gui_config.properties \
 	spectrograph.ccs_gui_config.properties nuview1.ccs_gui_config.properties \
 	lttmc.ccs_gui_config.properties ftntmc.ccs_gui_config.properties ftstmc.ccs_gui_config.properties \
-	ratcam1.ccs_gui_config.properties
+	ratcam1.ccs_gui_config.properties frodospec1.ccs_gui_config.properties
 CCS_GUI_FITS_PROPERTY_SRCS = ltccd1.ccs_gui.fits.properties ltccd2.ccs_gui.fits.properties \
 	ltccd3.ccs_gui.fits.properties ltccd4.ccs_gui.fits.properties \
 	ftccd1.ccs_gui.fits.properties ftccd2.ccs_gui.fits.properties \
 	ftspec1.ccs_gui.fits.properties ftspec2.ccs_gui.fits.properties \
 	spectrograph.ccs_gui.fits.properties nuview1.ccs_gui.fits.properties \
 	lttmc.ccs_gui.fits.properties ftntmc.ccs_gui.fits.properties ftstmc.ccs_gui.fits.properties \
-	ratcam1.ccs_gui.fits.properties 
+	ratcam1.ccs_gui.fits.properties frodospec1.ccs_gui.fits.properties
 PROPERTY_OBJS	= $(PROPERTY_SRCS:%.properties=$(BINDIR)/%.properties)
 
 SCRIPT_SRCS	= icsgui scsgui ccsgui xv_wrapper.csh
@@ -95,7 +100,7 @@ $(BINDIR)/%.class:%.java
 properties: $(PROPERTY_OBJS)
 
 $(BINDIR)/%.properties: %.properties
-	$(CP) $< $@
+	$(CP) -f $< $@
 
 #
 # run scripts
@@ -163,6 +168,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.36  2007/06/19 15:01:17  cjm
+# Added ltccd4 config.
+#
 # Revision 0.35  2006/08/31 14:20:19  cjm
 # Added ftsocc.ccs_gui.properties.
 #
