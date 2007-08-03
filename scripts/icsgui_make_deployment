@@ -1,6 +1,6 @@
 #!/bin/csh
-# $Header: /home/cjm/cvs/ics_gui/scripts/icsgui_make_deployment,v 1.5 2006-08-31 14:23:10 cjm Exp $
-# Version: $Revision: 1.5 $
+# $Header: /home/cjm/cvs/ics_gui/scripts/icsgui_make_deployment,v 1.6 2007-08-03 14:01:05 cjm Exp $
+# Version: $Revision: 1.6 $
 # By $Author: cjm $
 # Make a deployment tar file.
 # This contains:
@@ -83,7 +83,7 @@ echo "${dir_count} directories created."
 #
 echo "Copying jars..."
 #ngat_math.jar ngat_math_test.jar 
-set jar_list = "ngat_message_base.jar ngat_fits.jar ngat_message_inst_dp.jar ngat_message_iss_inst.jar ngat_net.jar ngat_phase2.jar ngat_sound.jar ngat_swing.jar ngat_util.jar ngat_util_logging.jar"
+set jar_list = "ngat_astrometry.jar ngat_message_base.jar ngat_fits.jar ngat_message_inst_dp.jar ngat_message_iss_inst.jar ngat_net.jar ngat_phase2.jar ngat_sound.jar ngat_swing.jar ngat_util.jar ngat_util_logging.jar"
 set jar_count = 0
 foreach jar ( ${jar_list} )
 	echo "jar : ${jar}"
