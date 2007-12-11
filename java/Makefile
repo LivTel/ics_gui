@@ -1,5 +1,5 @@
 # Makefile
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.37 2007-08-01 13:55:53 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.38 2007-12-11 17:39:44 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -21,7 +21,8 @@ SERVER_SRCS	= CcsGUIServer.java CcsGUIServerConnectionThread.java
 CONFIG_SRCS	= IcsGUIConfigProperties.java IcsGUIConfigListDialog.java CcsGUIConfigButtonListener.java \
 		IcsGUICCDConfigAADialog.java IcsGUILowResSpecConfigAADialog.java IcsGUIIRCamConfigAADialog.java \
 		IcsGUIFixedFormatSpecConfigAADialog.java IcsGUIPolarimeterConfigAADialog.java \
-		IcsGUIFrodoSpecConfigAADialog.java CcsConfigAADialogListener.java 
+		IcsGUIFrodoSpecConfigAADialog.java IcsGUIRISEConfigAADialog.java \
+		CcsConfigAADialogListener.java 
 UPDATE_SRCS	= CcsGUIUpdateListener.java CcsGUIUpdateThread.java
 
 DIALOG_SRCS	= ACQUIREDialog.java $(CALIBRATE_DIALOG_SRCS) $(EXPOSE_DIALOG_SRCS) $(INTERRUPT_DIALOG_SRCS) $(SETUP_DIALOG_SRCS)
@@ -45,7 +46,7 @@ CCS_GUI_PROPERTY_SRCS	= ltccd1.ccs_gui.properties \
 	spectrograph.scs_gui.properties \
 	ltobs9.ratcam.ccs_gui.properties ltobs9.fartcam.ccs_gui.properties ltobs9.dillcamsouth.ccs_gui.properties \
 	ltobs9.supircam.ccs_gui.properties ltobs9.spectrograph.scs_gui.properties ltobs9.frodospec.ccs_gui.properties \
-	ltobs9.ftspec.ics_gui.properties ltobs9.nuview1.ics_gui.properties \
+	ltobs9.ftspec.ics_gui.properties ltobs9.nuview1.ics_gui.properties ltobs9.rise.ics_gui.properties \
 	supircam1.ccs_gui.properties supircam2.ccs_gui.properties \
 	ftspec1.ccs_gui.properties ftspec2.ccs_gui.properties \
 	spectrograph.ccs_gui.properties nuview1.ccs_gui.properties ratcam1.ccs_gui.properties \
@@ -168,6 +169,10 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.37  2007/08/01 13:55:53  cjm
+# Added FrodoSpec config dialogs.
+# Added frodospec config properties.
+#
 # Revision 0.36  2007/06/19 15:01:17  cjm
 # Added ltccd4 config.
 #
