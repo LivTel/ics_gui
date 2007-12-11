@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUIConfigProperties.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.12 2006-05-16 17:12:24 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.13 2007-12-11 16:24:19 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -30,14 +30,14 @@ import ngat.phase2.*;
  * in a Java properties file and this class extends java.util.Properties
  * @see java.util.Properties
  * @author Chris Mottram
- * @version $Revision: 0.12 $
+ * @version $Revision: 0.13 $
  */
 public class IcsGUIConfigProperties extends Properties
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.12 2006-05-16 17:12:24 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.13 2007-12-11 16:24:19 cjm Exp $");
 	/**
 	 * Configuration type specifier:CCD (RATCam).
 	 */
@@ -63,6 +63,10 @@ public class IcsGUIConfigProperties extends Properties
 	 */
 	public final static int CONFIG_TYPE_POLARIMETER_RINGOSTAR = 5;
 	/**
+	 * Configuration type specifier:Spectrograph (FrodoSpec).
+	 */
+	public final static int CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC = 6;
+	/**
 	 * List of legal values that can be held in the config type field.
 	 * @see #CONFIG_TYPE_CCD_RATCAM
 	 * @see #CONFIG_TYPE_SPECTROGRAPH_MES
@@ -70,10 +74,11 @@ public class IcsGUIConfigProperties extends Properties
 	 * @see #CONFIG_TYPE_INFRA_RED_SUPIRCAM
 	 * @see #CONFIG_TYPE_SPECTROGRAPH_FTSPEC
 	 * @see #CONFIG_TYPE_POLARIMETER_RINGOSTAR
+	 * @see #CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC
 	 */
 	public final static int CONFIG_TYPE_LIST[] = {CONFIG_TYPE_CCD_RATCAM,CONFIG_TYPE_SPECTROGRAPH_MES,
 		CONFIG_TYPE_SPECTROGRAPH_NUVIEW,CONFIG_TYPE_INFRA_RED_SUPIRCAM,CONFIG_TYPE_SPECTROGRAPH_FTSPEC,
-						      CONFIG_TYPE_POLARIMETER_RINGOSTAR};
+		CONFIG_TYPE_POLARIMETER_RINGOSTAR,CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC};
 	/**
 	 * Filename for properties file.
 	 */
@@ -189,6 +194,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * @see #getIRCamConfigById
 	 * @see #getFTSpecConfigById
 	 * @see #getPolarimeterConfigById
+	 * @see #getFrodoSpecConfigById
 	 */
 	public InstrumentConfig getConfigById(int id) throws NumberFormatException, IllegalArgumentException
 	{
@@ -216,6 +222,9 @@ public class IcsGUIConfigProperties extends Properties
 				break;
 			case CONFIG_TYPE_POLARIMETER_RINGOSTAR:
 				c = getPolarimeterConfigById(id);
+				break;
+			case CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC:
+				c = getFrodoSpecConfigById(id);
 				break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":getConfigById:Id "
@@ -301,6 +310,12 @@ public class IcsGUIConfigProperties extends Properties
 				remove(configIdStringXBin(id));
 				remove(configIdStringYBin(id));
 				break;
+			case CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC:
+				remove(configIdStringXBin(id));
+				remove(configIdStringYBin(id));
+				remove(configIdStringArm(id));
+				remove(configIdStringResolution(id));
+				break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":deleteId:Id "
 					+id+" type "+type+" not a supported type of configuration.");
@@ -377,6 +392,16 @@ public class IcsGUIConfigProperties extends Properties
 					remove(configIdStringXBin(i));
 					setConfigYBin(i-1,getConfigYBin(i));
 					remove(configIdStringYBin(i));
+					break;
+			case CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC:
+					setConfigXBin(i-1,getConfigXBin(i));
+					remove(configIdStringXBin(i));
+					setConfigYBin(i-1,getConfigYBin(i));
+					remove(configIdStringYBin(i));
+					setConfigArm(i-1,getConfigArm(i));
+					remove(configIdStringArm(i));
+					setConfigResolution(i-1,getConfigResolution(i));
+					remove(configIdStringResolution(i));
 					break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":deleteId:Id "
@@ -906,6 +931,131 @@ public class IcsGUIConfigProperties extends Properties
 		setProperty(configIdWindowStringYEnd(id,windowNumber),Integer.toString(yEnd));
 	}
 
+	/**
+	 * Method to get the arm of configuration id id as a string.
+	 * This is a FrodoSpec only configuration value.
+	 * @param id The id of the configuration.
+	 * @return The configuration arm.
+	 * @exception IllegalArgumentException Thrown if the relevant property 
+	 * 	"ccs_gui_config."id".arm" does not contain either "red", "blue", or "unknown".
+	 * @see ngat.phase2.FrodoSpecConfig#RED_ARM
+	 * @see ngat.phase2.FrodoSpecConfig#BLUE_ARM
+	 * @see ngat.phase2.FrodoSpecConfig#UNKNOWN_ARM
+	 */
+	public int getConfigArm(int id) throws IllegalArgumentException
+	{
+		String s = null;
+
+		s = getProperty(configIdStringArm(id));
+		if(s.equals("red"))
+			return FrodoSpecConfig.RED_ARM;
+		else if (s.equals("blue"))
+			return FrodoSpecConfig.BLUE_ARM;
+		else if (s.equals("unknown"))
+			return FrodoSpecConfig.NO_ARM;
+		throw new IllegalArgumentException(this.getClass().getName()+":getConfigArm:Illegal arm string:"+s);
+	}
+
+	/**
+	 * Method to get the arm of configuration id id as a string.
+	 * @param id The id of the configuration.
+	 * @return The configuration arm as a string.
+	 */
+	public String getConfigArmString(int id)
+	{
+		return getProperty(configIdStringArm(id));
+	}
+
+	/**
+	 * Method to set the arm of configuration id id.
+	 * This is a FrodoSpec only configuration value.
+	 * @param id The id of the configuration.
+	 * @param arm The configuration arm.
+	 * @exception IllegalArgumentException Thrown if the arm can't be mapped to a string.
+	 * @see ngat.phase2.FrodoSpecConfig#RED_ARM
+	 * @see ngat.phase2.FrodoSpecConfig#BLUE_ARM
+	 * @see ngat.phase2.FrodoSpecConfig#UNKNOWN_ARM
+	 */
+	public void setConfigArm(int id,int arm) throws IllegalArgumentException
+	{
+		String armString = null;
+
+		if(arm == FrodoSpecConfig.RED_ARM)
+			armString = "red";
+		else if(arm == FrodoSpecConfig.BLUE_ARM)
+			armString = "blue";
+		else if(arm == FrodoSpecConfig.NO_ARM)
+			armString = "unknown";
+		else
+		{
+			throw new IllegalArgumentException(this.getClass().getName()+":setConfigArm:Illegal arm:"+arm);
+		}
+		setProperty(configIdStringArm(id),armString);
+	}
+
+	/**
+	 * Method to get the resolution of configuration id id as a string.
+	 * This is a FrodoSpec only configuration value.
+	 * @param id The id of the configuration.
+	 * @return The configuration resolution.
+	 * @exception IllegalArgumentException Thrown if the relevant property 
+	 * 	"ccs_gui_config."id".resolution" does not contain either "low", "high", or "unknown".
+	 * @see ngat.phase2.FrodoSpecConfig#RESOLUTION_LOW
+	 * @see ngat.phase2.FrodoSpecConfig#RESOLUTION_HIGH 
+	 * @see ngat.phase2.FrodoSpecConfig#RESOLUTION_UNKNOWN
+	 */
+	public int getConfigResolution(int id) throws IllegalArgumentException
+	{
+		String s = null;
+
+		s = getProperty(configIdStringResolution(id));
+		if(s.equals("low"))
+			return FrodoSpecConfig.RESOLUTION_LOW;
+		else if (s.equals("high"))
+			return FrodoSpecConfig.RESOLUTION_HIGH;
+		else if (s.equals("unknown"))
+			return FrodoSpecConfig.RESOLUTION_UNKNOWN;
+		throw new IllegalArgumentException(this.getClass().getName()+":getConfigArm:Illegal resolution string:"+s);
+	}
+
+	/**
+	 * Method to get the resolution of configuration id id as a string.
+	 * @param id The id of the configuration.
+	 * @return The configuration resolution as a string.
+	 */
+	public String getConfigResolutionString(int id)
+	{
+		return getProperty(configIdStringResolution(id));
+	}
+
+	/**
+	 * Method to set the resolution of configuration id id.
+	 * This is a FrodoSpec only configuration value.
+	 * @param id The id of the configuration.
+	 * @param resolution The configuration resolution.
+	 * @exception IllegalArgumentException Thrown if the resolution can't be mapped to a string.
+	 * @see ngat.phase2.FrodoSpecConfig#RESOLUTION_LOW
+	 * @see ngat.phase2.FrodoSpecConfig#RESOLUTION_HIGH 
+	 * @see ngat.phase2.FrodoSpecConfig#RESOLUTION_UNKNOWN
+	 */
+	public void setConfigResolution(int id,int resolution) throws IllegalArgumentException
+	{
+		String resolutionString = null;
+
+		if(resolution == FrodoSpecConfig.RESOLUTION_LOW)
+			resolutionString = "low";
+		else if(resolution == FrodoSpecConfig.RESOLUTION_HIGH)
+			resolutionString = "high";
+		else if(resolution == FrodoSpecConfig.RESOLUTION_UNKNOWN)
+			resolutionString = "unknown";
+		else
+		{
+			throw new IllegalArgumentException(this.getClass().getName()+
+							   ":setConfigResolution:Illegal resolution:"+resolution);
+		}
+		setProperty(configIdStringResolution(id),resolutionString);
+	}
+
 // methods to create an instance of an instrument config
 	/**
 	 * Method to return a CCDConfig, constructed from the information against id id.
@@ -1159,6 +1309,45 @@ public class IcsGUIConfigProperties extends Properties
 		return c;
 	}
 
+	/**
+	 * Method to return a FrodoSpecConfig, constructed from the information against id id.
+	 * @param id The Id number.
+	 * @return The constructed FrodoSpecConfig.
+	 * @exception NumberFormatException Thrown if a numeric parameter is not returned from the properties
+	 * 	file as a legal number.
+	 * @exception IllegalArgumentException Thrown if the config id specified does not have a legal type.
+	 */
+	private FrodoSpecConfig getFrodoSpecConfigById(int id) throws NumberFormatException, IllegalArgumentException
+	{
+		FrodoSpecConfig c = null;
+		FrodoSpecDetector detector = null;
+
+	// check type
+		if(getConfigType(id) != CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC)
+		{
+			throw new IllegalArgumentException(this.getClass().getName()+":getFrodoSpecConfigById:Id "
+				+id+" not a configuration of type FrodoSpec.");
+		}
+	// construct LowResSpecConfig
+		c = new FrodoSpecConfig(getConfigName(id));
+		c.setCalibrateBefore(getConfigCalibrateBefore(id));
+		c.setCalibrateAfter(getConfigCalibrateAfter(id));
+		c.setArm(getConfigArm(id));
+		c.setResolution(getConfigResolution(id));
+	// setup detector
+		detector = new FrodoSpecDetector();
+		detector.setXBin(getConfigXBin(id));
+		detector.setYBin(getConfigYBin(id));
+		// note, other Detector fields not set, as they are not used by the instrument.
+	// don't set windows into detector, use default windows.
+	// Note flags are held IN the window list, so must setWindowFlags AFTER detector windows set
+		detector.setWindowFlags(0);
+	// set detector into config
+		c.setDetector(0,detector);
+	// return config
+		return c;
+	}
+
 // method to check values in the property file.
 	/**
 	 * Method to check whether a number is a legal configuration type number.
@@ -1370,6 +1559,28 @@ public class IcsGUIConfigProperties extends Properties
 	}
 
 	/**
+	 * Method to return a key for the arm for a particular config id.
+	 * @param id The config id.
+	 * @return The key string.
+	 * @see #configIdString
+	 */
+	private String configIdStringArm(int id)
+	{
+		return new String(configIdString(id)+"arm");
+	}
+
+	/**
+	 * Method to return a key for the resolution for a particular config id.
+	 * @param id The config id.
+	 * @return The key string.
+	 * @see #configIdString
+	 */
+	private String configIdStringResolution(int id)
+	{
+		return new String(configIdString(id)+"resolution");
+	}
+
+	/**
 	 * Method to return a partial key string for a configuration of a particular id.
 	 * @param id The Id of the required configuration.
 	 * @return A string suitable for use as a partial key in the hashtable.
@@ -1448,6 +1659,9 @@ public class IcsGUIConfigProperties extends Properties
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.12  2006/05/16 17:12:24  cjm
+// gnuify: Added GNU General Public License.
+//
 // Revision 0.11  2005/11/29 16:31:40  cjm
 // Added Polarimeter (Ringo Star) support.
 //
