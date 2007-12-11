@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUIConfigListDialog.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigListDialog.java,v 0.11 2006-05-16 17:12:23 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigListDialog.java,v 0.12 2007-12-11 17:40:40 cjm Exp $
 import java.lang.*;
 import java.util.*;
 import java.awt.*;
@@ -37,7 +37,7 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public static String RCSID = new String("$Id: IcsGUIConfigListDialog.java,v 0.11 2006-05-16 17:12:23 cjm Exp $");
+	public static String RCSID = new String("$Id: IcsGUIConfigListDialog.java,v 0.12 2007-12-11 17:40:40 cjm Exp $");
 	/**
 	 * String to go on buttons.
 	 */
@@ -63,6 +63,14 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	 */
 	protected final static String POLARIMETER_RINGOSTAR_BUTTON_STRING = "Polarimeter (Ringo Star)";
 	/**
+	 * String to go on buttons.
+	 */
+	protected final static String SPECTROGRAPH_FRODOSPEC_BUTTON_STRING = "Spectrograph (FrodoSpec)";
+	/**
+	 * String to go on buttons.
+	 */
+	protected final static String CCD_RISE_BUTTON_STRING = "CCD Camera (RISE)";
+	/**
 	 * List of strings that describe instruments. Note, make sure in the same order as 
 	 * IcsGUIConfigProperties.CONFIG_TYPE_LIST.
 	 * @see IcsGUIConfigProperties#CONFIG_TYPE_LIST
@@ -72,11 +80,13 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	 * @see #INFRA_RED_SUPIRCAM_BUTTON_STRING
 	 * @see #SPECTROGRAPH_FTSPEC_BUTTON_STRING
 	 * @see #POLARIMETER_RINGOSTAR_BUTTON_STRING
+	 * @see #SPECTROGRAPH_FRODOSPEC_BUTTON_STRING
+	 * @see #CCD_RISE_BUTTON_STRING
 	 */
 	protected final static String INSTRUMENT_STRING_ARRAY[] = {CCD_RATCAM_BUTTON_STRING,
 		SPECTROGRAPH_MES_BUTTON_STRING,SPECTROGRAPH_NUVIEW_BUTTON_STRING,
 	        INFRA_RED_SUPIRCAM_BUTTON_STRING,SPECTROGRAPH_FTSPEC_BUTTON_STRING,
-								   POLARIMETER_RINGOSTAR_BUTTON_STRING};
+		POLARIMETER_RINGOSTAR_BUTTON_STRING,SPECTROGRAPH_FRODOSPEC_BUTTON_STRING,CCD_RISE_BUTTON_STRING};
 	/**
 	 * String to pre-pend to add menu instrument entries.
 	 */
@@ -117,6 +127,14 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	 * The Add/Amend dialog to use when Add or Amend is selected for a Polarimeter (Ringo Star) configuration.
 	 */
 	private IcsGUIPolarimeterConfigAADialog addAmendPolarimeterDialog = null;
+	/**
+	 * The Add/Amend dialog to use when Add or Amend is selected for a FrodoSpec configuration.
+	 */
+	private IcsGUIFrodoSpecConfigAADialog addAmendFrodoSpecDialog = null;
+	/**
+	 * The Add/Amend dialog to use when Add or Amend is selected for a RISE configuration.
+	 */
+	private IcsGUIRISEConfigAADialog addAmendRISEDialog = null;
 	/**
 	 * The config dialog that caused this dialog to be managed.
 	 */
@@ -208,6 +226,12 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	// create a Polarimater add/amend dialog
 		addAmendPolarimeterDialog = new IcsGUIPolarimeterConfigAADialog(owner,c);
 		addAmendPolarimeterDialog.addCcsConfigAADialogListener(this);
+	// create a FrodoSpec add/amend dialog
+		addAmendFrodoSpecDialog = new IcsGUIFrodoSpecConfigAADialog(owner,c);
+		addAmendFrodoSpecDialog.addCcsConfigAADialogListener(this);
+	// create a RISE add/amend dialog
+		addAmendRISEDialog = new IcsGUIRISEConfigAADialog(owner,c);
+		addAmendRISEDialog.addCcsConfigAADialogListener(this);
 	}
 
 	/**
@@ -320,6 +344,16 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 						addAmendPolarimeterDialog.pack();
 						addAmendPolarimeterDialog.add();
 						break;
+					case IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC:
+						addAmendFrodoSpecDialog.setLocation(getX()+getWidth(),getY());
+						addAmendFrodoSpecDialog.pack();
+						addAmendFrodoSpecDialog.add();
+						break;
+					case IcsGUIConfigProperties.CONFIG_TYPE_CCD_RISE:
+						addAmendRISEDialog.setLocation(getX()+getWidth(),getY());
+						addAmendRISEDialog.pack();
+						addAmendRISEDialog.add();
+						break;
 					case IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_MES:
 					default:
 						JOptionPane.showMessageDialog((Component)null,
@@ -362,6 +396,16 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 						addAmendPolarimeterDialog.setLocation(getX()+getWidth(),getY());
 						addAmendPolarimeterDialog.pack();
 						addAmendPolarimeterDialog.amend(id);
+						break;
+					case IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC:
+						addAmendFrodoSpecDialog.setLocation(getX()+getWidth(),getY());
+						addAmendFrodoSpecDialog.pack();
+						addAmendFrodoSpecDialog.amend(id);
+						break;
+					case IcsGUIConfigProperties.CONFIG_TYPE_CCD_RISE:
+						addAmendRISEDialog.setLocation(getX()+getWidth(),getY());
+						addAmendRISEDialog.pack();
+						addAmendRISEDialog.amend(id);
 						break;
 					case IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_MES:
 					default:
@@ -612,6 +656,9 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.11  2006/05/16 17:12:23  cjm
+// gnuify: Added GNU General Public License.
+//
 // Revision 0.10  2005/11/29 16:31:31  cjm
 // Added Polarimeter (Ringo Star) support.
 //
