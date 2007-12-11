@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUIConfigProperties.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.13 2007-12-11 16:24:19 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.14 2007-12-11 17:40:02 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -30,14 +30,14 @@ import ngat.phase2.*;
  * in a Java properties file and this class extends java.util.Properties
  * @see java.util.Properties
  * @author Chris Mottram
- * @version $Revision: 0.13 $
+ * @version $Revision: 0.14 $
  */
 public class IcsGUIConfigProperties extends Properties
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.13 2007-12-11 16:24:19 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.14 2007-12-11 17:40:02 cjm Exp $");
 	/**
 	 * Configuration type specifier:CCD (RATCam).
 	 */
@@ -67,6 +67,10 @@ public class IcsGUIConfigProperties extends Properties
 	 */
 	public final static int CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC = 6;
 	/**
+	 * Configuration type specifier:IMAGER (RISE).
+	 */
+	public final static int CONFIG_TYPE_CCD_RISE = 7;
+	/**
 	 * List of legal values that can be held in the config type field.
 	 * @see #CONFIG_TYPE_CCD_RATCAM
 	 * @see #CONFIG_TYPE_SPECTROGRAPH_MES
@@ -75,10 +79,11 @@ public class IcsGUIConfigProperties extends Properties
 	 * @see #CONFIG_TYPE_SPECTROGRAPH_FTSPEC
 	 * @see #CONFIG_TYPE_POLARIMETER_RINGOSTAR
 	 * @see #CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC
+	 * @see #CONFIG_TYPE_CCD_RISE
 	 */
 	public final static int CONFIG_TYPE_LIST[] = {CONFIG_TYPE_CCD_RATCAM,CONFIG_TYPE_SPECTROGRAPH_MES,
 		CONFIG_TYPE_SPECTROGRAPH_NUVIEW,CONFIG_TYPE_INFRA_RED_SUPIRCAM,CONFIG_TYPE_SPECTROGRAPH_FTSPEC,
-		CONFIG_TYPE_POLARIMETER_RINGOSTAR,CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC};
+		CONFIG_TYPE_POLARIMETER_RINGOSTAR,CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC,CONFIG_TYPE_CCD_RISE};
 	/**
 	 * Filename for properties file.
 	 */
@@ -195,6 +200,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * @see #getFTSpecConfigById
 	 * @see #getPolarimeterConfigById
 	 * @see #getFrodoSpecConfigById
+	 * @see #getRISEConfigById
 	 */
 	public InstrumentConfig getConfigById(int id) throws NumberFormatException, IllegalArgumentException
 	{
@@ -225,6 +231,9 @@ public class IcsGUIConfigProperties extends Properties
 				break;
 			case CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC:
 				c = getFrodoSpecConfigById(id);
+				break;
+			case CONFIG_TYPE_CCD_RISE:
+				c = getRISEConfigById(id);
 				break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":getConfigById:Id "
@@ -316,6 +325,10 @@ public class IcsGUIConfigProperties extends Properties
 				remove(configIdStringArm(id));
 				remove(configIdStringResolution(id));
 				break;
+			case CONFIG_TYPE_CCD_RISE:
+				remove(configIdStringXBin(id));
+				remove(configIdStringYBin(id));
+				break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":deleteId:Id "
 					+id+" type "+type+" not a supported type of configuration.");
@@ -402,6 +415,12 @@ public class IcsGUIConfigProperties extends Properties
 					remove(configIdStringArm(i));
 					setConfigResolution(i-1,getConfigResolution(i));
 					remove(configIdStringResolution(i));
+					break;
+			case CONFIG_TYPE_CCD_RISE:
+					setConfigXBin(i-1,getConfigXBin(i));
+					remove(configIdStringXBin(i));
+					setConfigYBin(i-1,getConfigYBin(i));
+					remove(configIdStringYBin(i));
 					break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":deleteId:Id "
@@ -1348,6 +1367,44 @@ public class IcsGUIConfigProperties extends Properties
 		return c;
 	}
 
+	/**
+	 * Method to return a RISEConfig, constructed from the information against id id.
+	 * @param id The Id number.
+	 * @return The constructed RISEConfig.
+	 * @exception NumberFormatException Thrown if a numeric parameter is not returned from the properties
+	 * 	file as a legal number.
+	 * @exception IllegalArgumentException Thrown if the config id specified does not have a legal type.
+	 */
+	private RISEConfig getRISEConfigById(int id) throws NumberFormatException, 
+									 IllegalArgumentException
+	{
+		RISEConfig c = null;
+		RISEDetector detector = null;
+
+	// check type
+		if(getConfigType(id) != CONFIG_TYPE_CCD_RISE)
+		{
+			throw new IllegalArgumentException(this.getClass().getName()+":getRISEConfigById:Id "
+				+id+" not a configuration of type Polarimeter (Ringo Star).");
+		}
+	// construct RISEConfig
+		c = new RISEConfig(getConfigName(id));
+		c.setCalibrateBefore(getConfigCalibrateBefore(id));
+		c.setCalibrateAfter(getConfigCalibrateAfter(id));
+	// setup detector
+		detector = new RISEDetector();
+		detector.setXBin(getConfigXBin(id));
+		detector.setYBin(getConfigYBin(id));
+		// note, other Detector fields not set, as they are not used by the instrument.
+	// don't set windows into detector, use default windows.
+	// Note flags are held IN the window list, so must setWindowFlags AFTER detector windows set
+		detector.setWindowFlags(0);
+	// set detector into config
+		c.setDetector(0,detector);
+	// return config
+		return c;
+	}
+
 // method to check values in the property file.
 	/**
 	 * Method to check whether a number is a legal configuration type number.
@@ -1659,6 +1716,9 @@ public class IcsGUIConfigProperties extends Properties
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.13  2007/12/11 16:24:19  cjm
+// Added FrodoSpec configuration property handling.
+//
 // Revision 0.12  2006/05/16 17:12:24  cjm
 // gnuify: Added GNU General Public License.
 //
