@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.11 2006-05-16 17:12:28 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.12 2007-12-11 17:34:44 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -40,14 +40,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class IcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.11 2006-05-16 17:12:28 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.12 2007-12-11 17:34:44 cjm Exp $");
 	/**
 	 * Internal constant used when converting temperatures in centigrade (from the CCD controller) to Kelvin.
 	 */
@@ -851,10 +851,17 @@ public class IcsGUI
 	 */
 	private void run()
 	{
+		log("run:Start.");
 		if(initiallyStartISSServer)
+		{
+			log("run:Starting ISS Server.");
 			startISSServer();
+		}
+		log("run:Packing frame.");
 		frame.pack();
+		log("run:Setting frame visible.");
 		frame.setVisible(true);
+		log("run:End.");
 	}
 
 	/**
@@ -1145,6 +1152,31 @@ public class IcsGUI
 	}
 
 	/**
+	 * Method to set the ccd status label. The mode number is translated into an equivalent string.
+	 * Note, the list of strings in this method should be kept up to date with the 
+	 * currentMode number returned by GET_STATUSImplementation in the Ics process.
+	 * @param currentMode The mode number from the get status command.
+	 */
+	public void setCCDStatusLabel(int redCurrentMode,int blueCurrentMode)
+	{
+		// Ensure this list matches GET_STATUS_DONE.MODE_*
+		String currentModeList[] = {"Idle","Config","Clearing","Wait to Start","Exposure",
+					    "Pre-Readout","Readout","Post-Readout","Error"};
+		String s = null;
+
+		if((redCurrentMode < 0)||(redCurrentMode >= currentModeList.length))
+			redCurrentMode = currentModeList.length-1; // set to Error mode
+		if((blueCurrentMode < 0)||(blueCurrentMode >= currentModeList.length))
+			blueCurrentMode = currentModeList.length-1; // set to Error mode
+		if(ccdStatusLabel != null)
+		{
+			SwingUtilities.invokeLater(new GUILabelSetter(ccdStatusLabel,
+								      "Red:"+currentModeList[redCurrentMode]+
+								      ":Blue:"+currentModeList[blueCurrentMode]));
+		}
+	}
+
+	/**
 	 * Method to set the current command label.
 	 * @param commandString The string to set the label to. If it is null, 'None' is used instead.
 	 */
@@ -1174,6 +1206,21 @@ public class IcsGUI
 	}
 
 	/**
+	 * Method to set the remaining exposures label.
+	 * @param redRemainingExposures The number of red exposures remaining to complete the current command.
+	 * @param blueRemainingExposures The number of blue exposures remaining to complete the current command.
+	 */
+	public void setRemainingExposuresLabel(int redRemainingExposures,int blueRemainingExposures)
+	{
+		if(remainingExposuresLabel != null)
+		{
+			SwingUtilities.invokeLater(new GUILabelSetter(remainingExposuresLabel,
+								      "Red : "+redRemainingExposures+
+								      ": Blue : "+blueRemainingExposures));
+		}
+	}
+
+	/**
 	 * Method to set the remaining exposure time label. We divide the input by 1000, to display in
 	 * remaining seconds.
 	 * @param remainingExposureTime The time to complete the exposure, in milliseconds.
@@ -1183,6 +1230,24 @@ public class IcsGUI
 		String s = null;
 
 		s = Double.toString(((double)remainingExposureTime)/1000.0);
+		if(remainingExposureTimeLabel != null)
+		{
+			SwingUtilities.invokeLater(new GUILabelSetter(remainingExposureTimeLabel,s));
+		}
+	}
+
+	/**
+	 * Method to set the remaining exposure time label for two arms. We divide the input by 1000, to display in
+	 * remaining seconds.
+	 * @param redRemainingExposureTime The time to complete the red arm exposure, in milliseconds.
+	 * @param blueRemainingExposureTime The time to complete the blue arm eexposure, in milliseconds.
+	 */
+	public void setRemainingExposureTimeLabel(long redRemainingExposureTime,long blueRemainingExposureTime)
+	{
+		String s = null;
+
+		s = new String("Red : "+Double.toString(((double)redRemainingExposureTime)/1000.0)+
+			       ": Blue : "+Double.toString(((double)blueRemainingExposureTime)/1000.0));
 		if(remainingExposureTimeLabel != null)
 		{
 			SwingUtilities.invokeLater(new GUILabelSetter(remainingExposureTimeLabel,s));
@@ -1284,6 +1349,28 @@ public class IcsGUI
 		if(ccdTemperatureLabel != null)
 		{
 			SwingUtilities.invokeLater(new GUILabelSetter(ccdTemperatureLabel,s+" C"));
+		}
+	}
+
+	/**
+	 * Method to set the CCD Temperature label for a two arm instrument. T
+	 * The temperatures are converted into degrees centigrade and displayed.
+	 * @param redCCDTemperature The temperature in degrees Kelvin.
+	 * @param blueCCDTemperature The temperature in degrees Kelvin.
+	 * @see #CENTIGRADE_TO_KELVIN
+	 */
+	public void setCCDTemperatureLabel(double redCCDTemperature,double blueCCDTemperature)
+	{
+		DecimalFormat decimalFormat = null;
+		String s = null;
+
+	// format number to 2d.p.
+		decimalFormat = new DecimalFormat("###.00");
+		s = new String("Red: "+decimalFormat.format(redCCDTemperature-CENTIGRADE_TO_KELVIN)+" C :Blue: "+
+			       decimalFormat.format(blueCCDTemperature-CENTIGRADE_TO_KELVIN)+" C");
+		if(ccdTemperatureLabel != null)
+		{
+			SwingUtilities.invokeLater(new GUILabelSetter(ccdTemperatureLabel,s));
 		}
 	}
 
@@ -1562,6 +1649,9 @@ public class IcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.11  2006/05/16 17:12:28  cjm
+// gnuify: Added GNU General Public License.
+//
 // Revision 1.10  2005/11/28 14:10:00  cjm
 // Added simple date formatting of current time when (error) logging to file.
 // Added prints to startup to debug multiple IcsGUI lock-at-startup problem.
