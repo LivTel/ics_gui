@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // CcsGUIClientConnectionThread.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.24 2006-09-22 11:30:35 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.25 2008-01-11 15:33:07 cjm Exp $
 
 import java.awt.*;
 import java.lang.*;
@@ -37,14 +37,14 @@ import ngat.util.StringUtilities;
  * It implements the generic ISS instrument command protocol.
  * It is used to send commands from the CcsGUI to the Ccs.
  * @author Chris Mottram
- * @version $Revision: 0.24 $
+ * @version $Revision: 0.25 $
  */
 public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.24 2006-09-22 11:30:35 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.25 2008-01-11 15:33:07 cjm Exp $");
 	/**
 	 * The CcsGUI object.
 	 */
@@ -287,12 +287,14 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	 * Method to display some status for a GET_STATUS message.
 	 * @param getStatusDone The DONE object instance containing status data to display.
 	 * @see #processDone
+	 * @see #printGetStatusDoneTwoArms
 	 */
 	private void printGetStatusDone(GET_STATUS_DONE getStatusDone)
 	{
 		CcsGUIStatus status = null;
 		Hashtable displayInfo = null;
 		String instrumentString = null;
+		String currentCommandString = null;
 		String filterTypeString = null;
 		Integer integer = null;
 		Long longObject = null;
@@ -324,7 +326,9 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 		if(instrumentString == null)
 			instrumentString = "RATCam";
 	// set current command status
-		parent.setCurrentCommandLabel((String)(displayInfo.get("currentCommand")));
+		currentCommandString = (String)(displayInfo.get("currentCommand"));
+		if(currentCommandString != null)
+			parent.setCurrentCommandLabel(currentCommandString);
 	// set filters selected status
 		filterTypeString = status.getProperty("ics_gui.get_status.filter_type."+instrumentString);
 		if(filterTypeString == null)
@@ -334,8 +338,8 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 		}
 		else if(filterTypeString.equals("TWO_WHEELS"))
 		{
-			parent.setFiltersSelectedLabel((String)(displayInfo.get("Filter Wheel:0")),
-				(String)(displayInfo.get("Filter Wheel:1")));
+			parent.setFiltersSelectedLabel("lower",(String)(displayInfo.get("Filter Wheel:0")),
+				"upper",(String)(displayInfo.get("Filter Wheel:1")));
 		}
 		else if(filterTypeString.equals("WAVELENGTH"))
 		{
@@ -353,53 +357,208 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 		{
 			parent.setFiltersSelectedLabel((String)("Fixed"));
 		}
+		else if(filterTypeString.equals("TWO_ARMS"))
+		{
+			parent.setFiltersSelectedLabel("Red",(String)(displayInfo.get("red.Grating Position String")),
+				"Blue",(String)(displayInfo.get("blue.Grating Position String")));
+		}
 		else
 		{
 			parent.setFiltersSelectedLabel("UNKNOWN");
 			parent.log("Unknown filter type string:"+filterTypeString);
 		}
-	// set remaining exposures status
-		integer = (Integer)(displayInfo.get("Exposure Count"));
-		exposureCount = integer.intValue();
-		integer = (Integer)(displayInfo.get("Exposure Number"));
-		exposureNumber = integer.intValue();
-		if(exposureCount <= 0)// special case MOVIE - or not exposing
-			parent.setRemainingExposuresLabel(0);
-		else
-			parent.setRemainingExposuresLabel(exposureCount-exposureNumber);
-	// set remaining exposure time label
-		if(getStatusDone.getCurrentMode() == GET_STATUS_DONE.MODE_EXPOSING)
+		if(filterTypeString.equals("TWO_ARMS"))
 		{
-			integer = (Integer)(displayInfo.get("Exposure Length"));
-			if(integer != null)
-				exposureLength = integer.longValue();
-			else
-				exposureLength = 0;
-		// If Elapsed Exposure Time was included, use this to calculate remaining exposure time
-			if(displayInfo.containsKey("Elapsed Exposure Time"))
-			{
-				integer = (Integer)(displayInfo.get("Elapsed Exposure Time"));
-				elapsedExposureTime = integer.longValue();
-				parent.setRemainingExposureTimeLabel(exposureLength-elapsedExposureTime);
-			}
-		// otherwise, use current time - exposure start time to calculate remaining exposure time
-			else
-			{
-				longObject = (Long)(displayInfo.get("Exposure Start Time"));
- 				elapsedExposureTime = System.currentTimeMillis()-longObject.longValue();
-				parent.setRemainingExposureTimeLabel(exposureLength-elapsedExposureTime);
-				parent.log("Elapsed Exposure Time not received, using Exposure Start Time"+
-					" to calculate remaining exposure time.");
-			}
+			// special FrodoSpec case.
+			printGetStatusDoneTwoArms(displayInfo,getStatusDone);
 		}
 		else
-			parent.setRemainingExposureTimeLabel(0L);
-	// set temperature
-		if(displayInfo.containsKey("Temperature"))
 		{
-			ccdTemperature = (Double)(displayInfo.get("Temperature"));
-			if(ccdTemperature != null)
-				parent.setCCDTemperatureLabel(ccdTemperature.doubleValue());
+	// set remaining exposures status
+			integer = (Integer)(displayInfo.get("Exposure Count"));
+			exposureCount = integer.intValue();
+			integer = (Integer)(displayInfo.get("Exposure Number"));
+			exposureNumber = integer.intValue();
+			if(exposureCount <= 0)// special case MOVIE - or not exposing
+				parent.setRemainingExposuresLabel(0);
+			else
+				parent.setRemainingExposuresLabel(exposureCount-exposureNumber);
+			// set remaining exposure time label
+			if(getStatusDone.getCurrentMode() == GET_STATUS_DONE.MODE_EXPOSING)
+			{
+				integer = (Integer)(displayInfo.get("Exposure Length"));
+				if(integer != null)
+					exposureLength = integer.longValue();
+				else
+					exposureLength = 0;
+				// If Elapsed Exposure Time was included, use this to calculate remaining exposure time
+				if(displayInfo.containsKey("Elapsed Exposure Time"))
+				{
+					integer = (Integer)(displayInfo.get("Elapsed Exposure Time"));
+					elapsedExposureTime = integer.longValue();
+					parent.setRemainingExposureTimeLabel(exposureLength-elapsedExposureTime);
+				}
+				// otherwise, use current time - exposure start time to calculate remaining exposure time
+				else
+				{
+					longObject = (Long)(displayInfo.get("Exposure Start Time"));
+					elapsedExposureTime = System.currentTimeMillis()-longObject.longValue();
+					parent.setRemainingExposureTimeLabel(exposureLength-elapsedExposureTime);
+					parent.log("Elapsed Exposure Time not received, using Exposure Start Time"+
+						   " to calculate remaining exposure time.");
+				}
+			}
+			else
+				parent.setRemainingExposureTimeLabel(0L);
+			// set temperature
+			if(displayInfo.containsKey("Temperature"))
+			{
+				ccdTemperature = (Double)(displayInfo.get("Temperature"));
+				if(ccdTemperature != null)
+					parent.setCCDTemperatureLabel(ccdTemperature.doubleValue());
+			}
+			else
+			{
+				parent.log("Temperature not updated.");
+			}
+		}// end if not TWO_ARMS
+	}
+
+	/**
+	 * Method to display some status for FrodoSpec.
+	 * @param getStatusDone The DONE object instance containing status data to display.
+	 * @see #processDone
+	 * @see #printGetStatusDoneTwoArms
+	 */
+	private void printGetStatusDoneTwoArms(Hashtable displayInfo,GET_STATUS_DONE getStatusDone)
+	{
+		Integer integer = null;
+		Long longObject = null;
+		String redCurrentCommandString = null;
+		String blueCurrentCommandString = null;
+		Double redCCDTemperature = null;
+		Double blueCCDTemperature = null;
+		int exposureCount,exposureNumber,redCurrentMode,blueCurrentMode;
+		int redRemainingExposures,blueRemainingExposures;
+		long exposureLength,elapsedExposureTime;
+		long redRemainingExposureTime,blueRemainingExposureTime;
+
+		// set CCD Status
+		// red
+		integer = (Integer)(displayInfo.get("red.Current Mode"));
+		if(integer != null)
+			redCurrentMode = integer.intValue();
+		else
+			redCurrentMode = 0;
+		// blue
+		integer = (Integer)(displayInfo.get("blue.Current Mode"));
+		if(integer != null)
+			blueCurrentMode = integer.intValue();
+		else
+			blueCurrentMode = 0;
+		parent.setCCDStatusLabel(redCurrentMode,blueCurrentMode);
+		// current command
+		redCurrentCommandString = (String)(displayInfo.get("red.currentCommand"));
+		blueCurrentCommandString = (String)(displayInfo.get("blue.currentCommand"));
+		parent.setCurrentCommandLabel("Red:"+redCurrentCommandString+": Blue:"+blueCurrentCommandString);
+	// set filters selected status
+		// diddly
+		// set remaining exposures status
+		// red
+		integer = (Integer)(displayInfo.get("red.Exposure Count"));
+		if(integer != null)
+			exposureCount = integer.intValue();
+		else
+			exposureCount = 0;
+		integer = (Integer)(displayInfo.get("red.Exposure Number"));
+		if(integer != null)
+			exposureNumber = integer.intValue();
+		else
+			exposureNumber = 0;
+
+		if(exposureCount <= 0)// special case MOVIE - or not exposing
+			redRemainingExposures = 0;
+		else
+			redRemainingExposures = exposureCount-exposureNumber;
+		// blue
+		integer = (Integer)(displayInfo.get("blue.Exposure Count"));
+		if(integer != null)
+			exposureCount = integer.intValue();
+		else
+			exposureCount = 0;
+		integer = (Integer)(displayInfo.get("blue.Exposure Number"));
+		if(integer != null)
+			exposureNumber = integer.intValue();
+		else
+			exposureNumber = 0;
+
+		if(exposureCount <= 0)// special case MOVIE - or not exposing
+			blueRemainingExposures = 0;
+		else
+			blueRemainingExposures = exposureCount-exposureNumber;
+		// set GUI label
+		parent.setRemainingExposuresLabel(redRemainingExposures,blueRemainingExposures);
+		// set remaining exposure time label
+		//if(getStatusDone.getCurrentMode() == GET_STATUS_DONE.MODE_EXPOSING)
+		//{
+		// red arm
+		integer = (Integer)(displayInfo.get("red.Exposure Length"));
+		if(integer != null)
+			exposureLength = integer.longValue();
+		else
+			exposureLength = 0;
+		// If Elapsed Exposure Time was included, use this to calculate remaining exposure time
+		if(displayInfo.containsKey("red.Elapsed Exposure Time"))
+		{
+			integer = (Integer)(displayInfo.get("red.Elapsed Exposure Time"));
+			elapsedExposureTime = integer.longValue();
+			redRemainingExposureTime = exposureLength-elapsedExposureTime;
+			if(redRemainingExposureTime < 0)
+				redRemainingExposureTime = 0;
+		}
+		// otherwise, use current time - exposure start time to calculate remaining exposure time
+		else
+		{
+			longObject = (Long)(displayInfo.get("red.Exposure Start Time"));
+			elapsedExposureTime = System.currentTimeMillis()-longObject.longValue();
+			redRemainingExposureTime = exposureLength-elapsedExposureTime;
+			parent.log("Red Elapsed Exposure Time not received, using Exposure Start Time"+
+				   " to calculate remaining exposure time.");
+		}
+		// blue arm
+		integer = (Integer)(displayInfo.get("blue.Exposure Length"));
+		if(integer != null)
+			exposureLength = integer.longValue();
+		else
+			exposureLength = 0;
+		// If Elapsed Exposure Time was included, use this to calculate remaining exposure time
+		if(displayInfo.containsKey("blue.Elapsed Exposure Time"))
+		{
+			integer = (Integer)(displayInfo.get("blue.Elapsed Exposure Time"));
+			elapsedExposureTime = integer.longValue();
+			blueRemainingExposureTime = exposureLength-elapsedExposureTime;
+			if(blueRemainingExposureTime < 0)
+				blueRemainingExposureTime = 0;
+		}
+		// otherwise, use current time - exposure start time to calculate remaining exposure time
+		else
+		{
+			longObject = (Long)(displayInfo.get("blue.Exposure Start Time"));
+			elapsedExposureTime = System.currentTimeMillis()-longObject.longValue();
+			blueRemainingExposureTime = exposureLength-elapsedExposureTime;
+			parent.log("Blue Elapsed Exposure Time not received, using Exposure Start Time"+
+				   " to calculate remaining exposure time.");
+		}
+		parent.setRemainingExposureTimeLabel(redRemainingExposureTime,blueRemainingExposureTime);
+		// set temperature
+		if(displayInfo.containsKey("red.Temperature"))
+			redCCDTemperature = (Double)(displayInfo.get("red.Temperature"));
+		if(displayInfo.containsKey("blue.Temperature"))
+			blueCCDTemperature = (Double)(displayInfo.get("blue.Temperature"));
+		if((redCCDTemperature != null)&&(blueCCDTemperature != null))
+		{
+			parent.setCCDTemperatureLabel(redCCDTemperature.doubleValue(),
+						      blueCCDTemperature.doubleValue());
 		}
 		else
 		{
@@ -457,6 +616,10 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.24  2006/09/22 11:30:35  cjm
+// Replaced hard coded GET_STATUS Instrument -> "Filter Selected" mapping with ics_gui.get_status.filter_type
+// config mapping.
+//
 // Revision 0.23  2006/09/04 15:32:24  cjm
 // Added HawkCam.
 //
