@@ -1,5 +1,5 @@
 # Makefile
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.38 2007-12-11 17:39:44 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.39 2008-01-11 15:00:48 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -51,7 +51,7 @@ CCS_GUI_PROPERTY_SRCS	= ltccd1.ccs_gui.properties \
 	ftspec1.ccs_gui.properties ftspec2.ccs_gui.properties \
 	spectrograph.ccs_gui.properties nuview1.ccs_gui.properties ratcam1.ccs_gui.properties \
 	lttmc.ccs_gui.properties ftntmc.ccs_gui.properties ftstmc.ccs_gui.properties ftsocc.ccs_gui.properties \
-	frodospec1.ccs_gui.properties
+	frodospec1.ccs_gui.properties estar6.ccs_gui.properties
 CCS_GUI_CONFIG_PROPERTY_SRCS = ltccd1.ccs_gui_config.properties ltccd2.ccs_gui_config.properties \
 	ltccd3.ccs_gui_config.properties ltccd4.ccs_gui_config.properties \
 	ftccd1.ccs_gui_config.properties ftccd2.ccs_gui_config.properties \
@@ -59,14 +59,14 @@ CCS_GUI_CONFIG_PROPERTY_SRCS = ltccd1.ccs_gui_config.properties ltccd2.ccs_gui_c
 	ftspec1.ccs_gui_config.properties ftspec2.ccs_gui_config.properties \
 	spectrograph.ccs_gui_config.properties nuview1.ccs_gui_config.properties \
 	lttmc.ccs_gui_config.properties ftntmc.ccs_gui_config.properties ftstmc.ccs_gui_config.properties \
-	ratcam1.ccs_gui_config.properties frodospec1.ccs_gui_config.properties
+	ratcam1.ccs_gui_config.properties frodospec1.ccs_gui_config.properties estar6.ccs_gui_config.properties
 CCS_GUI_FITS_PROPERTY_SRCS = ltccd1.ccs_gui.fits.properties ltccd2.ccs_gui.fits.properties \
 	ltccd3.ccs_gui.fits.properties ltccd4.ccs_gui.fits.properties \
 	ftccd1.ccs_gui.fits.properties ftccd2.ccs_gui.fits.properties \
 	ftspec1.ccs_gui.fits.properties ftspec2.ccs_gui.fits.properties \
 	spectrograph.ccs_gui.fits.properties nuview1.ccs_gui.fits.properties \
 	lttmc.ccs_gui.fits.properties ftntmc.ccs_gui.fits.properties ftstmc.ccs_gui.fits.properties \
-	ratcam1.ccs_gui.fits.properties frodospec1.ccs_gui.fits.properties
+	ratcam1.ccs_gui.fits.properties frodospec1.ccs_gui.fits.properties estar6.ccs_gui.fits.properties
 PROPERTY_OBJS	= $(PROPERTY_SRCS:%.properties=$(BINDIR)/%.properties)
 
 SCRIPT_SRCS	= icsgui scsgui ccsgui xv_wrapper.csh
@@ -169,6 +169,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.38  2007/12/11 17:39:44  cjm
+# Added rise config / IcsGUIRISEConfigAADialog.java.
+#
 # Revision 0.37  2007/08/01 13:55:53  cjm
 # Added FrodoSpec config dialogs.
 # Added frodospec config properties.
