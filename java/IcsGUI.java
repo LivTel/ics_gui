@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.12 2007-12-11 17:34:44 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.13 2008-01-11 15:34:06 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -40,14 +40,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class IcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.12 2007-12-11 17:34:44 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.13 2008-01-11 15:34:06 cjm Exp $");
 	/**
 	 * Internal constant used when converting temperatures in centigrade (from the CCD controller) to Kelvin.
 	 */
@@ -1256,11 +1256,14 @@ public class IcsGUI
 
 	/**
 	 * Method to set the selected filters label. If one of the parameters is null, the String
-	 * 'Unknown' is used instead. This is used for RATCam filter settings.
+	 * 'Unknown' is used instead. This is used for RATCam  and FrodoSpec filter settings.
+	 * @param lowerFilterLabel The label to be used for the "lower" part of the filter.
 	 * @param lowerFilterString The name of the lower filter wheel's selected filter.
+	 * @param upperFilterLabel The label to be used for the "upper" part of the filter.
 	 * @param upperFilterString The name of the lower filter wheel's selected filter.
 	 */
-	public void setFiltersSelectedLabel(String lowerFilterString,String upperFilterString)
+	public void setFiltersSelectedLabel(String lowerFilterLabel,String lowerFilterString,
+					    String upperFilterLabel,String upperFilterString)
 	{
 		if(lowerFilterString == null)
 			lowerFilterString = new String("Unknown");
@@ -1268,8 +1271,8 @@ public class IcsGUI
 			upperFilterString = new String("Unknown");
 		if(filterSelectedLabel != null)
 		{
-			SwingUtilities.invokeLater(new GUILabelSetter(filterSelectedLabel,"lower:"+
-				lowerFilterString+" upper:"+upperFilterString));
+			SwingUtilities.invokeLater(new GUILabelSetter(filterSelectedLabel,lowerFilterLabel+":"+
+				lowerFilterString+" "+upperFilterLabel+":"+upperFilterString));
 		}
 	}
 
@@ -1649,6 +1652,11 @@ public class IcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.12  2007/12/11 17:34:44  cjm
+// Added more logging.
+// Added setCCDStatusLabel, setCCDTemperatureLabel for TWO_ARM instruments.
+// Added setRemainingExposuresLabel, setRemainingExposureTimeLabel for TWO_ARM instruments.
+//
 // Revision 1.11  2006/05/16 17:12:28  cjm
 // gnuify: Added GNU General Public License.
 //
