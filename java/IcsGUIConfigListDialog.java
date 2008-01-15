@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUIConfigListDialog.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigListDialog.java,v 0.12 2007-12-11 17:40:40 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigListDialog.java,v 0.13 2008-01-15 11:17:28 cjm Exp $
 import java.lang.*;
 import java.util.*;
 import java.awt.*;
@@ -37,7 +37,7 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public static String RCSID = new String("$Id: IcsGUIConfigListDialog.java,v 0.12 2007-12-11 17:40:40 cjm Exp $");
+	public static String RCSID = new String("$Id: IcsGUIConfigListDialog.java,v 0.13 2008-01-15 11:17:28 cjm Exp $");
 	/**
 	 * String to go on buttons.
 	 */
@@ -49,7 +49,7 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	/**
 	 * String to go on buttons.
 	 */
-	protected final static String SPECTROGRAPH_NUVIEW_BUTTON_STRING = "Spectrograph (NuView)";
+	protected final static String SPECTROGRAPH_NUVIEW_BUTTON_STRING = "Spectrograph (Meaburn)";
 	/**
 	 * String to go on buttons.
 	 */
@@ -656,6 +656,9 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.12  2007/12/11 17:40:40  cjm
+// Added RISE config handling.
+//
 // Revision 0.11  2006/05/16 17:12:23  cjm
 // gnuify: Added GNU General Public License.
 //
