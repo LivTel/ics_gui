@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.13 2008-01-11 15:34:06 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.14 2008-02-29 15:02:13 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -40,14 +40,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class IcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.13 2008-01-11 15:34:06 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.14 2008-02-29 15:02:13 cjm Exp $");
 	/**
 	 * Internal constant used when converting temperatures in centigrade (from the CCD controller) to Kelvin.
 	 */
@@ -842,25 +842,28 @@ public class IcsGUI
 	}
 
 	/**
- 	 * The run routine. Sets the main frame visible.
+ 	 * The run routine. Starts a GUIDialogManager that sets the main frame visible (in the Swing thread).
 	 * Starts the server, if we want to start it.
 	 * @see #frame
 	 * @see #initiallyStartISSServer
 	 * @see #startISSServer
 	 * @see #server
+	 * @see ngat.swing.GUIDialogManager
+	 * @see javax.swing.SwingUtilities#invokeLater
 	 */
 	private void run()
 	{
+		GUIDialogManager dialogManager = null;
+
 		log("run:Start.");
 		if(initiallyStartISSServer)
 		{
 			log("run:Starting ISS Server.");
 			startISSServer();
 		}
-		log("run:Packing frame.");
-		frame.pack();
-		log("run:Setting frame visible.");
-		frame.setVisible(true);
+		log("run:Adding frame to invokeLater GUIDialogManager.");
+		dialogManager = new GUIDialogManager(frame);
+		SwingUtilities.invokeLater(dialogManager);
 		log("run:End.");
 	}
 
@@ -1652,6 +1655,10 @@ public class IcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.13  2008/01/11 15:34:06  cjm
+// Added labels to the two parameter setFiltersSelectedLabel, so
+// that it supports RATCam and FrodoSpec.
+//
 // Revision 1.12  2007/12/11 17:34:44  cjm
 // Added more logging.
 // Added setCCDStatusLabel, setCCDTemperatureLabel for TWO_ARM instruments.
