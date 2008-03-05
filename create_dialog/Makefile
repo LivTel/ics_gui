@@ -1,5 +1,5 @@
 # Makefile
-# $Header: /home/cjm/cvs/ics_gui/create_dialog/Makefile,v 0.4 2004-04-26 11:29:28 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/create_dialog/Makefile,v 0.5 2008-03-05 14:35:07 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -14,8 +14,14 @@ DOCS 		= $(SRCS:%.java=$(DOCSDIR)/%.html)
 
 CALIBRATE_DIALOG_SRCS	= ngat.message.ISS_INST.ARC ngat.message.ISS_INST.BIAS ngat.message.ISS_INST.DARK \
 			ngat.message.ISS_INST.DAY_CALIBRATE ngat.message.ISS_INST.LAMPFLAT \
-			ngat.message.ISS_INST.SKYFLAT ngat.message.ISS_INST.TWILIGHT_CALIBRATE
-EXPOSE_DIALOG_SRCS	= ngat.message.ISS_INST.GLANCE ngat.message.ISS_INST.MOVIE ngat.message.ISS_INST.MULTRUN ngat.message.ISS_INST.RUNAT ngat.message.ISS_INST.SAVE
+			ngat.message.ISS_INST.SKYFLAT ngat.message.ISS_INST.TWILIGHT_CALIBRATE \
+			ngat.message.ISS_INST.FRODOSPEC_BIAS ngat.message.ISS_INST.FRODOSPEC_DARK \
+			ngat.message.ISS_INST.FRODOSPEC_DAY_CALIBRATE \
+			ngat.message.ISS_INST.FRODOSPEC_TWILIGHT_CALIBRATE
+EXPOSE_DIALOG_SRCS	= ngat.message.ISS_INST.GLANCE ngat.message.ISS_INST.MOVIE ngat.message.ISS_INST.MULTRUN \
+	ngat.message.ISS_INST.RUNAT ngat.message.ISS_INST.SAVE \
+	ngat.message.ISS_INST.FRODOSPEC_GLANCE ngat.message.ISS_INST.FRODOSPEC_MULTRUN \
+	ngat.message.ISS_INST.FRODOSPEC_RUNAT 
 INTERRUPT_DIALOG_SRCS	= ngat.message.ISS_INST.ABORT ngat.message.ISS_INST.GET_STATUS ngat.message.ISS_INST.PAUSE ngat.message.ISS_INST.REBOOT ngat.message.ISS_INST.RESUME ngat.message.ISS_INST.STOP
 SETUP_DIALOG_SRCS	= ngat.message.ISS_INST.CONFIG ngat.message.ISS_INST.LAMPFOCUS ngat.message.ISS_INST.SET_LOGGING ngat.message.ISS_INST.STARFOCUS ngat.message.ISS_INST.TELFOCUS ngat.message.ISS_INST.TEST 
 DIALOG_SRCS	= ngat.message.ISS_INST.ACQUIRE $(CALIBRATE_DIALOG_SRCS) $(EXPOSE_DIALOG_SRCS) $(INTERRUPT_DIALOG_SRCS) $(SETUP_DIALOG_SRCS)
@@ -45,9 +51,16 @@ $(CCS_GUI_SRC_HOME)/java/DAY_CALIBRATEDialog.java:ngat.message.ISS_INST.DAY_CALI
 $(CCS_GUI_SRC_HOME)/java/LAMPFLATDialog.java:ngat.message.ISS_INST.LAMPFLAT
 $(CCS_GUI_SRC_HOME)/java/SKYFLATDialog.java:ngat.message.ISS_INST.SKYFLAT
 $(CCS_GUI_SRC_HOME)/java/TWILIGHT_CALIBRATEDialog.java:ngat.message.ISS_INST.TWILIGHT_CALIBRATE
+$(CCS_GUI_SRC_HOME)/java/FRODOSPEC_BIASDialog.java:ngat.message.ISS_INST.FRODOSPEC_BIAS
+$(CCS_GUI_SRC_HOME)/java/FRODOSPEC_DARKDialog.java:ngat.message.ISS_INST.FRODOSPEC_DARK
+$(CCS_GUI_SRC_HOME)/java/FRODOSPEC_DAY_CALIBRATEDialog.java:ngat.message.ISS_INST.FRODOSPEC_DAY_CALIBRATE
+$(CCS_GUI_SRC_HOME)/java/FRODOSPEC_TWILIGHT_CALIBRATEDialog.java:ngat.message.ISS_INST.FRODOSPEC_TWILIGHT_CALIBRATE
 $(CCS_GUI_SRC_HOME)/java/GLANCEDialog.java:ngat.message.ISS_INST.GLANCE
 $(CCS_GUI_SRC_HOME)/java/MOVIEDialog.java:ngat.message.ISS_INST.MOVIE
 $(CCS_GUI_SRC_HOME)/java/MULTRUNDialog.java:ngat.message.ISS_INST.MULTRUN
+$(CCS_GUI_SRC_HOME)/java/FRODOSPEC_GLANCEDialog.java:ngat.message.ISS_INST.FRODOSPEC_GLANCE
+$(CCS_GUI_SRC_HOME)/java/FRODOSPEC_MULTRUNDialog.java:ngat.message.ISS_INST.FRODOSPEC_MULTRUN
+$(CCS_GUI_SRC_HOME)/java/FRODOSPEC_RUNATDialog.java:ngat.message.ISS_INST.FRODOSPEC_RUNAT
 $(CCS_GUI_SRC_HOME)/java/RUNATDialog.java:ngat.message.ISS_INST.RUNAT
 $(CCS_GUI_SRC_HOME)/java/SAVEDialog.java:ngat.message.ISS_INST.SAVE
 $(CCS_GUI_SRC_HOME)/java/ABORTDialog.java:ngat.message.ISS_INST.ABORT
@@ -83,6 +96,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.4  2004/04/26 11:29:28  cjm
+# Added Linux compatibility stuff for calling CreateDialog OK.
+#
 # Revision 0.3  2001/08/02 14:19:16  cjm
 # Added source classes DAY_CALIBRATE and TWILIGHT_CALIBRATE.
 #
