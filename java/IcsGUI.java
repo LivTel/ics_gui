@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.16 2008-04-29 11:09:07 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.17 2008-04-29 14:24:42 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -41,14 +41,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class IcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.16 2008-04-29 11:09:07 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.17 2008-04-29 14:24:42 cjm Exp $");
 	/**
 	 * Internal constant used when converting temperatures in centigrade (from the CCD controller) to Kelvin.
 	 */
@@ -69,6 +69,10 @@ public class IcsGUI
 	 * Top level frame for the program.
 	 */
 	private JFrame frame = null;
+	/**
+	 * The top-level Panel containing the status and log panels.
+	 */
+	private JPanel mainPanel = null;
 	/**
 	 * The Panel containing the last status returned by the instruments GET_STATUS command.
 	 */
@@ -339,6 +343,7 @@ public class IcsGUI
 	 * Initialise the program.
 	 * Creates the frame and creates the widgets associated with it.
 	 * Creates the menu bar.
+	 * @see #mainPanel
 	 * @see #remoteX
 	 * @see #frame
 	 * @see #initMenuBar
@@ -379,9 +384,8 @@ public class IcsGUI
 		 * and its contents is to put the contents in a JPanel
 		 * that has an "empty" border.
 		 */
-		JPanel panel = new JPanel();
-
-		initMainPanel(panel);
+		mainPanel = new JPanel();
+		initMainPanel(mainPanel);
 
 	// Add the JPanel to the frame.
 		gridBagCon.gridx = GridBagConstraints.RELATIVE;
@@ -392,8 +396,8 @@ public class IcsGUI
 		gridBagCon.weightx = 1.0;
 		gridBagCon.weighty = 1.0;
 		gridBagCon.anchor = GridBagConstraints.NORTHWEST;
-		gridBagLayout.setConstraints(panel,gridBagCon);
-		frame.getContentPane().add(panel);
+		gridBagLayout.setConstraints(mainPanel,gridBagCon);
+		frame.getContentPane().add(mainPanel);
 
 	//Finish setting up the frame, and show it.
 		frame.addWindowListener(new CcsGUIWindowListener(this));
@@ -1440,13 +1444,13 @@ public class IcsGUI
 	}
 
 	/**
-	 * Method to set the last status panel background, based on the overall instrument status health string.
+	 * Method to set the main panel background, based on the overall instrument status health string.
 	 * This should have been retrieved from the GET_STATUS_DONE.KEYWORD_INSTRUMENT_STATUS
 	 * keyword. However, the instrument might not support this.
 	 * @param statusString The overall detector temperature status string, retrieved from 
 	 *        GET_STATUS_DONE.KEYWORD_INSTRUMENT_STATUS. This might be null, or one of:
 	 *        OK,WARN,FAIL,UNKNOWN.
-	 * @see #lastStatusPanel
+	 * @see #mainPanel
 	 * @see ngat.message.ISS_INST.GET_STATUS_DONE#KEYWORD_INSTRUMENT_STATUS
 	 * @see ngat.message.ISS_INST.GET_STATUS_DONE#VALUE_STATUS_OK
 	 * @see ngat.message.ISS_INST.GET_STATUS_DONE#VALUE_STATUS_WARN
@@ -1476,7 +1480,7 @@ public class IcsGUI
 		}
 		if(lastStatusPanel != null)
 		{
-			SwingUtilities.invokeLater(new GUIBackgroundColourSetter(lastStatusPanel,colour));
+			SwingUtilities.invokeLater(new GUIBackgroundColourSetter(mainPanel,colour));
 		}
 	}
 
@@ -1767,6 +1771,10 @@ public class IcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.16  2008/04/29 11:09:07  cjm
+// Added -instrument_config / instrumentConfigPropertyFilename so the instrument config
+// can be loaded from a non-standard property filename.
+//
 // Revision 1.15  2008/04/29 09:55:44  cjm
 // Methods to change background colour of various components based on status retrieved from GET_STATUS.
 //
