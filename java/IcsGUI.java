@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.18 2008-04-29 14:58:55 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.19 2008-04-29 15:10:49 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -41,14 +41,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public class IcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.18 2008-04-29 14:58:55 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.19 2008-04-29 15:10:49 cjm Exp $");
 	/**
 	 * Internal constant used when converting temperatures in centigrade (from the CCD controller) to Kelvin.
 	 */
@@ -1421,21 +1421,22 @@ public class IcsGUI
 		Color colour = null;
 
 		// init colour to unknown
-		colour = Color.LIGHT_GRAY;
+		// Now using dark colours against light blue background
+		colour = Color.DARK_GRAY;
 		if(statusString != null)
 		{
 			if(statusString.equals(GET_STATUS_DONE.VALUE_STATUS_OK))
-				colour = Color.GREEN;
+				colour = new Color(0.0f,0.5f,0.0f);
 			else if(statusString.equals(GET_STATUS_DONE.VALUE_STATUS_WARN))
-				colour = Color.YELLOW;
+				colour = new Color(0.5f,0.5f,0.0f);
 			else if(statusString.equals(GET_STATUS_DONE.VALUE_STATUS_FAIL))
 				colour = Color.RED;
 			else if(statusString.equals(GET_STATUS_DONE.VALUE_STATUS_UNKNOWN))
-				colour = Color.LIGHT_GRAY;
+				colour = Color.DARK_GRAY;
 			else if(statusString.equals(""))
-				colour = Color.LIGHT_GRAY;
+				colour = Color.DARK_GRAY;
 			else
-				colour = Color.LIGHT_GRAY;
+				colour = Color.DARK_GRAY;
 		}
 		if(ccdTemperatureLabel != null)
 		{
@@ -1771,6 +1772,10 @@ public class IcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.18  2008/04/29 14:58:55  cjm
+// Changed setCCDTemperatureLabelBackground to setCCDTemperatureLabelForeground as changing
+// the background does nothing!
+//
 // Revision 1.17  2008/04/29 14:24:42  cjm
 // Changed setStatusBackground to use mainPanel.
 //
