@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // CcsGUIClientConnectionThread.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.25 2008-01-11 15:33:07 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.26 2008-04-29 09:55:21 cjm Exp $
 
 import java.awt.*;
 import java.lang.*;
@@ -37,14 +37,14 @@ import ngat.util.StringUtilities;
  * It implements the generic ISS instrument command protocol.
  * It is used to send commands from the CcsGUI to the Ccs.
  * @author Chris Mottram
- * @version $Revision: 0.25 $
+ * @version $Revision: 0.26 $
  */
 public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.25 2008-01-11 15:33:07 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.26 2008-04-29 09:55:21 cjm Exp $");
 	/**
 	 * The CcsGUI object.
 	 */
@@ -288,12 +288,17 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	 * @param getStatusDone The DONE object instance containing status data to display.
 	 * @see #processDone
 	 * @see #printGetStatusDoneTwoArms
+	 * @see IcsGUI#setCCDTemperatureLabelBackground
+	 * @see IcsGUI#setStatusBackground
+	 * @see ngat.message.ISS_INST.GET_STATUS_DONE#KEYWORD_INSTRUMENT_STATUS
+	 * @see ngat.message.ISS_INST.GET_STATUS_DONE#KEYWORD_DETECTOR_TEMPERATURE_INSTRUMENT_STATUS
 	 */
 	private void printGetStatusDone(GET_STATUS_DONE getStatusDone)
 	{
 		CcsGUIStatus status = null;
 		Hashtable displayInfo = null;
 		String instrumentString = null;
+		String statusString = null;
 		String currentCommandString = null;
 		String filterTypeString = null;
 		Integer integer = null;
@@ -422,6 +427,15 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 				parent.log("Temperature not updated.");
 			}
 		}// end if not TWO_ARMS
+		// Detector temperature health status
+		// NB status might not be present or NULL, setCCDTemperatureLabelBackground
+		// takes care of this
+		statusString=(String)(displayInfo.get(GET_STATUS_DONE.KEYWORD_DETECTOR_TEMPERATURE_INSTRUMENT_STATUS));
+		parent.setCCDTemperatureLabelBackground(statusString);
+		// Overall Instrument health status
+		// Again might be null, setStatusBackground take scare of this
+		statusString = (String)(displayInfo.get(GET_STATUS_DONE.KEYWORD_INSTRUMENT_STATUS));
+		parent.setStatusBackground(statusString);
 	}
 
 	/**
@@ -616,6 +630,9 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.25  2008/01/11 15:33:07  cjm
+// Added some FrodoSpec Status information.
+//
 // Revision 0.24  2006/09/22 11:30:35  cjm
 // Replaced hard coded GET_STATUS Instrument -> "Filter Selected" mapping with ics_gui.get_status.filter_type
 // config mapping.
