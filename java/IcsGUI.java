@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.17 2008-04-29 14:24:42 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.18 2008-04-29 14:58:55 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -41,14 +41,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class IcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.17 2008-04-29 14:24:42 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.18 2008-04-29 14:58:55 cjm Exp $");
 	/**
 	 * Internal constant used when converting temperatures in centigrade (from the CCD controller) to Kelvin.
 	 */
@@ -1403,7 +1403,7 @@ public class IcsGUI
 	}
 
 	/**
-	 * Method to set the CCD Temperature label background, based on the overall detector temperature status string.
+	 * Method to set the CCD Temperature label foreground, based on the overall detector temperature status string.
 	 * This should have been retrieved from the GET_STATUS_DONE.KEYWORD_DETECTOR_TEMPERATURE_INSTRUMENT_STATUS
 	 * keyword. However, the instrument might not support this.
 	 * @param statusString The overall detector temperature status string, retrieved from 
@@ -1414,9 +1414,9 @@ public class IcsGUI
 	 * @see ngat.message.ISS_INST.GET_STATUS_DONE#VALUE_STATUS_OK
 	 * @see ngat.message.ISS_INST.GET_STATUS_DONE#VALUE_STATUS_WARN
 	 * @see ngat.message.ISS_INST.GET_STATUS_DONE#VALUE_STATUS_FAIL
-	 * @see ngat.swing.GUIBackgroundColourSetter
+	 * @see ngat.swing.GUIForegroundColourSetter
 	 */
-	public void setCCDTemperatureLabelBackground(String statusString)
+	public void setCCDTemperatureLabelForeground(String statusString)
 	{
 		Color colour = null;
 
@@ -1439,7 +1439,7 @@ public class IcsGUI
 		}
 		if(ccdTemperatureLabel != null)
 		{
-			SwingUtilities.invokeLater(new GUIBackgroundColourSetter(ccdTemperatureLabel,colour));
+			SwingUtilities.invokeLater(new GUIForegroundColourSetter(ccdTemperatureLabel,colour));
 		}
 	}
 
@@ -1771,6 +1771,9 @@ public class IcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.17  2008/04/29 14:24:42  cjm
+// Changed setStatusBackground to use mainPanel.
+//
 // Revision 1.16  2008/04/29 11:09:07  cjm
 // Added -instrument_config / instrumentConfigPropertyFilename so the instrument config
 // can be loaded from a non-standard property filename.
