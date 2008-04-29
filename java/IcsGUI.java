@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.14 2008-02-29 15:02:13 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.15 2008-04-29 09:55:44 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -33,6 +33,7 @@ import javax.swing.plaf.metal.*;
 
 import ngat.message.base.*;
 import ngat.message.ISS_INST.GET_STATUS;
+import ngat.message.ISS_INST.GET_STATUS_DONE;
 import ngat.sound.*;
 import ngat.swing.*;
 import ngat.util.*;
@@ -40,14 +41,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class IcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.14 2008-02-29 15:02:13 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.15 2008-04-29 09:55:44 cjm Exp $");
 	/**
 	 * Internal constant used when converting temperatures in centigrade (from the CCD controller) to Kelvin.
 	 */
@@ -68,6 +69,10 @@ public class IcsGUI
 	 * Top level frame for the program.
 	 */
 	private JFrame frame = null;
+	/**
+	 * The Panel containing the last status returned by the instruments GET_STATUS command.
+	 */
+	private JPanel lastStatusPanel = null;
 	/**
 	 * Label for current Ics status.
 	 */
@@ -409,14 +414,15 @@ public class IcsGUI
 	 * @param panel The panel to put the status panel in.
 	 * @param gridBagLayout The grid bag layout to set constraints for, before adding things
 	 * 	to the panel.
+	 * @see #lastStatusPanel
 	 */
 	private void initStatusPanel(JPanel panel,GridBagLayout gridBagLayout)
 	{
-		JPanel lastStatusPanel = new JPanel();
 		JLabel label = null;
         	GridBagConstraints gridBagCon = new GridBagConstraints();
 		int minTime;
 
+		lastStatusPanel = new JPanel();
 		lastStatusPanel.setLayout(new GridLayout(0,2));
 		lastStatusPanel.setMinimumSize(new Dimension(250,160));
 		lastStatusPanel.setPreferredSize(new Dimension(1024,160));
@@ -1381,6 +1387,88 @@ public class IcsGUI
 	}
 
 	/**
+	 * Method to set the CCD Temperature label background, based on the overall detector temperature status string.
+	 * This should have been retrieved from the GET_STATUS_DONE.KEYWORD_DETECTOR_TEMPERATURE_INSTRUMENT_STATUS
+	 * keyword. However, the instrument might not support this.
+	 * @param statusString The overall detector temperature status string, retrieved from 
+	 *        GET_STATUS_DONE.KEYWORD_DETECTOR_TEMPERATURE_INSTRUMENT_STATUS. This might be null, or one of:
+	 *        OK,WARN,FAIL,UNKNOWN.
+	 * @see #ccdTemperatureLabel
+	 * @see ngat.message.ISS_INST.GET_STATUS_DONE#KEYWORD_DETECTOR_TEMPERATURE_INSTRUMENT_STATUS
+	 * @see ngat.message.ISS_INST.GET_STATUS_DONE#VALUE_STATUS_OK
+	 * @see ngat.message.ISS_INST.GET_STATUS_DONE#VALUE_STATUS_WARN
+	 * @see ngat.message.ISS_INST.GET_STATUS_DONE#VALUE_STATUS_FAIL
+	 * @see ngat.swing.GUIBackgroundColourSetter
+	 */
+	public void setCCDTemperatureLabelBackground(String statusString)
+	{
+		Color colour = null;
+
+		// init colour to unknown
+		colour = Color.LIGHT_GRAY;
+		if(statusString != null)
+		{
+			if(statusString.equals(GET_STATUS_DONE.VALUE_STATUS_OK))
+				colour = Color.GREEN;
+			else if(statusString.equals(GET_STATUS_DONE.VALUE_STATUS_WARN))
+				colour = Color.YELLOW;
+			else if(statusString.equals(GET_STATUS_DONE.VALUE_STATUS_FAIL))
+				colour = Color.RED;
+			else if(statusString.equals(GET_STATUS_DONE.VALUE_STATUS_UNKNOWN))
+				colour = Color.LIGHT_GRAY;
+			else if(statusString.equals(""))
+				colour = Color.LIGHT_GRAY;
+			else
+				colour = Color.LIGHT_GRAY;
+		}
+		if(ccdTemperatureLabel != null)
+		{
+			SwingUtilities.invokeLater(new GUIBackgroundColourSetter(ccdTemperatureLabel,colour));
+		}
+	}
+
+	/**
+	 * Method to set the last status panel background, based on the overall instrument status health string.
+	 * This should have been retrieved from the GET_STATUS_DONE.KEYWORD_INSTRUMENT_STATUS
+	 * keyword. However, the instrument might not support this.
+	 * @param statusString The overall detector temperature status string, retrieved from 
+	 *        GET_STATUS_DONE.KEYWORD_INSTRUMENT_STATUS. This might be null, or one of:
+	 *        OK,WARN,FAIL,UNKNOWN.
+	 * @see #lastStatusPanel
+	 * @see ngat.message.ISS_INST.GET_STATUS_DONE#KEYWORD_INSTRUMENT_STATUS
+	 * @see ngat.message.ISS_INST.GET_STATUS_DONE#VALUE_STATUS_OK
+	 * @see ngat.message.ISS_INST.GET_STATUS_DONE#VALUE_STATUS_WARN
+	 * @see ngat.message.ISS_INST.GET_STATUS_DONE#VALUE_STATUS_FAIL
+	 * @see ngat.swing.GUIBackgroundColourSetter
+	 */
+	public void setStatusBackground(String statusString)
+	{
+		Color colour = null;
+
+		// init colour to unknown
+		colour = Color.LIGHT_GRAY;
+		if(statusString != null)
+		{
+			if(statusString.equals(GET_STATUS_DONE.VALUE_STATUS_OK))
+				colour = Color.GREEN;
+			else if(statusString.equals(GET_STATUS_DONE.VALUE_STATUS_WARN))
+				colour = Color.YELLOW;
+			else if(statusString.equals(GET_STATUS_DONE.VALUE_STATUS_FAIL))
+				colour = Color.RED;
+			else if(statusString.equals(GET_STATUS_DONE.VALUE_STATUS_UNKNOWN))
+				colour = Color.LIGHT_GRAY;
+			else if(statusString.equals(""))
+				colour = Color.LIGHT_GRAY;
+			else
+				colour = Color.LIGHT_GRAY;
+		}
+		if(lastStatusPanel != null)
+		{
+			SwingUtilities.invokeLater(new GUIBackgroundColourSetter(lastStatusPanel,colour));
+		}
+	}
+
+	/**
 	 * Method to set the filename label to the last FITS filename received in a message from the Ics.
 	 * @param filenameString The string to set the label to. If it is null or of zero length, 
 	 * 	the label is not updated.
@@ -1655,6 +1743,12 @@ public class IcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.14  2008/02/29 15:02:13  cjm
+// Removed frame.pack and frame.setVisible from run method, and replaced them
+// with a GUIDialogManager instance invoked in the Swing thread (SwingUtilities.invokeLater).
+// This alledgedly makes the IcsGUI become visible every time - before it sometimes
+// used to hang at the Splash screen stage.
+//
 // Revision 1.13  2008/01/11 15:34:06  cjm
 // Added labels to the two parameter setFiltersSelectedLabel, so
 // that it supports RATCam and FrodoSpec.
