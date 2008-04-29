@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // CcsGUIStatus.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIStatus.java,v 0.6 2006-05-16 17:12:17 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIStatus.java,v 0.7 2008-04-29 11:03:33 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -28,14 +28,14 @@ import ngat.sound.*;
 /**
  * This class holds status information for the CcsGUI program.
  * @author Chris Mottram
- * @version $Revision: 0.6 $
+ * @version $Revision: 0.7 $
  */
 public class CcsGUIStatus
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIStatus.java,v 0.6 2006-05-16 17:12:17 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIStatus.java,v 0.7 2008-04-29 11:03:33 cjm Exp $");
 	/**
 	 * File name containing properties for ccs gui.
 	 */
@@ -95,6 +95,20 @@ public class CcsGUIStatus
 		fileInputStream = new FileInputStream(filename);
 		properties.load(fileInputStream);
 		fileInputStream.close();
+	}
+
+	/**
+	 * Method to load Instrument Configurations from a non-standard property filename.
+	 * Calls configProperties.setPropertiesFilename to set the filename.
+	 * Calls configProperties.load to load the properties filename.
+	 * @see #configProperties
+	 * @see IcsGUIConfigProperties#setPropertiesFilename
+	 * @see IcsGUIConfigProperties#load
+	 */
+	public void loadInstrumentConfig(String filename) throws FileNotFoundException,IOException
+	{
+		configProperties.setPropertiesFilename(filename);
+		configProperties.load();
 	}
 
 	/**
@@ -291,6 +305,9 @@ public class CcsGUIStatus
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.6  2006/05/16 17:12:17  cjm
+// gnuify: Added GNU General Public License.
+//
 // Revision 0.5  2004/06/15 19:16:03  cjm
 // Added play method for better audio feedback.
 //
