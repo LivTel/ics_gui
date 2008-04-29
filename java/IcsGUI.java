@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.15 2008-04-29 09:55:44 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.16 2008-04-29 11:09:07 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -41,14 +41,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class IcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.15 2008-04-29 09:55:44 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.16 2008-04-29 11:09:07 cjm Exp $");
 	/**
 	 * Internal constant used when converting temperatures in centigrade (from the CCD controller) to Kelvin.
 	 */
@@ -132,6 +132,11 @@ public class IcsGUI
 	 */
 	private String propertyFilename = null;
 	/**
+	 * The property filename to load instrument config properties from.
+	 * If NULL, the status's (IcsGUIConfigProperties) internal default filename is used.
+	 */
+	private String instrumentConfigPropertyFilename = null;
+	/**
 	 * IcsGUI status information.
 	 */
 	private CcsGUIStatus status = null;
@@ -183,11 +188,14 @@ public class IcsGUI
 
 	/**
 	 * Default constructor.
+	 * @see #propertyFilename
+	 * @see #instrumentConfigPropertyFilename
 	 */
 	public IcsGUI()
 	{
 		super();
 		propertyFilename = null;
+		instrumentConfigPropertyFilename = null;
 	}
 
 	/**
@@ -267,6 +275,7 @@ public class IcsGUI
 	 * @exception FileNotFoundException Thrown if a configuration filename not found.
 	 * @exception IOException Thrown if a configuration file has an IO error during reading.
 	 * @see #propertyFilename
+	 * @see #instrumentConfigPropertyFilename
 	 * @see #status
 	 * @see CcsGUIStatus#load
 	 * @see CcsGUIStatus#loadInstrumentConfig
@@ -283,7 +292,10 @@ public class IcsGUI
 			status.load(propertyFilename);
 		else
 			status.load();
-		status.loadInstrumentConfig();
+		if(instrumentConfigPropertyFilename != null)
+			status.loadInstrumentConfig(instrumentConfigPropertyFilename);
+		else
+			status.loadInstrumentConfig();
 	// change errorStream to files defined in loaded properties
 		filename = status.getProperty("ccs_gui.file.error");
 		if((filename != null)&&(filename.length()>0))
@@ -1579,11 +1591,12 @@ public class IcsGUI
 
 
 	/**
-	 * This routine parses arguments passed into the GUI. It only looks for property filename argument
+	 * This routine parses arguments passed into the GUI. It only looks for property filenames argument
 	 * config, which is needed before the status is inited, and therfore needs a special parseArguments
 	 * method (as other arguments affect the status).
 	 * @param args The list of arguments to parse.
 	 * @see #propertyFilename
+	 * @see #instrumentConfigPropertyFilename
 	 * @see #parseArguments
 	 */
 	private void parsePropertyFilenameArgument(String[] args) throws NumberFormatException,UnknownHostException
@@ -1600,6 +1613,16 @@ public class IcsGUI
 				}
 				else
 					error("-config requires a filename");
+			}
+			else if(args[i].equals("-instrument_config")||args[i].equals("-insco"))
+			{
+				if((i+1)< args.length)
+				{
+					instrumentConfigPropertyFilename = args[i+1];
+					i++;
+				}
+				else
+					error("-instrument_config requires a filename");
 			}
 		}
 	}
@@ -1732,6 +1755,7 @@ public class IcsGUI
 		System.out.println("IcsGUI is the `Instrument Control System Graphical User Interface'.");
 		System.out.println("Options are:");
 		System.out.println("\t-[co]nfig <filename> - Change the property file to load.");
+		System.out.println("\t-instrument_config|-insco <filename> - Change the instrument config property file to load.");
 		System.out.println("\t-[icsip]|[icsaddress] <address> - Address to send ICS commands to.");
 		System.out.println("\t-icsport <port number> - ICS server port number.");
 		System.out.println("\t-issspoof - Start an thread to pretend to be the ISS.");
@@ -1743,6 +1767,9 @@ public class IcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.15  2008/04/29 09:55:44  cjm
+// Methods to change background colour of various components based on status retrieved from GET_STATUS.
+//
 // Revision 1.14  2008/02/29 15:02:13  cjm
 // Removed frame.pack and frame.setVisible from run method, and replaced them
 // with a GUIDialogManager instance invoked in the Swing thread (SwingUtilities.invokeLater).
