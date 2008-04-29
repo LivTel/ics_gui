@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUIConfigProperties.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.14 2007-12-11 17:40:02 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.15 2008-04-29 11:08:09 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -30,14 +30,14 @@ import ngat.phase2.*;
  * in a Java properties file and this class extends java.util.Properties
  * @see java.util.Properties
  * @author Chris Mottram
- * @version $Revision: 0.14 $
+ * @version $Revision: 0.15 $
  */
 public class IcsGUIConfigProperties extends Properties
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.14 2007-12-11 17:40:02 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.15 2008-04-29 11:08:09 cjm Exp $");
 	/**
 	 * Configuration type specifier:CCD (RATCam).
 	 */
@@ -85,14 +85,29 @@ public class IcsGUIConfigProperties extends Properties
 		CONFIG_TYPE_SPECTROGRAPH_NUVIEW,CONFIG_TYPE_INFRA_RED_SUPIRCAM,CONFIG_TYPE_SPECTROGRAPH_FTSPEC,
 		CONFIG_TYPE_POLARIMETER_RINGOSTAR,CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC,CONFIG_TYPE_CCD_RISE};
 	/**
-	 * Filename for properties file.
+	 * Default filename for properties file.
 	 */
-	public final static String PROPERTIES_FILENAME = "./ccs_gui_config.properties";
+	public final static String DEFAULT_PROPERTIES_FILENAME = "./ccs_gui_config.properties";
+	/**
+	 * Filename for properties file. Defaults to DEFAULT_PROPERTIES_FILENAME.
+	 * @see #DEFAULT_PROPERTIES_FILENAME
+	 */
+	protected String propertiesFilename = DEFAULT_PROPERTIES_FILENAME;
+
+	/**
+	 * Set the filename to load/save the instrument config properties to.
+	 * @param s A string representing the filename.
+	 * @see #propertiesFilename
+	 */
+	public void setPropertiesFilename(String s)
+	{
+		propertiesFilename = s;
+	}
 
 	/**
 	 * Load method for the properties. Calls super.load with a file input stream derived
-	 * from the PROPERTIES_FILENAME.
-	 * @see #PROPERTIES_FILENAME
+	 * from thepropertiesFilename.
+	 * @see #propertiesFilename
 	 * @exception IOException Thrown if an erro occurs with the IO.
 	 * @exception FileNotFoundException Thrown if the file isn't found.
 	 */
@@ -100,22 +115,22 @@ public class IcsGUIConfigProperties extends Properties
 	{
 		FileInputStream fis = null;
 
-		fis = new FileInputStream(PROPERTIES_FILENAME);
+		fis = new FileInputStream(propertiesFilename);
 		super.load(fis);
 		fis.close();
 	}
 
 	/**
 	 * Save method for the properties. Calls super.save with a file output stream derived from the
-	 * PROPERTIES_FILENAME.
-	 * @see #PROPERTIES_FILENAME
+	 * propertiesFilename.
+	 * @see #propertiesFilename
 	 * @exception IOException Thrown if an erro occurs with the IO.
 	 */
 	public void save() throws IOException
 	{
 		FileOutputStream fos = null;
 
-		fos = new FileOutputStream(PROPERTIES_FILENAME);
+		fos = new FileOutputStream(propertiesFilename);
 	// jdk 1.1.x
 		//super.save(fos,"#\n# ICS GUI Instrument CONFIG configuration file\n#\n");
 	// jdk 1.2.x
@@ -1716,6 +1731,9 @@ public class IcsGUIConfigProperties extends Properties
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.14  2007/12/11 17:40:02  cjm
+// Added RISE config handling - CONFIG_TYPE_CCD_RISE etc.
+//
 // Revision 0.13  2007/12/11 16:24:19  cjm
 // Added FrodoSpec configuration property handling.
 //
