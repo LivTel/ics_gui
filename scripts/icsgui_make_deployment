@@ -1,6 +1,6 @@
 #!/bin/csh
-# $Header: /home/cjm/cvs/ics_gui/scripts/icsgui_make_deployment,v 1.6 2007-08-03 14:01:05 cjm Exp $
-# Version: $Revision: 1.6 $
+# $Header: /home/cjm/cvs/ics_gui/scripts/icsgui_make_deployment,v 1.7 2008-04-29 09:59:55 cjm Exp $
+# Version: $Revision: 1.7 $
 # By $Author: cjm $
 # Make a deployment tar file.
 # This contains:
@@ -216,7 +216,7 @@ echo "${dir_count} C test program directories copied."
 # Scripts
 #
 echo "Copying scripts..."
-set file_list = "bin/scripts/ccs_get_status.csh bin/scripts/ccs_get_status_cron bin/scripts/ccs_reboot.csh bin/scripts/xv_wrapper.csh bin/scripts/killhup.csh bin/scripts/fuser_check bin/scripts/kappa_make_mean_frame bin/ccs/test/test_config.csh bin/ccs/test/sendisscommands.csh bin/ccs/test/calibrate_ccd_dark.csh bin/ccs/test/calibrate_ccd_light.csh bin/ccs/test/test_ccd_stop.csh bin/ccs_gui/java/xv_wrapper.csh bin/ccs_gui/java/icsgui"
+set file_list = "bin/scripts/ccs_reboot.csh bin/scripts/xv_wrapper.csh bin/scripts/killhup.csh bin/scripts/fuser_check bin/scripts/kappa_make_mean_frame bin/ccs/test/test_config.csh bin/ccs/test/sendisscommands.csh bin/ccs/test/calibrate_ccd_dark.csh bin/ccs/test/calibrate_ccd_light.csh bin/ccs/test/test_ccd_stop.csh bin/ccs_gui/java/xv_wrapper.csh bin/ccs_gui/java/icsgui"
 set file_count = 0
 cd ${dev_dir}
 foreach file ( ${file_list} )
