@@ -1,5 +1,5 @@
 # Makefile
-# $Header: /home/cjm/cvs/ics_gui/create_dialog/Makefile,v 0.5 2008-03-05 14:35:07 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/create_dialog/Makefile,v 0.6 2008-10-21 17:46:05 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -15,6 +15,7 @@ DOCS 		= $(SRCS:%.java=$(DOCSDIR)/%.html)
 CALIBRATE_DIALOG_SRCS	= ngat.message.ISS_INST.ARC ngat.message.ISS_INST.BIAS ngat.message.ISS_INST.DARK \
 			ngat.message.ISS_INST.DAY_CALIBRATE ngat.message.ISS_INST.LAMPFLAT \
 			ngat.message.ISS_INST.SKYFLAT ngat.message.ISS_INST.TWILIGHT_CALIBRATE \
+			ngat.message.ISS_INST.FRODOSPEC_ARC \
 			ngat.message.ISS_INST.FRODOSPEC_BIAS ngat.message.ISS_INST.FRODOSPEC_DARK \
 			ngat.message.ISS_INST.FRODOSPEC_DAY_CALIBRATE \
 			ngat.message.ISS_INST.FRODOSPEC_TWILIGHT_CALIBRATE
@@ -51,6 +52,7 @@ $(CCS_GUI_SRC_HOME)/java/DAY_CALIBRATEDialog.java:ngat.message.ISS_INST.DAY_CALI
 $(CCS_GUI_SRC_HOME)/java/LAMPFLATDialog.java:ngat.message.ISS_INST.LAMPFLAT
 $(CCS_GUI_SRC_HOME)/java/SKYFLATDialog.java:ngat.message.ISS_INST.SKYFLAT
 $(CCS_GUI_SRC_HOME)/java/TWILIGHT_CALIBRATEDialog.java:ngat.message.ISS_INST.TWILIGHT_CALIBRATE
+$(CCS_GUI_SRC_HOME)/java/FRODOSPEC_ARCDialog.java:ngat.message.ISS_INST.FRODOSPEC_ARC
 $(CCS_GUI_SRC_HOME)/java/FRODOSPEC_BIASDialog.java:ngat.message.ISS_INST.FRODOSPEC_BIAS
 $(CCS_GUI_SRC_HOME)/java/FRODOSPEC_DARKDialog.java:ngat.message.ISS_INST.FRODOSPEC_DARK
 $(CCS_GUI_SRC_HOME)/java/FRODOSPEC_DAY_CALIBRATEDialog.java:ngat.message.ISS_INST.FRODOSPEC_DAY_CALIBRATE
@@ -96,6 +98,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.5  2008/03/05 14:35:07  cjm
+# Added FrodoSpec dialogs.
+#
 # Revision 0.4  2004/04/26 11:29:28  cjm
 # Added Linux compatibility stuff for calling CreateDialog OK.
 #
