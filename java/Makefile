@@ -1,5 +1,5 @@
 # Makefile
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.39 2008-01-11 15:00:48 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.40 2008-10-21 17:45:54 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -29,8 +29,8 @@ DIALOG_SRCS	= ACQUIREDialog.java $(CALIBRATE_DIALOG_SRCS) $(EXPOSE_DIALOG_SRCS) 
 
 CALIBRATE_DIALOG_SRCS	= ARCDialog.java BIASDialog.java DARKDialog.java DAY_CALIBRATEDialog.java LAMPFLATDialog.java \
 			SKYFLATDialog.java TWILIGHT_CALIBRATEDialog.java \
-			FRODOSPEC_BIASDialog.java FRODOSPEC_DARKDialog.java FRODOSPEC_DAY_CALIBRATEDialog.java \
-			FRODOSPEC_TWILIGHT_CALIBRATEDialog.java 
+			FRODOSPEC_ARCDialog.java FRODOSPEC_BIASDialog.java FRODOSPEC_DARKDialog.java \
+			FRODOSPEC_DAY_CALIBRATEDialog.java FRODOSPEC_TWILIGHT_CALIBRATEDialog.java 
 EXPOSE_DIALOG_SRCS	= GLANCEDialog.java MOVIEDialog.java MULTRUNDialog.java RUNATDialog.java SAVEDialog.java \
 	FRODOSPEC_GLANCEDialog.java FRODOSPEC_MULTRUNDialog.java FRODOSPEC_RUNATDialog.java
 INTERRUPT_DIALOG_SRCS	= ABORTDialog.java GET_STATUSDialog.java PAUSEDialog.java REBOOTDialog.java RESUMEDialog.java STOPDialog.java
@@ -169,6 +169,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.39  2008/01/11 15:00:48  cjm
+# Added estar6 configs for temporary frodospec1 testing.
+#
 # Revision 0.38  2007/12/11 17:39:44  cjm
 # Added rise config / IcsGUIRISEConfigAADialog.java.
 #
