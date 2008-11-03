@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // CcsGUIClientConnectionThread.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.27 2008-04-29 14:58:53 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.28 2008-11-03 16:53:30 cjm Exp $
 
 import java.awt.*;
 import java.lang.*;
@@ -37,14 +37,14 @@ import ngat.util.StringUtilities;
  * It implements the generic ISS instrument command protocol.
  * It is used to send commands from the CcsGUI to the Ccs.
  * @author Chris Mottram
- * @version $Revision: 0.27 $
+ * @version $Revision: 0.28 $
  */
 public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.27 2008-04-29 14:58:53 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.28 2008-11-03 16:53:30 cjm Exp $");
 	/**
 	 * The CcsGUI object.
 	 */
@@ -320,12 +320,21 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 			return;
 		}
 	// log contents of hash table
-		for (Enumeration e = displayInfo.keys(); e.hasMoreElements();)
+		Enumeration e = displayInfo.keys();
+		ArrayList al = Collections.list(e);
+		Collections.sort(al,String.CASE_INSENSITIVE_ORDER);
+		for(int i = 0; i < al.size(); i++)
 		{
-			Object key = e.nextElement();
+			Object key = al.get(i);
 			Object value = displayInfo.get(key);
 			parent.log(key.toString()+":"+value.toString());
 		}
+		//for (Enumeration e = displayInfo.keys(); e.hasMoreElements();)
+		//{
+		//	Object key = e.nextElement();
+		//	Object value = displayInfo.get(key);
+		//	parent.log(key.toString()+":"+value.toString());
+		//}
 	// which instrument are we getting status from?
 		instrumentString = (String)(displayInfo.get("Instrument"));
 		if(instrumentString == null)
@@ -630,6 +639,10 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.27  2008/04/29 14:58:53  cjm
+// Changed setCCDTemperatureLabelBackground to setCCDTemperatureLabelForeground as changing
+// the background does nothing!
+//
 // Revision 0.26  2008/04/29 09:55:21  cjm
 // Set  temperature and status panel background colour based on GET_STATUS standard instrument status.
 //
