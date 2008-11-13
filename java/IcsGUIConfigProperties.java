@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUIConfigProperties.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.15 2008-04-29 11:08:09 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.16 2008-11-13 15:38:22 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -30,14 +30,14 @@ import ngat.phase2.*;
  * in a Java properties file and this class extends java.util.Properties
  * @see java.util.Properties
  * @author Chris Mottram
- * @version $Revision: 0.15 $
+ * @version $Revision: 0.16 $
  */
 public class IcsGUIConfigProperties extends Properties
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.15 2008-04-29 11:08:09 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.16 2008-11-13 15:38:22 cjm Exp $");
 	/**
 	 * Configuration type specifier:CCD (RATCam).
 	 */
@@ -974,7 +974,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * 	"ccs_gui_config."id".arm" does not contain either "red", "blue", or "unknown".
 	 * @see ngat.phase2.FrodoSpecConfig#RED_ARM
 	 * @see ngat.phase2.FrodoSpecConfig#BLUE_ARM
-	 * @see ngat.phase2.FrodoSpecConfig#UNKNOWN_ARM
+	 * @see ngat.phase2.FrodoSpecConfig#NO_ARM
 	 */
 	public int getConfigArm(int id) throws IllegalArgumentException
 	{
@@ -1008,7 +1008,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * @exception IllegalArgumentException Thrown if the arm can't be mapped to a string.
 	 * @see ngat.phase2.FrodoSpecConfig#RED_ARM
 	 * @see ngat.phase2.FrodoSpecConfig#BLUE_ARM
-	 * @see ngat.phase2.FrodoSpecConfig#UNKNOWN_ARM
+	 * @see ngat.phase2.FrodoSpecConfig#NO_ARM
 	 */
 	public void setConfigArm(int id,int arm) throws IllegalArgumentException
 	{
@@ -1731,6 +1731,10 @@ public class IcsGUIConfigProperties extends Properties
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.15  2008/04/29 11:08:09  cjm
+// Added setPropertiesFilename/propertiesFilename so the property filename can be changed
+// from the default.
+//
 // Revision 0.14  2007/12/11 17:40:02  cjm
 // Added RISE config handling - CONFIG_TYPE_CCD_RISE etc.
 //
