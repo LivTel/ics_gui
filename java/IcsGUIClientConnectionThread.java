@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // CcsGUIClientConnectionThread.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.28 2008-11-03 16:53:30 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.29 2008-11-20 15:01:33 cjm Exp $
 
 import java.awt.*;
 import java.lang.*;
@@ -37,14 +37,14 @@ import ngat.util.StringUtilities;
  * It implements the generic ISS instrument command protocol.
  * It is used to send commands from the CcsGUI to the Ccs.
  * @author Chris Mottram
- * @version $Revision: 0.28 $
+ * @version $Revision: 0.29 $
  */
 public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.28 2008-11-03 16:53:30 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.29 2008-11-20 15:01:33 cjm Exp $");
 	/**
 	 * The CcsGUI object.
 	 */
@@ -169,7 +169,7 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	 * This prints out the ambient and current temperature of the instrument's CCD, after converting them from 
 	 * degrees Kelvin to degrees Centigrade. 
 	 * The CCD Temperature label is also updated.
-	 * @param filenameAck The acknowledge object passed back to the client.
+	 * @param temperatureAck The acknowledge object passed back to the client.
 	 * @see IcsGUI#setCCDTemperatureLabel
 	 * @see IcsGUI#CENTIGRADE_TO_KELVIN
 	 */
@@ -249,8 +249,11 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	 * This method is called when the thread generates an error.
 	 * Currently, this just prints the string using the parents error method.
 	 * @param errorString The error string.
-	 * @see IcsGUI#error
 	 * @see #parent
+	 * @see IcsGUI#error
+	 * @see IcsGUI#setStatusBackground
+	 * @see ngat.message.ISS_INST.GET_STATUS
+	 * @see ngat.message.ISS_INST.GET_STATUS_DONE#VALUE_STATUS_FAIL
 	 */
 	protected void processError(String errorString)
 	{
@@ -260,6 +263,13 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 		{
 			parent.getStatus().play(parent.getAudioThread(),"ics_gui.audio.event.command-error");
 		}
+		// if we have an error getting a DONE from GET_STATUS, the RCS treats the instrument as being off-line
+		// Therefore we turn the icsgui backgrounfd to fail
+		if(command instanceof GET_STATUS)
+		{
+			// Overall Instrument health status
+			parent.setStatusBackground(GET_STATUS_DONE.VALUE_STATUS_FAIL);
+		}
 	}
 
 	/**
@@ -268,9 +278,12 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	 * to the parents error stream.
 	 * @param errorString The error string.
 	 * @param exception The exception that was thrown.
+	 * @see #parent
 	 * @see IcsGUI#error
 	 * @see IcsGUI#getErrorStream
-	 * @see #parent
+	 * @see IcsGUI#setStatusBackground
+	 * @see ngat.message.ISS_INST.GET_STATUS
+	 * @see ngat.message.ISS_INST.GET_STATUS_DONE#VALUE_STATUS_FAIL
 	 */
 	protected void processError(String errorString,Exception exception)
 	{
@@ -280,6 +293,13 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 		if(parent.getAudioFeedback())
 		{
 			parent.getStatus().play(parent.getAudioThread(),"ics_gui.audio.event.command-error");
+		}
+		// if we have an error getting a DONE from GET_STATUS, the RCS treats the instrument as being off-line
+		// Therefore we turn the icsgui backgrounfd to fail
+		if(command instanceof GET_STATUS)
+		{
+			// Overall Instrument health status
+			parent.setStatusBackground(GET_STATUS_DONE.VALUE_STATUS_FAIL);
 		}
 	}
 
@@ -482,7 +502,11 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 		parent.setCCDStatusLabel(redCurrentMode,blueCurrentMode);
 		// current command
 		redCurrentCommandString = (String)(displayInfo.get("red.currentCommand"));
+		if(redCurrentCommandString.startsWith("ngat.message.ISS_INST."))
+			redCurrentCommandString = redCurrentCommandString.substring(22); // strlen ngat.message...
 		blueCurrentCommandString = (String)(displayInfo.get("blue.currentCommand"));
+		if(blueCurrentCommandString.startsWith("ngat.message.ISS_INST."))
+			blueCurrentCommandString = blueCurrentCommandString.substring(22); // strlen ngat.message...
 		parent.setCurrentCommandLabel("Red:"+redCurrentCommandString+": Blue:"+blueCurrentCommandString);
 	// set filters selected status
 		// diddly
@@ -639,6 +663,9 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.28  2008/11/03 16:53:30  cjm
+// Changed printGetStatusDone so that display info key/value pairs are ordered by string.
+//
 // Revision 0.27  2008/04/29 14:58:53  cjm
 // Changed setCCDTemperatureLabelBackground to setCCDTemperatureLabelForeground as changing
 // the background does nothing!
