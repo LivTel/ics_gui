@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // CcsGUIClientConnectionThread.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.30 2009-02-18 16:18:48 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.31 2009-02-19 11:19:28 cjm Exp $
 
 import java.awt.*;
 import java.lang.*;
@@ -37,14 +37,14 @@ import ngat.util.StringUtilities;
  * It implements the generic ISS instrument command protocol.
  * It is used to send commands from the CcsGUI to the Ccs.
  * @author Chris Mottram
- * @version $Revision: 0.30 $
+ * @version $Revision: 0.31 $
  */
 public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.30 2009-02-18 16:18:48 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.31 2009-02-19 11:19:28 cjm Exp $");
 	/**
 	 * The CcsGUI object.
 	 */
@@ -345,6 +345,7 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 		// Collections.list only available since 1.4
 		// ArrayList al = Collections.list(e);
 		// rewrite as a loop?
+		al = new ArrayList();
 		while(e.hasMoreElements())
 		{
 			Object key = e.nextElement();
@@ -671,6 +672,10 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.30  2009/02/18 16:18:48  cjm
+// Replaced Collections.list with while loop over Enumeration,
+// so icsgui can still be used on RATCam (JVM v1.2).
+//
 // Revision 0.29  2008/11/20 15:01:33  cjm
 // Fixed comment problems.
 // icsgui now turns background RED if it fails to get a DONE from a GET_STATUS message.
