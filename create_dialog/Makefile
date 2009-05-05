@@ -1,5 +1,5 @@
 # Makefile
-# $Header: /home/cjm/cvs/ics_gui/create_dialog/Makefile,v 0.7 2009-04-30 10:05:15 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/create_dialog/Makefile,v 0.8 2009-05-05 14:21:41 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -20,11 +20,16 @@ CALIBRATE_DIALOG_SRCS	= ngat.message.ISS_INST.ARC ngat.message.ISS_INST.BIAS nga
 			ngat.message.ISS_INST.FRODOSPEC_DAY_CALIBRATE \
 			ngat.message.ISS_INST.FRODOSPEC_TWILIGHT_CALIBRATE
 EXPOSE_DIALOG_SRCS	= ngat.message.ISS_INST.GLANCE ngat.message.ISS_INST.MOVIE ngat.message.ISS_INST.MULTRUN \
-	ngat.message.ISS_INST.RUNAT ngat.message.ISS_INST.SAVE \
-	ngat.message.ISS_INST.FRODOSPEC_GLANCE ngat.message.ISS_INST.FRODOSPEC_MULTRUN \
-	ngat.message.ISS_INST.FRODOSPEC_RUNAT 
-INTERRUPT_DIALOG_SRCS	= ngat.message.ISS_INST.ABORT ngat.message.ISS_INST.GET_STATUS ngat.message.ISS_INST.PAUSE ngat.message.ISS_INST.REBOOT ngat.message.ISS_INST.RESUME ngat.message.ISS_INST.STOP ngat.message.ISS_INST.FRODOSPEC_ABORT
-SETUP_DIALOG_SRCS	= ngat.message.ISS_INST.CONFIG ngat.message.ISS_INST.LAMPFOCUS ngat.message.ISS_INST.SET_LOGGING ngat.message.ISS_INST.STARFOCUS ngat.message.ISS_INST.TELFOCUS ngat.message.ISS_INST.TEST 
+			ngat.message.ISS_INST.RUNAT ngat.message.ISS_INST.SAVE \
+			ngat.message.ISS_INST.FRODOSPEC_GLANCE ngat.message.ISS_INST.FRODOSPEC_MULTRUN \
+			ngat.message.ISS_INST.FRODOSPEC_RUNAT 
+INTERRUPT_DIALOG_SRCS	= ngat.message.ISS_INST.ABORT ngat.message.ISS_INST.GET_STATUS ngat.message.ISS_INST.PAUSE \
+			ngat.message.ISS_INST.REBOOT ngat.message.ISS_INST.RESUME ngat.message.ISS_INST.STOP \
+			ngat.message.ISS_INST.FRODOSPEC_ABORT
+SETUP_DIALOG_SRCS	= ngat.message.ISS_INST.CONFIG ngat.message.ISS_INST.LAMPFOCUS \
+			ngat.message.ISS_INST.SET_LOGGING ngat.message.ISS_INST.STARFOCUS \
+			ngat.message.ISS_INST.TELFOCUS ngat.message.ISS_INST.TEST \
+			ngat.message.ISS_INST.FRODOSPEC_LAMPFOCUS 
 DIALOG_SRCS	= ngat.message.ISS_INST.ACQUIRE $(CALIBRATE_DIALOG_SRCS) $(EXPOSE_DIALOG_SRCS) $(INTERRUPT_DIALOG_SRCS) $(SETUP_DIALOG_SRCS)
 DIALOG_OBJS 	= $(DIALOG_SRCS:ngat.message.ISS_INST.%=$(CCS_GUI_SRC_HOME)/java/%Dialog.java)
 
@@ -78,6 +83,7 @@ $(CCS_GUI_SRC_HOME)/java/SET_LOGGINGDialog.java:ngat.message.ISS_INST.SET_LOGGIN
 $(CCS_GUI_SRC_HOME)/java/STARFOCUSDialog.java:ngat.message.ISS_INST.STARFOCUS
 $(CCS_GUI_SRC_HOME)/java/TELFOCUSDialog.java:ngat.message.ISS_INST.TELFOCUS
 $(CCS_GUI_SRC_HOME)/java/TESTDialog.java:ngat.message.ISS_INST.TEST
+$(CCS_GUI_SRC_HOME)/java/FRODOSPEC_LAMPFOCUSDialog.java:ngat.message.ISS_INST.FRODOSPEC_LAMPFOCUS
 
 ngat.message.ISS_INST.%:
 	(cd $(BINDIR); $(JAVA) CreateDialog -c $@; mv $*Dialog.java $(CCS_GUI_SRC_HOME)/java/);
@@ -99,6 +105,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.7  2009/04/30 10:05:15  cjm
+# Added FRODOSPEC_ABORT dialog.
+#
 # Revision 0.6  2008/10/21 17:46:05  cjm
 # Added FRODOSPEC_ARC.
 #
