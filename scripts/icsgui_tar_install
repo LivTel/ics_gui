@@ -1,6 +1,6 @@
 #!/bin/csh
-# $Header: /home/cjm/cvs/ics_gui/scripts/icsgui_tar_install,v 1.1 2004-01-15 17:44:20 cjm Exp $
-# Version: $Revision: 1.1 $
+# $Header: /home/cjm/cvs/ics_gui/scripts/icsgui_tar_install,v 1.2 2009-08-24 10:28:19 cjm Exp $
+# Version: $Revision: 1.2 $
 # By $Author: cjm $
 # install a deployment tar created by icsgui_make_deployment
 # Usage:
@@ -88,4 +88,20 @@ echo "Editing eng .cshrc"
 cat ~eng/.cshrc | awk -f ${current_dir}/tmc_cshrc_edit.awk > ~eng/.cshrc.tmp
 cat ~eng/.cshrc.tmp ${current_dir}/tmc_cshrc > ~eng/.cshrc
 rm -f ~eng/.cshrc.tmp
+echo "Fixing root permissions."
+chown root:root /
+set chown_status = $status
+if( ${chown_status} != 0 ) then
+    echo "chown root:root / FAILED."
+    exit 1
+endif
+chmod 1755 /
+set chmod_status = $status
+if( ${chmod_status} != 0 ) then
+    echo "chmod 1755 / FAILED."
+    exit 1
+endif
 echo "Installation completed."
+#
+# $Log: not supported by cvs2svn $
+#
