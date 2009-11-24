@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUIConfigProperties.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.16 2008-11-13 15:38:22 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.17 2009-11-24 14:17:10 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -30,14 +30,14 @@ import ngat.phase2.*;
  * in a Java properties file and this class extends java.util.Properties
  * @see java.util.Properties
  * @author Chris Mottram
- * @version $Revision: 0.16 $
+ * @version $Revision: 0.17 $
  */
 public class IcsGUIConfigProperties extends Properties
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.16 2008-11-13 15:38:22 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.17 2009-11-24 14:17:10 cjm Exp $");
 	/**
 	 * Configuration type specifier:CCD (RATCam).
 	 */
@@ -71,6 +71,10 @@ public class IcsGUIConfigProperties extends Properties
 	 */
 	public final static int CONFIG_TYPE_CCD_RISE = 7;
 	/**
+	 * Configuration type specifier:Polarimeter (Ringo2).
+	 */
+	public final static int CONFIG_TYPE_POLARIMETER_RINGO2 = 8;
+	/**
 	 * List of legal values that can be held in the config type field.
 	 * @see #CONFIG_TYPE_CCD_RATCAM
 	 * @see #CONFIG_TYPE_SPECTROGRAPH_MES
@@ -80,10 +84,12 @@ public class IcsGUIConfigProperties extends Properties
 	 * @see #CONFIG_TYPE_POLARIMETER_RINGOSTAR
 	 * @see #CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC
 	 * @see #CONFIG_TYPE_CCD_RISE
+	 * @see #CONFIG_TYPE_POLARIMETER_RINGO2
 	 */
 	public final static int CONFIG_TYPE_LIST[] = {CONFIG_TYPE_CCD_RATCAM,CONFIG_TYPE_SPECTROGRAPH_MES,
 		CONFIG_TYPE_SPECTROGRAPH_NUVIEW,CONFIG_TYPE_INFRA_RED_SUPIRCAM,CONFIG_TYPE_SPECTROGRAPH_FTSPEC,
-		CONFIG_TYPE_POLARIMETER_RINGOSTAR,CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC,CONFIG_TYPE_CCD_RISE};
+		CONFIG_TYPE_POLARIMETER_RINGOSTAR,CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC,CONFIG_TYPE_CCD_RISE,
+		CONFIG_TYPE_POLARIMETER_RINGO2};
 	/**
 	 * Default filename for properties file.
 	 */
@@ -216,6 +222,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * @see #getPolarimeterConfigById
 	 * @see #getFrodoSpecConfigById
 	 * @see #getRISEConfigById
+	 * @see #getRingo2PolarimeterConfigById
 	 */
 	public InstrumentConfig getConfigById(int id) throws NumberFormatException, IllegalArgumentException
 	{
@@ -249,6 +256,9 @@ public class IcsGUIConfigProperties extends Properties
 				break;
 			case CONFIG_TYPE_CCD_RISE:
 				c = getRISEConfigById(id);
+				break;
+			case CONFIG_TYPE_POLARIMETER_RINGO2:
+				c = getRingo2PolarimeterConfigById(id);
 				break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":getConfigById:Id "
@@ -344,6 +354,20 @@ public class IcsGUIConfigProperties extends Properties
 				remove(configIdStringXBin(id));
 				remove(configIdStringYBin(id));
 				break;
+			case CONFIG_TYPE_POLARIMETER_RINGO2:
+				remove(configIdStringXBin(id));
+				remove(configIdStringYBin(id));
+				remove(configIdStringEMGain(id));
+				remove(configIdStringTriggerType(id));
+				remove(configIdStringWindowFlags(id));
+				for(j=1;j<2;j++)
+				{
+					remove(configIdWindowStringXStart(id,j));
+					remove(configIdWindowStringYStart(id,j));
+					remove(configIdWindowStringXEnd(id,j));
+					remove(configIdWindowStringYEnd(id,j));
+				}
+				break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":deleteId:Id "
 					+id+" type "+type+" not a supported type of configuration.");
@@ -436,6 +460,30 @@ public class IcsGUIConfigProperties extends Properties
 					remove(configIdStringXBin(i));
 					setConfigYBin(i-1,getConfigYBin(i));
 					remove(configIdStringYBin(i));
+					break;
+			case CONFIG_TYPE_POLARIMETER_RINGO2:
+					setConfigXBin(i-1,getConfigXBin(i));
+					remove(configIdStringXBin(i));
+					setConfigYBin(i-1,getConfigYBin(i));
+					remove(configIdStringYBin(i));
+					setConfigEMGain(i-1,getConfigEMGain(i));
+					remove(configIdStringEMGain(i));
+					setConfigTriggerType(i-1,getConfigTriggerType(i));
+					remove(configIdStringTriggerType(i));
+					setConfigWindowFlags(i-1,getConfigWindowFlags(i));
+					remove(configIdStringWindowFlags(i));
+
+					for(j=1;j<5;j++)
+					{
+						setConfigXStart(i-1,j,getConfigXStart(i,j));
+						remove(configIdWindowStringXStart(i,j));
+						setConfigYStart(i-1,j,getConfigYStart(i,j));
+						remove(configIdWindowStringYStart(i,j));
+						setConfigXEnd(i-1,j,getConfigXEnd(i,j));
+						remove(configIdWindowStringXEnd(i,j));
+						setConfigYEnd(i-1,j,getConfigYEnd(i,j));
+						remove(configIdWindowStringYEnd(i,j));
+					}
 					break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":deleteId:Id "
@@ -1090,6 +1138,100 @@ public class IcsGUIConfigProperties extends Properties
 		setProperty(configIdStringResolution(id),resolutionString);
 	}
 
+	/**
+	 * Method to get the EM Gain of configuration id id.
+	 * This is a Ringo2 only configuration value.
+	 * @param id The id of the configuration.
+	 * @return The configuration EM Gain number.
+	 * @exception NumberFormatException Thrown if the relevant property 
+	 * 	"ccs_gui_config."id".emGain" does not contain a numeric value.
+	 */
+	public int getConfigEMGain(int id) throws NumberFormatException
+	{
+		return getPropertyInteger(configIdStringEMGain(id));
+	}
+
+	/**
+	 * Method to get the EM Gain of configuration id id as a string.
+	 * This is a Ringo2 only configuration value.
+	 * @param id The id of the configuration.
+	 * @return The configuration EM Gain number as a string.
+	 */
+	public String getConfigEMGainString(int id)
+	{
+		return getProperty(configIdStringEMGain(id));
+	}
+
+	/**
+	 * Method to set the EM Gain of configuration id id.
+	 * This is a Ringo2 only configuration value.
+	 * @param id The id of the configuration.
+	 * @param emGain The configuration EM Gain number.
+	 */
+	public void setConfigEMGain(int id,int emGain)
+	{
+	// jdk 1.2.x
+		setProperty(configIdStringEMGain(id),Integer.toString(emGain));
+	}
+
+	/**
+	 * Method to get the triggrt type of configuration id id as a string.
+	 * This is a Ringo2 only configuration value.
+	 * @param id The id of the configuration.
+	 * @return The configuration arm.
+	 * @exception IllegalArgumentException Thrown if the relevant property 
+	 * 	"ccs_gui_config."id".triggerType" does not contain either "external", or "internal".
+	 * @see ngat.phase2.Ringo2PolarimeterConfig#TRIGGER_TYPE_EXTERNAL
+	 * @see ngat.phase2.Ringo2PolarimeterConfig#TRIGGER_TYPE_INTERNAL
+	 */
+	public int getConfigTriggerType(int id) throws IllegalArgumentException
+	{
+		String s = null;
+
+		s = getProperty(configIdStringTriggerType(id));
+		if(s.equals("external"))
+			return Ringo2PolarimeterConfig.TRIGGER_TYPE_EXTERNAL;
+		else if (s.equals("internal"))
+			return Ringo2PolarimeterConfig.TRIGGER_TYPE_INTERNAL;
+		throw new IllegalArgumentException(this.getClass().getName()+
+						   ":getConfigTriggerType:Illegal trigger type string:"+s);
+	}
+
+	/**
+	 * Method to get the trigger type of configuration id id as a string.
+	 * @param id The id of the configuration.
+	 * @return The configuration trigger type as a string.
+	 */
+	public String getConfigTriggerTypeString(int id)
+	{
+		return getProperty(configIdStringTriggerType(id));
+	}
+
+	/**
+	 * Method to set the trigger type of configuration id id.
+	 * This is a Ringo2 only configuration value.
+	 * @param id The id of the configuration.
+	 * @param triggerType The configuration trigger type.
+	 * @exception IllegalArgumentException Thrown if the trigger type can't be mapped to a string.
+	 * @see ngat.phase2.Ringo2PolarimeterConfig#TRIGGER_TYPE_EXTERNAL
+	 * @see ngat.phase2.Ringo2PolarimeterConfig#TRIGGER_TYPE_INTERNAL
+	 */
+	public void setConfigTriggerType(int id,int triggerType) throws IllegalArgumentException
+	{
+		String triggerTypeString = null;
+
+		if(triggerType == Ringo2PolarimeterConfig.TRIGGER_TYPE_EXTERNAL)
+			triggerTypeString = "external";
+		else if(triggerType == Ringo2PolarimeterConfig.TRIGGER_TYPE_INTERNAL)
+			triggerTypeString = "internal";
+		else
+		{
+			throw new IllegalArgumentException(this.getClass().getName()+
+							   ":setConfigTriggerType:Illegal trigger type:"+triggerType);
+		}
+		setProperty(configIdStringTriggerType(id),triggerTypeString);
+	}
+
 // methods to create an instance of an instrument config
 	/**
 	 * Method to return a CCDConfig, constructed from the information against id id.
@@ -1420,6 +1562,67 @@ public class IcsGUIConfigProperties extends Properties
 		return c;
 	}
 
+	/**
+	 * Method to return a Ringo2PolarimeterConfig, constructed from the information against id id.
+	 * @param id The Id number.
+	 * @return The constructed Ringo2PolarimeterConfig.
+	 * @exception NumberFormatException Thrown if a numeric parameter is not returned from the properties
+	 * 	file as a legal number.
+	 * @exception IllegalArgumentException Thrown if the config id specified does not have a legal type.
+	 */
+	private Ringo2PolarimeterConfig getRingo2PolarimeterConfigById(int id) throws NumberFormatException, 
+									 IllegalArgumentException
+	{
+		Ringo2PolarimeterConfig c = null;
+		Ringo2PolarimeterDetector detector = null;
+		Window windowArray[];
+
+	// check type
+		if(getConfigType(id) != CONFIG_TYPE_POLARIMETER_RINGO2)
+		{
+			throw new IllegalArgumentException(this.getClass().getName()+":getRingo2PolarimeterConfigById:Id "
+				+id+" not a configuration of type Polarimeter (Ringo2).");
+		}
+	// construct Ringo2PolarimeterConfig
+		c = new Ringo2PolarimeterConfig(getConfigName(id));
+		c.setCalibrateBefore(getConfigCalibrateBefore(id));
+		c.setCalibrateAfter(getConfigCalibrateAfter(id));
+		c.setEmGain(getConfigEMGain(id));
+		c.setTriggerType(getConfigTriggerType(id));
+	// setup detector
+		detector = new Ringo2PolarimeterDetector();
+		detector.setXBin(getConfigXBin(id));
+		detector.setYBin(getConfigYBin(id));
+		// note, other Detector fields not set, as they are not used by the instrument.
+	// don't set windows into detector, use default windows.
+	// setup window list
+		windowArray = new Window[detector.getMaxWindowCount()];
+		for(int i = 0; i < detector.getMaxWindowCount(); i++)
+		{
+		// Note, windows are only non-null if they are active in RCS created configs
+		// Lets re-create that effect here, we can use the config window flags.
+			if((getConfigWindowFlags(id) & (1<<i))>0)
+			{
+				windowArray[i] = new Window();
+
+				windowArray[i].setXs(getConfigXStart(id,i+1));
+				windowArray[i].setYs(getConfigYStart(id,i+1));
+				windowArray[i].setXe(getConfigXEnd(id,i+1));
+				windowArray[i].setYe(getConfigYEnd(id,i+1));
+			}
+			else
+				windowArray[i] = null;
+		}// end for on windows
+	// set windows into detector
+		detector.setWindows(windowArray);
+	// Note flags are held IN the window list, so must setWindowFlags AFTER detector windows set
+		detector.setWindowFlags(getConfigWindowFlags(id));
+	// set detector into config
+		c.setDetector(0,detector);
+	// return config
+		return c;
+	}
+
 // method to check values in the property file.
 	/**
 	 * Method to check whether a number is a legal configuration type number.
@@ -1642,6 +1845,28 @@ public class IcsGUIConfigProperties extends Properties
 	}
 
 	/**
+	 * Method to return a key for the EM Gain for a particular config id.
+	 * @param id The config id.
+	 * @return The key string.
+	 * @see #configIdString
+	 */
+	private String configIdStringEMGain(int id)
+	{
+		return new String(configIdString(id)+"emGain");
+	}
+
+	/**
+	 * Method to return a key for the trigger type for a particular config id.
+	 * @param id The config id.
+	 * @return The key string.
+	 * @see #configIdString
+	 */
+	private String configIdStringTriggerType(int id)
+	{
+		return new String(configIdString(id)+"triggerType");
+	}
+
+	/**
 	 * Method to return a key for the resolution for a particular config id.
 	 * @param id The config id.
 	 * @return The key string.
@@ -1731,6 +1956,9 @@ public class IcsGUIConfigProperties extends Properties
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.16  2008/11/13 15:38:22  cjm
+// Fixed comments.
+//
 // Revision 0.15  2008/04/29 11:08:09  cjm
 // Added setPropertiesFilename/propertiesFilename so the property filename can be changed
 // from the default.
