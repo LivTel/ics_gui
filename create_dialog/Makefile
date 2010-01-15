@@ -1,5 +1,5 @@
 # Makefile
-# $Header: /home/cjm/cvs/ics_gui/create_dialog/Makefile,v 0.8 2009-05-05 14:21:41 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/create_dialog/Makefile,v 0.9 2010-01-15 11:36:53 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -20,7 +20,7 @@ CALIBRATE_DIALOG_SRCS	= ngat.message.ISS_INST.ARC ngat.message.ISS_INST.BIAS nga
 			ngat.message.ISS_INST.FRODOSPEC_DAY_CALIBRATE \
 			ngat.message.ISS_INST.FRODOSPEC_TWILIGHT_CALIBRATE
 EXPOSE_DIALOG_SRCS	= ngat.message.ISS_INST.GLANCE ngat.message.ISS_INST.MOVIE ngat.message.ISS_INST.MULTRUN \
-			ngat.message.ISS_INST.RUNAT ngat.message.ISS_INST.SAVE \
+			ngat.message.ISS_INST.RUNAT ngat.message.ISS_INST.TIMED_MULTRUNAT ngat.message.ISS_INST.SAVE \
 			ngat.message.ISS_INST.FRODOSPEC_GLANCE ngat.message.ISS_INST.FRODOSPEC_MULTRUN \
 			ngat.message.ISS_INST.FRODOSPEC_RUNAT 
 INTERRUPT_DIALOG_SRCS	= ngat.message.ISS_INST.ABORT ngat.message.ISS_INST.GET_STATUS ngat.message.ISS_INST.PAUSE \
@@ -69,6 +69,7 @@ $(CCS_GUI_SRC_HOME)/java/FRODOSPEC_GLANCEDialog.java:ngat.message.ISS_INST.FRODO
 $(CCS_GUI_SRC_HOME)/java/FRODOSPEC_MULTRUNDialog.java:ngat.message.ISS_INST.FRODOSPEC_MULTRUN
 $(CCS_GUI_SRC_HOME)/java/FRODOSPEC_RUNATDialog.java:ngat.message.ISS_INST.FRODOSPEC_RUNAT
 $(CCS_GUI_SRC_HOME)/java/RUNATDialog.java:ngat.message.ISS_INST.RUNAT
+$(CCS_GUI_SRC_HOME)/java/TIMED_MULTRUNATDialog.java:ngat.message.ISS_INST.TIMED_MULTRUNAT
 $(CCS_GUI_SRC_HOME)/java/SAVEDialog.java:ngat.message.ISS_INST.SAVE
 $(CCS_GUI_SRC_HOME)/java/ABORTDialog.java:ngat.message.ISS_INST.ABORT
 $(CCS_GUI_SRC_HOME)/java/FRODOSPEC_ABORTDialog.java:ngat.message.ISS_INST.FRODOSPEC_ABORT
@@ -105,6 +106,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.8  2009/05/05 14:21:41  cjm
+# Added FRODOSPEC_LAMPFOCUS dialog.
+#
 # Revision 0.7  2009/04/30 10:05:15  cjm
 # Added FRODOSPEC_ABORT dialog.
 #
