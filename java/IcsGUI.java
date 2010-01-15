@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.19 2008-04-29 15:10:49 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.20 2010-01-15 14:33:11 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -41,14 +41,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  */
 public class IcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.19 2008-04-29 15:10:49 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.20 2010-01-15 14:33:11 cjm Exp $");
 	/**
 	 * Internal constant used when converting temperatures in centigrade (from the CCD controller) to Kelvin.
 	 */
@@ -703,6 +703,12 @@ public class IcsGUI
 		menuItem = new JMenuItem("Runat",KeyEvent.VK_R);
 		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R,ActionEvent.CTRL_MASK));
 		menuItem.getAccessibleContext().setAccessibleDescription("Send a Runat command");
+		menuItem.addActionListener(menuItemListener);
+		submenu.add(menuItem);
+        // TIMED_MULTRUNAT
+		menuItem = new JMenuItem("Timed MultRunat",KeyEvent.VK_R);
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R,ActionEvent.CTRL_MASK));
+		menuItem.getAccessibleContext().setAccessibleDescription("Send a Timed Multrunat command");
 		menuItem.addActionListener(menuItemListener);
 		submenu.add(menuItem);
         // SAVE
@@ -1772,6 +1778,9 @@ public class IcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.19  2008/04/29 15:10:49  cjm
+// setCCDTemperatureLabelForeground now uses dark colours on light blue background.
+//
 // Revision 1.18  2008/04/29 14:58:55  cjm
 // Changed setCCDTemperatureLabelBackground to setCCDTemperatureLabelForeground as changing
 // the background does nothing!
