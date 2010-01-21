@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.21 2010-01-20 10:44:01 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.22 2010-01-21 14:38:04 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -32,8 +32,7 @@ import javax.swing.*;
 import javax.swing.plaf.metal.*;
 
 import ngat.message.base.*;
-import ngat.message.ISS_INST.GET_STATUS;
-import ngat.message.ISS_INST.GET_STATUS_DONE;
+import ngat.message.ISS_INST.*;
 import ngat.sound.*;
 import ngat.swing.*;
 import ngat.util.*;
@@ -41,14 +40,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  */
 public class IcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.21 2010-01-20 10:44:01 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.22 2010-01-21 14:38:04 cjm Exp $");
 	/**
 	 * Internal constant used when converting temperatures in centigrade (from the CCD controller) to Kelvin.
 	 */
@@ -1149,6 +1148,21 @@ public class IcsGUI
 		CcsGUIClientConnectionThread thread = null;
 
 		log("About to send "+command.getClass().getName()+" to "+ccsAddress.getHostName()+":"+ccsPortNumber);
+		// special extra debug for startTime's 
+		if(command instanceof TIMED_MULTRUNAT)
+		{
+			Date startTime = null;
+
+			startTime = ((TIMED_MULTRUNAT)command).getStartTime();
+			log("TIMED_MULTRUNAT has start time:"+startTime);
+		}
+		if(command instanceof RUNAT)
+		{
+			Date startTime = null;
+
+			startTime = ((RUNAT)command).getStartTime();
+			log("RUNAT has start time:"+startTime);
+		}
 		thread = new CcsGUIClientConnectionThread(ccsAddress,ccsPortNumber,command);
 		thread.setParent(this);
 		thread.start();
@@ -1778,6 +1792,9 @@ public class IcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.21  2010/01/20 10:44:01  cjm
+// Changed Timed MultRunat accelerator.
+//
 // Revision 1.20  2010/01/15 14:33:11  cjm
 // Added Timed MultRunat menu.
 //
