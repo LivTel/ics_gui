@@ -1,5 +1,5 @@
 # Makefile
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.43 2010-01-15 14:32:57 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.44 2010-04-08 10:20:19 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -30,7 +30,8 @@ DIALOG_SRCS	= ACQUIREDialog.java $(CALIBRATE_DIALOG_SRCS) $(EXPOSE_DIALOG_SRCS) 
 CALIBRATE_DIALOG_SRCS	= ARCDialog.java BIASDialog.java DARKDialog.java DAY_CALIBRATEDialog.java LAMPFLATDialog.java \
 			SKYFLATDialog.java TWILIGHT_CALIBRATEDialog.java \
 			FRODOSPEC_ARCDialog.java FRODOSPEC_BIASDialog.java FRODOSPEC_DARKDialog.java \
-			FRODOSPEC_DAY_CALIBRATEDialog.java FRODOSPEC_TWILIGHT_CALIBRATEDialog.java 
+			FRODOSPEC_DAY_CALIBRATEDialog.java FRODOSPEC_TWILIGHT_CALIBRATEDialog.java \
+			FRODOSPEC_LAMPFLATDialog.java 
 EXPOSE_DIALOG_SRCS	= GLANCEDialog.java MOVIEDialog.java MULTRUNDialog.java RUNATDialog.java \
 			TIMED_MULTRUNATDialog.java SAVEDialog.java \
 			FRODOSPEC_GLANCEDialog.java FRODOSPEC_MULTRUNDialog.java FRODOSPEC_RUNATDialog.java
@@ -168,6 +169,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.43  2010/01/15 14:32:57  cjm
+# Added TIMED_MULTRUNATDialog.java.
+#
 # Revision 0.42  2009/05/05 14:24:52  cjm
 # Added FRODOSPEC_LAMPFOCUSDialog.java .
 #
