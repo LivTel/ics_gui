@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // CcsGUIClientConnectionThread.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.31 2009-02-19 11:19:28 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.32 2010-09-23 13:15:16 cjm Exp $
 
 import java.awt.*;
 import java.lang.*;
@@ -37,14 +37,14 @@ import ngat.util.StringUtilities;
  * It implements the generic ISS instrument command protocol.
  * It is used to send commands from the CcsGUI to the Ccs.
  * @author Chris Mottram
- * @version $Revision: 0.31 $
+ * @version $Revision: 0.32 $
  */
 public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.31 2009-02-19 11:19:28 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.32 2010-09-23 13:15:16 cjm Exp $");
 	/**
 	 * The CcsGUI object.
 	 */
@@ -325,7 +325,7 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 		Long longObject = null;
 		Double ccdTemperature = null;
 		int exposureCount,exposureNumber;
-		long exposureLength,elapsedExposureTime;
+		long exposureLength,elapsedExposureTime,currentTime;
 
 	// get status object
 		status = parent.getStatus();
@@ -419,9 +419,15 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 		{
 	// set remaining exposures status
 			integer = (Integer)(displayInfo.get("Exposure Count"));
-			exposureCount = integer.intValue();
+			if(integer != null)
+				exposureCount = integer.intValue();
+			else
+				exposureCount = 0;
 			integer = (Integer)(displayInfo.get("Exposure Number"));
-			exposureNumber = integer.intValue();
+			if(integer != null)
+				exposureNumber = integer.intValue();
+			else
+				exposureNumber = 0;
 			if(exposureCount <= 0)// special case MOVIE - or not exposing
 				parent.setRemainingExposuresLabel(0);
 			else
@@ -441,14 +447,28 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 					elapsedExposureTime = integer.longValue();
 					parent.setRemainingExposureTimeLabel(exposureLength-elapsedExposureTime);
 				}
-				// otherwise, use current time - exposure start time to calculate remaining exposure time
+				// otherwise, use current time - exposure start time to 
+				// calculate remaining exposure time
 				else
 				{
 					longObject = (Long)(displayInfo.get("Exposure Start Time"));
-					elapsedExposureTime = System.currentTimeMillis()-longObject.longValue();
-					parent.setRemainingExposureTimeLabel(exposureLength-elapsedExposureTime);
-					parent.log("Elapsed Exposure Time not received, using Exposure Start Time"+
-						   " to calculate remaining exposure time.");
+					if(longObject != null)
+					{
+						parent.log("Elapsed Exposure Time not received, "+
+							   "using Exposure Start Time"+
+							   " to calculate remaining exposure time.");
+						currentTime = System.currentTimeMillis();
+						elapsedExposureTime = currentTime-longObject.longValue();
+						parent.log("Current Time:"+currentTime+" minus Exposure Start Time: "+
+							   longObject.longValue()+" equals Elapsed Exposure Time:"+
+							   elapsedExposureTime+".");
+						parent.setRemainingExposureTimeLabel(exposureLength-
+										     elapsedExposureTime);
+						parent.log("Remaining Exposure Time:"+
+							   (exposureLength-elapsedExposureTime)+
+							   " equals Exposure Length:"+exposureLength+
+							   " minus elapsed Exposure Time:"+elapsedExposureTime+".");
+					}
 				}
 			}
 			else
@@ -672,6 +692,9 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.31  2009/02/19 11:19:28  cjm
+// Fixed the ArrayList so it is initialised before use.
+//
 // Revision 0.30  2009/02/18 16:18:48  cjm
 // Replaced Collections.list with while loop over Enumeration,
 // so icsgui can still be used on RATCam (JVM v1.2).
