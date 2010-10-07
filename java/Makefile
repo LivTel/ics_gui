@@ -1,5 +1,5 @@
 # Makefile
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.44 2010-04-08 10:20:19 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.45 2010-10-07 13:24:53 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -22,7 +22,8 @@ CONFIG_SRCS	= IcsGUIConfigProperties.java IcsGUIConfigListDialog.java CcsGUIConf
 		IcsGUICCDConfigAADialog.java IcsGUILowResSpecConfigAADialog.java IcsGUIIRCamConfigAADialog.java \
 		IcsGUIFixedFormatSpecConfigAADialog.java IcsGUIPolarimeterConfigAADialog.java \
 		IcsGUIFrodoSpecConfigAADialog.java IcsGUIRISEConfigAADialog.java \
-		IcsGUIRingo2PolarimeterConfigAADialog.java CcsConfigAADialogListener.java 
+		IcsGUIRingo2PolarimeterConfigAADialog.java IcsGUITHORConfigAADialog.java \
+		CcsConfigAADialogListener.java 
 UPDATE_SRCS	= CcsGUIUpdateListener.java CcsGUIUpdateThread.java
 
 DIALOG_SRCS	= ACQUIREDialog.java $(CALIBRATE_DIALOG_SRCS) $(EXPOSE_DIALOG_SRCS) $(INTERRUPT_DIALOG_SRCS) $(SETUP_DIALOG_SRCS)
@@ -49,21 +50,24 @@ CCS_GUI_PROPERTY_SRCS	= ltccd2.ccs_gui.properties ltccd4.ccs_gui.properties \
 	ltobs9.ftspec.ics_gui.properties ltobs9.nuview1.ics_gui.properties ltobs9.rise.ics_gui.properties \
 	supircam2.ccs_gui.properties nuview1.ccs_gui.properties ratcam1.ccs_gui.properties \
 	lttmc.ccs_gui.properties frodospec1.ccs_gui.properties estar6.ccs_gui.properties ringo1.ccs_gui.properties \
-	ringo2.ccs_gui.properties ltobs9.ringo2.ccs_gui.properties 
+	ringo2.ccs_gui.properties ltobs9.ringo2.ccs_gui.properties \
+	tiptilt1.ccs_gui.properties ltobs9.thor.ccs_gui.properties thor.ccs_gui.properties 
 # No longer used
 #ltccd1.ccs_gui.properties ltccd3.ccs_gui.properties ftccd1.ccs_gui.properties ftccd2.ccs_gui.properties spectrograph.scs_gui.properties ltobs9.fartcam.ccs_gui.properties ltobs9.dillcamsouth.ccs_gui.properties ltobs9.spectrograph.scs_gui.properties supircam1.ccs_gui.properties ftspec1.ccs_gui.properties ftspec2.ccs_gui.properties spectrograph.ccs_gui.properties ftntmc.ccs_gui.properties ftstmc.ccs_gui.properties ftsocc.ccs_gui.properties 
 
 CCS_GUI_CONFIG_PROPERTY_SRCS = ltccd2.ccs_gui_config.properties ltccd4.ccs_gui_config.properties \
 	supircam2.ccs_gui_config.properties nuview1.ccs_gui_config.properties lttmc.ccs_gui_config.properties \
 	ratcam1.ccs_gui_config.properties frodospec1.ccs_gui_config.properties estar6.ccs_gui_config.properties \
-	ringo1.ccs_gui_config.properties ringo2.ccs_gui_config.properties ltobs9.ringo2.ccs_gui_config.properties 
+	ringo1.ccs_gui_config.properties ringo2.ccs_gui_config.properties ltobs9.ringo2.ccs_gui_config.properties \
+	tiptilt1.ccs_gui_config.properties thor.ccs_gui_config.properties 
 # No longer used
 #ltccd1.ccs_gui_config.properties ltccd3.ccs_gui_config.properties ftccd1.ccs_gui_config.properties ftccd2.ccs_gui_config.properties supircam1.ccs_gui_config.properties ftspec1.ccs_gui_config.properties ftspec2.ccs_gui_config.properties spectrograph.ccs_gui_config.properties ftntmc.ccs_gui_config.properties ftstmc.ccs_gui_config.properties 
 
 CCS_GUI_FITS_PROPERTY_SRCS = ltccd2.ccs_gui.fits.properties ltccd4.ccs_gui.fits.properties \
 	nuview1.ccs_gui.fits.properties lttmc.ccs_gui.fits.properties ratcam1.ccs_gui.fits.properties \
 	frodospec1.ccs_gui.fits.properties estar6.ccs_gui.fits.properties ringo1.ccs_gui.fits.properties \
-	ringo2.ccs_gui.fits.properties ltobs9.ringo2.ccs_gui.fits.properties 
+	ringo2.ccs_gui.fits.properties ltobs9.ringo2.ccs_gui.fits.properties tiptilt1.ccs_gui.fits.properties \
+	thor.ccs_gui.fits.properties 
 # No longer used
 #ltccd1.ccs_gui.fits.properties ltccd3.ccs_gui.fits.properties ftccd1.ccs_gui.fits.properties ftccd2.ccs_gui.fits.properties ftspec1.ccs_gui.fits.properties ftspec2.ccs_gui.fits.properties spectrograph.ccs_gui.fits.properties ftntmc.ccs_gui.fits.properties ftstmc.ccs_gui.fits.properties 
 
@@ -76,7 +80,7 @@ GIF_SRCS	= lt.gif lt_icon.gif ratcam.gif ratcam_ltccd1.gif ratcam_ftccd1.gif rat
 		ratcam_ltccd2.gif ratcam_ltccd3.gif supircam.gif ftspec.gif nuview_capella.gif
 GIF_OBJS	= $(GIF_SRCS:%=$(BINDIR)/%)
 
-JPG_SRCS	= ringo-BD64106.jpg
+JPG_SRCS	= ringo-BD64106.jpg thor.jpg
 JPG_OBJS	= $(JPG_SRCS:%=$(BINDIR)/%)
 
 SOUND_SRCS	= wav/command_completed.wav wav/command_failed.wav wav/filename.wav \
@@ -169,6 +173,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.44  2010/04/08 10:20:19  cjm
+# Added FRODOSPEC_LAMPFLATDialog.java .
+#
 # Revision 0.43  2010/01/15 14:32:57  cjm
 # Added TIMED_MULTRUNATDialog.java.
 #
