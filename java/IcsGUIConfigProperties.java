@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUIConfigProperties.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.17 2009-11-24 14:17:10 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.18 2010-10-07 13:24:06 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -30,14 +30,14 @@ import ngat.phase2.*;
  * in a Java properties file and this class extends java.util.Properties
  * @see java.util.Properties
  * @author Chris Mottram
- * @version $Revision: 0.17 $
+ * @version $Revision: 0.18 $
  */
 public class IcsGUIConfigProperties extends Properties
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.17 2009-11-24 14:17:10 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.18 2010-10-07 13:24:06 cjm Exp $");
 	/**
 	 * Configuration type specifier:CCD (RATCam).
 	 */
@@ -75,6 +75,10 @@ public class IcsGUIConfigProperties extends Properties
 	 */
 	public final static int CONFIG_TYPE_POLARIMETER_RINGO2 = 8;
 	/**
+	 * Configuration type specifier:CCD (THOR).
+	 */
+	public final static int CONFIG_TYPE_CCD_THOR = 9;
+	/**
 	 * List of legal values that can be held in the config type field.
 	 * @see #CONFIG_TYPE_CCD_RATCAM
 	 * @see #CONFIG_TYPE_SPECTROGRAPH_MES
@@ -85,11 +89,12 @@ public class IcsGUIConfigProperties extends Properties
 	 * @see #CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC
 	 * @see #CONFIG_TYPE_CCD_RISE
 	 * @see #CONFIG_TYPE_POLARIMETER_RINGO2
+	 * @see #CONFIG_TYPE_CCD_THOR
 	 */
 	public final static int CONFIG_TYPE_LIST[] = {CONFIG_TYPE_CCD_RATCAM,CONFIG_TYPE_SPECTROGRAPH_MES,
 		CONFIG_TYPE_SPECTROGRAPH_NUVIEW,CONFIG_TYPE_INFRA_RED_SUPIRCAM,CONFIG_TYPE_SPECTROGRAPH_FTSPEC,
 		CONFIG_TYPE_POLARIMETER_RINGOSTAR,CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC,CONFIG_TYPE_CCD_RISE,
-		CONFIG_TYPE_POLARIMETER_RINGO2};
+		CONFIG_TYPE_POLARIMETER_RINGO2,CONFIG_TYPE_CCD_THOR};
 	/**
 	 * Default filename for properties file.
 	 */
@@ -223,6 +228,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * @see #getFrodoSpecConfigById
 	 * @see #getRISEConfigById
 	 * @see #getRingo2PolarimeterConfigById
+	 * @see #getTHORConfigById
 	 */
 	public InstrumentConfig getConfigById(int id) throws NumberFormatException, IllegalArgumentException
 	{
@@ -259,6 +265,9 @@ public class IcsGUIConfigProperties extends Properties
 				break;
 			case CONFIG_TYPE_POLARIMETER_RINGO2:
 				c = getRingo2PolarimeterConfigById(id);
+				break;
+			case CONFIG_TYPE_CCD_THOR:
+				c = getTHORConfigById(id);
 				break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":getConfigById:Id "
@@ -359,6 +368,20 @@ public class IcsGUIConfigProperties extends Properties
 				remove(configIdStringYBin(id));
 				remove(configIdStringEMGain(id));
 				remove(configIdStringTriggerType(id));
+				remove(configIdStringWindowFlags(id));
+				for(j=1;j<2;j++)
+				{
+					remove(configIdWindowStringXStart(id,j));
+					remove(configIdWindowStringYStart(id,j));
+					remove(configIdWindowStringXEnd(id,j));
+					remove(configIdWindowStringYEnd(id,j));
+				}
+				break;
+			case CONFIG_TYPE_CCD_THOR:
+				remove(configIdStringXBin(id));
+				remove(configIdStringYBin(id));
+				remove(configIdStringEMGain(id));
+				remove(configIdStringFilter(id));
 				remove(configIdStringWindowFlags(id));
 				for(j=1;j<2;j++)
 				{
@@ -473,7 +496,31 @@ public class IcsGUIConfigProperties extends Properties
 					setConfigWindowFlags(i-1,getConfigWindowFlags(i));
 					remove(configIdStringWindowFlags(i));
 
-					for(j=1;j<5;j++)
+					for(j=1;j<2;j++)
+					{
+						setConfigXStart(i-1,j,getConfigXStart(i,j));
+						remove(configIdWindowStringXStart(i,j));
+						setConfigYStart(i-1,j,getConfigYStart(i,j));
+						remove(configIdWindowStringYStart(i,j));
+						setConfigXEnd(i-1,j,getConfigXEnd(i,j));
+						remove(configIdWindowStringXEnd(i,j));
+						setConfigYEnd(i-1,j,getConfigYEnd(i,j));
+						remove(configIdWindowStringYEnd(i,j));
+					}
+					break;
+			case CONFIG_TYPE_CCD_THOR:
+					setConfigXBin(i-1,getConfigXBin(i));
+					remove(configIdStringXBin(i));
+					setConfigYBin(i-1,getConfigYBin(i));
+					remove(configIdStringYBin(i));
+					setConfigEMGain(i-1,getConfigEMGain(i));
+					remove(configIdStringEMGain(i));
+					setConfigFilter(i-1,getConfigFilter(i));
+					remove(configIdStringFilter(i));
+
+					setConfigWindowFlags(i-1,getConfigWindowFlags(i));
+					remove(configIdStringWindowFlags(i));
+					for(j=1;j<2;j++)
 					{
 						setConfigXStart(i-1,j,getConfigXStart(i,j));
 						remove(configIdWindowStringXStart(i,j));
@@ -815,6 +862,31 @@ public class IcsGUIConfigProperties extends Properties
 	}
 
 	/**
+	 * Method to get the filter string of configuration id id (THOR).
+	 * @param id The id of the configuration.
+	 * @return The configuration filter string.
+	 * @see #configIdStringFilter
+	 */
+	public String getConfigFilter(int id)
+	{
+		return getProperty(configIdStringFilter(id));
+	}
+
+	/**
+	 * Method to set the filter string of configuration id id (THOR).
+	 * @param id The id of the configuration.
+	 * @param s The configuration filter string.
+	 * @see #configIdStringFilter
+	 */
+	public void setConfigFilter(int id,String s)
+	{
+	// jdk 1.1.x
+		//put(configIdStringUpperFilterWheel(id),s);
+	// jdk 1.2.x
+		setProperty(configIdStringFilter(id),s);
+	}
+
+	/**
 	 * Method to get the window flags of configuration id id.
 	 * @param id The id of the configuration.
 	 * @return The configuration window flags number.
@@ -1140,7 +1212,7 @@ public class IcsGUIConfigProperties extends Properties
 
 	/**
 	 * Method to get the EM Gain of configuration id id.
-	 * This is a Ringo2 only configuration value.
+	 * This is a Ringo2/THOR only configuration value.
 	 * @param id The id of the configuration.
 	 * @return The configuration EM Gain number.
 	 * @exception NumberFormatException Thrown if the relevant property 
@@ -1153,7 +1225,7 @@ public class IcsGUIConfigProperties extends Properties
 
 	/**
 	 * Method to get the EM Gain of configuration id id as a string.
-	 * This is a Ringo2 only configuration value.
+	 * This is a Ringo2/THOR only configuration value.
 	 * @param id The id of the configuration.
 	 * @return The configuration EM Gain number as a string.
 	 */
@@ -1164,7 +1236,7 @@ public class IcsGUIConfigProperties extends Properties
 
 	/**
 	 * Method to set the EM Gain of configuration id id.
-	 * This is a Ringo2 only configuration value.
+	 * This is a Ringo2/THOR only configuration value.
 	 * @param id The id of the configuration.
 	 * @param emGain The configuration EM Gain number.
 	 */
@@ -1623,6 +1695,78 @@ public class IcsGUIConfigProperties extends Properties
 		return c;
 	}
 
+	/**
+	 * Method to return a THORConfig, constructed from the information against id id.
+	 * @param id The Id number.
+	 * @return The constructed THORConfig.
+	 * @exception NumberFormatException Thrown if a numeric parameter is not returned from the properties
+	 * 	file as a legal number.
+	 * @exception IllegalArgumentException Thrown if the config id specified does not have a legal type.
+	 * @see #getConfigType
+	 * @see #getConfigCalibrateBefore
+	 * @see #getConfigCalibrateAfter
+	 * @see #getConfigEMGain
+	 * @see #getConfigFilter
+	 * @see #getConfigXBin
+	 * @see #getConfigYBin
+	 * @see #getConfigWindowFlags
+	 * @see #getConfigXStart
+	 * @see #getConfigYStart
+	 * @see #getConfigXEnd
+	 * @see #getConfigYEnd
+	 */
+	private THORConfig getTHORConfigById(int id) throws NumberFormatException, IllegalArgumentException
+	{
+		THORConfig c = null;
+		THORDetector detector = null;
+		Window windowArray[];
+
+	// check type
+		if(getConfigType(id) != CONFIG_TYPE_CCD_THOR)
+		{
+			throw new IllegalArgumentException(this.getClass().getName()+":getTHORConfigById:Id "
+				+id+" not a configuration of type THOR.");
+		}
+	// construct THORConfig
+		c = new THORConfig(getConfigName(id));
+		c.setCalibrateBefore(getConfigCalibrateBefore(id));
+		c.setCalibrateAfter(getConfigCalibrateAfter(id));
+		c.setEmGain(getConfigEMGain(id));
+		c.setFilter(getConfigFilter(id));
+	// setup detector
+		detector = new THORDetector();
+		detector.setXBin(getConfigXBin(id));
+		detector.setYBin(getConfigYBin(id));
+		// note, other Detector fields not set, as they are not used by the instrument.
+	// don't set windows into detector, use default windows.
+	// setup window list
+		windowArray = new Window[detector.getMaxWindowCount()];
+		for(int i = 0; i < detector.getMaxWindowCount(); i++)
+		{
+		// Note, windows are only non-null if they are active in RCS created configs
+		// Lets re-create that effect here, we can use the config window flags.
+			if((getConfigWindowFlags(id) & (1<<i))>0)
+			{
+				windowArray[i] = new Window();
+
+				windowArray[i].setXs(getConfigXStart(id,i+1));
+				windowArray[i].setYs(getConfigYStart(id,i+1));
+				windowArray[i].setXe(getConfigXEnd(id,i+1));
+				windowArray[i].setYe(getConfigYEnd(id,i+1));
+			}
+			else
+				windowArray[i] = null;
+		}// end for on windows
+	// set windows into detector
+		detector.setWindows(windowArray);
+	// Note flags are held IN the window list, so must setWindowFlags AFTER detector windows set
+		detector.setWindowFlags(getConfigWindowFlags(id));
+	// set detector into config
+		c.setDetector(0,detector);
+	// return config
+		return c;
+	}
+
 // method to check values in the property file.
 	/**
 	 * Method to check whether a number is a legal configuration type number.
@@ -1749,6 +1893,17 @@ public class IcsGUIConfigProperties extends Properties
 	private String configIdStringFilterWheel(int id)
 	{
 		return new String(configIdString(id)+"filterWheel");
+	}
+
+	/**
+	 * Method to return a key for the filter for a particular config id.
+	 * @param id The config id.
+	 * @return The key string.
+	 * @see #configIdString
+	 */
+	private String configIdStringFilter(int id)
+	{
+		return new String(configIdString(id)+"filter");
 	}
 
 	/**
@@ -1956,6 +2111,9 @@ public class IcsGUIConfigProperties extends Properties
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.17  2009/11/24 14:17:10  cjm
+// Added Ringo2 support.
+//
 // Revision 0.16  2008/11/13 15:38:22  cjm
 // Fixed comments.
 //
