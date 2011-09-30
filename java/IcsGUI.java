@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.22 2010-01-21 14:38:04 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.23 2011-09-30 14:49:12 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -40,14 +40,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  */
 public class IcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.22 2010-01-21 14:38:04 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.23 2011-09-30 14:49:12 cjm Exp $");
 	/**
 	 * Internal constant used when converting temperatures in centigrade (from the CCD controller) to Kelvin.
 	 */
@@ -661,6 +661,18 @@ public class IcsGUI
         // LAMPFLAT
 		menuItem = new JMenuItem("Lamp Flat",KeyEvent.VK_L);
 		menuItem.getAccessibleContext().setAccessibleDescription("Send an Lamp Flat command");
+		menuItem.addActionListener(menuItemListener);
+		submenu.add(menuItem);
+        // MULTBIAS
+		menuItem = new JMenuItem("Mult Bias",KeyEvent.VK_M);
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M,ActionEvent.CTRL_MASK));
+		menuItem.getAccessibleContext().setAccessibleDescription("Send an Mult Bias command");
+		menuItem.addActionListener(menuItemListener);
+		submenu.add(menuItem);
+        // MULTDARK
+		menuItem = new JMenuItem("Mult Dark",KeyEvent.VK_U);
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U,ActionEvent.CTRL_MASK));
+		menuItem.getAccessibleContext().setAccessibleDescription("Send an Mult Dark command");
 		menuItem.addActionListener(menuItemListener);
 		submenu.add(menuItem);
         // SKYFLAT
@@ -1792,6 +1804,9 @@ public class IcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.22  2010/01/21 14:38:04  cjm
+// Added extra TIMED_MULTRUNAT / RUNAT start time logging when sending commands to server.
+//
 // Revision 1.21  2010/01/20 10:44:01  cjm
 // Changed Timed MultRunat accelerator.
 //
