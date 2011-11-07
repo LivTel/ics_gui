@@ -1,6 +1,6 @@
 #!/bin/csh
-# $Header: /home/cjm/cvs/ics_gui/scripts/icsgui_make_deployment,v 1.7 2008-04-29 09:59:55 cjm Exp $
-# Version: $Revision: 1.7 $
+# $Header: /home/cjm/cvs/ics_gui/scripts/icsgui_make_deployment,v 1.8 2011-11-07 17:59:22 cjm Exp $
+# Version: $Revision: 1.8 $
 # By $Author: cjm $
 # Make a deployment tar file.
 # This contains:
@@ -83,7 +83,7 @@ echo "${dir_count} directories created."
 #
 echo "Copying jars..."
 #ngat_math.jar ngat_math_test.jar 
-set jar_list = "ngat_astrometry.jar ngat_message_base.jar ngat_fits.jar ngat_message_inst_dp.jar ngat_message_iss_inst.jar ngat_net.jar ngat_phase2.jar ngat_sound.jar ngat_swing.jar ngat_util.jar ngat_util_logging.jar"
+set jar_list = "ngat_astrometry.jar ngat_message_base.jar ngat_fits.jar ngat_message_inst_dp.jar ngat_message_iss_inst.jar ngat_message_inst_bss.jar ngat_net.jar ngat_phase2.jar ngat_sound.jar ngat_swing.jar ngat_util.jar ngat_util_logging.jar"
 set jar_count = 0
 foreach jar ( ${jar_list} )
 	echo "jar : ${jar}"
@@ -234,7 +234,7 @@ echo "${file_count} scripts copied."
 #
 # in bin sub-directories
 echo "Copying machine configuration files..."
-set file_list = "ccs_gui/java/${machine_name}.ccs_gui.properties ccs_gui/java/${machine_name}.ccs_gui_config.properties ccs_gui/java/${machine_name}.ccs_gui.fits.properties"
+set file_list = "ccs_gui/java/${machine_name}.ccs_gui.properties ccs_gui/java/${machine_name}.ccs_gui_config.properties ccs_gui/java/${machine_name}.ccs_gui.fits.properties ccs_gui/java/${machine_name}.ics_gui.fits.bss.properties"
 set file_count = 0
 cd ${dev_dir}
 foreach file ( ${file_list} )
