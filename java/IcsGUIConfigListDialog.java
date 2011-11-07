@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUIConfigListDialog.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigListDialog.java,v 0.15 2010-10-07 13:24:06 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigListDialog.java,v 0.16 2011-11-07 17:07:34 cjm Exp $
 import java.lang.*;
 import java.util.*;
 import java.awt.*;
@@ -30,14 +30,14 @@ import javax.swing.event.*;
 import ngat.swing.*;
 
 /**
- * This class provides a list of configurations for the Ccs. 
+ * This class provides a list of configurations for the instrument GUI. 
  */
 public class IcsGUIConfigListDialog extends JDialog implements ActionListener, CcsConfigAADialogListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public static String RCSID = new String("$Id: IcsGUIConfigListDialog.java,v 0.15 2010-10-07 13:24:06 cjm Exp $");
+	public static String RCSID = new String("$Id: IcsGUIConfigListDialog.java,v 0.16 2011-11-07 17:07:34 cjm Exp $");
 	/**
 	 * String to go on buttons.
 	 */
@@ -79,6 +79,10 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	 */
 	protected final static String CCD_THOR_BUTTON_STRING = "CCD Camera (THOR)";
 	/**
+	 * String to go on buttons.
+	 */
+	protected final static String CCD_O_BUTTON_STRING = "CCD Camera (O)";
+	/**
 	 * List of strings that describe instruments. Note, make sure in the same order as 
 	 * IcsGUIConfigProperties.CONFIG_TYPE_LIST.
 	 * @see IcsGUIConfigProperties#CONFIG_TYPE_LIST
@@ -92,12 +96,13 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	 * @see #CCD_RISE_BUTTON_STRING
 	 * @see #POLARIMETER_RINGO2_BUTTON_STRING
 	 * @see #CCD_THOR_BUTTON_STRING
+	 * @see #CCD_O_BUTTON_STRING
 	 */
 	protected final static String INSTRUMENT_STRING_ARRAY[] = {CCD_RATCAM_BUTTON_STRING,
 		SPECTROGRAPH_MES_BUTTON_STRING,SPECTROGRAPH_NUVIEW_BUTTON_STRING,
 	        INFRA_RED_SUPIRCAM_BUTTON_STRING,SPECTROGRAPH_FTSPEC_BUTTON_STRING,
 		POLARIMETER_RINGOSTAR_BUTTON_STRING,SPECTROGRAPH_FRODOSPEC_BUTTON_STRING,CCD_RISE_BUTTON_STRING,
-		POLARIMETER_RINGO2_BUTTON_STRING,CCD_THOR_BUTTON_STRING};
+		POLARIMETER_RINGO2_BUTTON_STRING,CCD_THOR_BUTTON_STRING,CCD_O_BUTTON_STRING};
 	/**
 	 * String to pre-pend to add menu instrument entries.
 	 */
@@ -154,6 +159,10 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	 * The Add/Amend dialog to use when Add or Amend is selected for a THOR configuration.
 	 */
 	private IcsGUITHORConfigAADialog addAmendTHORDialog = null;
+	/**
+	 * The Add/Amend dialog to use when Add or Amend is selected for a O configuration.
+	 */
+	private IcsGUIOConfigAADialog addAmendODialog = null;
 	/**
 	 * The config dialog that caused this dialog to be managed.
 	 */
@@ -257,6 +266,9 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	// create a THOR add/amend dialog
 		addAmendTHORDialog = new IcsGUITHORConfigAADialog(owner,c);
 		addAmendTHORDialog.addCcsConfigAADialogListener(this);
+	// create a O add/amend dialog
+		addAmendODialog = new IcsGUIOConfigAADialog(owner,c);
+		addAmendODialog.addCcsConfigAADialogListener(this);
 	}
 
 	/**
@@ -389,6 +401,13 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 						addAmendTHORDialog.pack();
 						addAmendTHORDialog.add();
 						break;
+					case IcsGUIConfigProperties.CONFIG_TYPE_CCD_O:
+						addAmendODialog.setLocation(getX()+getWidth(),getY());
+						addAmendODialog.pack();
+						addAmendODialog.setIcsGUI(icsGUI);
+						addAmendODialog.setIcsGUIStatus(icsGUIStatus);
+						addAmendODialog.add();
+						break;
 					case IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_MES:
 					default:
 						JOptionPane.showMessageDialog((Component)null,
@@ -451,6 +470,13 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 						addAmendTHORDialog.setLocation(getX()+getWidth(),getY());
 						addAmendTHORDialog.pack();
 						addAmendTHORDialog.amend(id);
+						break;
+					case IcsGUIConfigProperties.CONFIG_TYPE_CCD_O:
+						addAmendODialog.setLocation(getX()+getWidth(),getY());
+						addAmendODialog.pack();
+						addAmendODialog.setIcsGUI(icsGUI);
+						addAmendODialog.setIcsGUIStatus(icsGUIStatus);
+						addAmendODialog.amend(id);
 						break;
 					case IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_MES:
 					default:
@@ -701,6 +727,9 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.15  2010/10/07 13:24:06  cjm
+// Added THOR accessors.
+//
 // Revision 0.14  2009/11/24 14:17:10  cjm
 // Added Ringo2 support.
 //

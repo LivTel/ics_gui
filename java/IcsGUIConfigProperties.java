@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUIConfigProperties.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.18 2010-10-07 13:24:06 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.19 2011-11-07 17:07:34 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -30,54 +30,58 @@ import ngat.phase2.*;
  * in a Java properties file and this class extends java.util.Properties
  * @see java.util.Properties
  * @author Chris Mottram
- * @version $Revision: 0.18 $
+ * @version $Revision: 0.19 $
  */
 public class IcsGUIConfigProperties extends Properties
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.18 2010-10-07 13:24:06 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.19 2011-11-07 17:07:34 cjm Exp $");
 	/**
 	 * Configuration type specifier:CCD (RATCam).
 	 */
-	public final static int CONFIG_TYPE_CCD_RATCAM 		= 0;
+	public final static int CONFIG_TYPE_CCD_RATCAM 		      = 0;
 	/**
 	 * Configuration type specifier:Spectrograph (MES).
 	 */
-	public final static int CONFIG_TYPE_SPECTROGRAPH_MES 	= 1;
+	public final static int CONFIG_TYPE_SPECTROGRAPH_MES 	      = 1;
 	/**
 	 * Configuration type specifier:Spectrograph (NuView).
 	 */
-	public final static int CONFIG_TYPE_SPECTROGRAPH_NUVIEW = 2;
+	public final static int CONFIG_TYPE_SPECTROGRAPH_NUVIEW       = 2;
 	/**
 	 * Configuration type specifier:Infra-Red camera (SupIRCam).
 	 */
-	public final static int CONFIG_TYPE_INFRA_RED_SUPIRCAM 	= 3;
+	public final static int CONFIG_TYPE_INFRA_RED_SUPIRCAM        = 3;
 	/**
 	 * Configuration type specifier:Spectrograph (FTSpec).
 	 */
-	public final static int CONFIG_TYPE_SPECTROGRAPH_FTSPEC = 4;
+	public final static int CONFIG_TYPE_SPECTROGRAPH_FTSPEC       = 4;
 	/**
 	 * Configuration type specifier:Polarimeter (Ringo Star).
 	 */
-	public final static int CONFIG_TYPE_POLARIMETER_RINGOSTAR = 5;
+	public final static int CONFIG_TYPE_POLARIMETER_RINGOSTAR     = 5;
 	/**
 	 * Configuration type specifier:Spectrograph (FrodoSpec).
 	 */
-	public final static int CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC = 6;
+	public final static int CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC    = 6;
 	/**
 	 * Configuration type specifier:IMAGER (RISE).
 	 */
-	public final static int CONFIG_TYPE_CCD_RISE = 7;
+	public final static int CONFIG_TYPE_CCD_RISE                  = 7;
 	/**
 	 * Configuration type specifier:Polarimeter (Ringo2).
 	 */
-	public final static int CONFIG_TYPE_POLARIMETER_RINGO2 = 8;
+	public final static int CONFIG_TYPE_POLARIMETER_RINGO2        = 8;
 	/**
 	 * Configuration type specifier:CCD (THOR).
 	 */
-	public final static int CONFIG_TYPE_CCD_THOR = 9;
+	public final static int CONFIG_TYPE_CCD_THOR                  = 9;
+	/**
+	 * Configuration type specifier:CCD (O).
+	 */
+	public final static int CONFIG_TYPE_CCD_O 	              = 10;
 	/**
 	 * List of legal values that can be held in the config type field.
 	 * @see #CONFIG_TYPE_CCD_RATCAM
@@ -90,11 +94,12 @@ public class IcsGUIConfigProperties extends Properties
 	 * @see #CONFIG_TYPE_CCD_RISE
 	 * @see #CONFIG_TYPE_POLARIMETER_RINGO2
 	 * @see #CONFIG_TYPE_CCD_THOR
+	 * @see #CONFIG_TYPE_CCD_O
 	 */
 	public final static int CONFIG_TYPE_LIST[] = {CONFIG_TYPE_CCD_RATCAM,CONFIG_TYPE_SPECTROGRAPH_MES,
 		CONFIG_TYPE_SPECTROGRAPH_NUVIEW,CONFIG_TYPE_INFRA_RED_SUPIRCAM,CONFIG_TYPE_SPECTROGRAPH_FTSPEC,
 		CONFIG_TYPE_POLARIMETER_RINGOSTAR,CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC,CONFIG_TYPE_CCD_RISE,
-		CONFIG_TYPE_POLARIMETER_RINGO2,CONFIG_TYPE_CCD_THOR};
+		CONFIG_TYPE_POLARIMETER_RINGO2,CONFIG_TYPE_CCD_THOR,CONFIG_TYPE_CCD_O};
 	/**
 	 * Default filename for properties file.
 	 */
@@ -229,6 +234,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * @see #getRISEConfigById
 	 * @see #getRingo2PolarimeterConfigById
 	 * @see #getTHORConfigById
+	 * @see #getOConfigById
 	 */
 	public InstrumentConfig getConfigById(int id) throws NumberFormatException, IllegalArgumentException
 	{
@@ -268,6 +274,9 @@ public class IcsGUIConfigProperties extends Properties
 				break;
 			case CONFIG_TYPE_CCD_THOR:
 				c = getTHORConfigById(id);
+				break;
+			case CONFIG_TYPE_CCD_O:
+				c = getOConfigById(id);
 				break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":getConfigById:Id "
@@ -384,6 +393,19 @@ public class IcsGUIConfigProperties extends Properties
 				remove(configIdStringFilter(id));
 				remove(configIdStringWindowFlags(id));
 				for(j=1;j<2;j++)
+				{
+					remove(configIdWindowStringXStart(id,j));
+					remove(configIdWindowStringYStart(id,j));
+					remove(configIdWindowStringXEnd(id,j));
+					remove(configIdWindowStringYEnd(id,j));
+				}
+				break;
+			case CONFIG_TYPE_CCD_O:
+				remove(configIdStringFilterWheel(id));
+				remove(configIdStringXBin(id));
+				remove(configIdStringYBin(id));
+				remove(configIdStringWindowFlags(id));
+				for(j=1;j<5;j++)
 				{
 					remove(configIdWindowStringXStart(id,j));
 					remove(configIdWindowStringYStart(id,j));
@@ -521,6 +543,28 @@ public class IcsGUIConfigProperties extends Properties
 					setConfigWindowFlags(i-1,getConfigWindowFlags(i));
 					remove(configIdStringWindowFlags(i));
 					for(j=1;j<2;j++)
+					{
+						setConfigXStart(i-1,j,getConfigXStart(i,j));
+						remove(configIdWindowStringXStart(i,j));
+						setConfigYStart(i-1,j,getConfigYStart(i,j));
+						remove(configIdWindowStringYStart(i,j));
+						setConfigXEnd(i-1,j,getConfigXEnd(i,j));
+						remove(configIdWindowStringXEnd(i,j));
+						setConfigYEnd(i-1,j,getConfigYEnd(i,j));
+						remove(configIdWindowStringYEnd(i,j));
+					}
+					break;
+				case CONFIG_TYPE_CCD_O:
+					setConfigFilterWheel(i-1,getConfigFilterWheel(i));
+					remove(configIdStringFilterWheel(i));
+					setConfigXBin(i-1,getConfigXBin(i));
+					remove(configIdStringXBin(i));
+					setConfigYBin(i-1,getConfigYBin(i));
+					remove(configIdStringYBin(i));
+					setConfigWindowFlags(i-1,getConfigWindowFlags(i));
+					remove(configIdStringWindowFlags(i));
+
+					for(j=1;j<5;j++)
 					{
 						setConfigXStart(i-1,j,getConfigXStart(i,j));
 						remove(configIdWindowStringXStart(i,j));
@@ -839,7 +883,7 @@ public class IcsGUIConfigProperties extends Properties
 	}
 
 	/**
-	 * Method to get the filter wheel string of configuration id id (INFRA_RED_SUPIRCAM).
+	 * Method to get the filter wheel string of configuration id id (INFRA_RED_SUPIRCAM|CCD_O).
 	 * @param id The id of the configuration.
 	 * @return The configuration filter wheel string.
 	 */
@@ -849,7 +893,7 @@ public class IcsGUIConfigProperties extends Properties
 	}
 
 	/**
-	 * Method to set the upper filter wheel string of configuration id id (INFRA_RED_SUPIRCAM).
+	 * Method to set the upper filter wheel string of configuration id id (INFRA_RED_SUPIRCAM|CCD_O).
 	 * @param id The id of the configuration.
 	 * @param s The configuration filter wheel string.
 	 */
@@ -1767,6 +1811,65 @@ public class IcsGUIConfigProperties extends Properties
 		return c;
 	}
 
+	/**
+	 * Method to return a OConfig, constructed from the information against id id.
+	 * @param id The Id number.
+	 * @return The constructed OConfig.
+	 * @exception NumberFormatException Thrown if a numeric parameter is not returned from the properties
+	 * 	file as a legal number.
+	 * @exception IllegalArgumentException Thrown if the config id specified does not have a legal type.
+	 */
+	private OConfig getOConfigById(int id) throws NumberFormatException, IllegalArgumentException
+	{
+		OConfig c = null;
+		ODetector detector = null;
+		Window windowArray[];
+
+	// check type
+		if(getConfigType(id) != CONFIG_TYPE_CCD_O)
+		{
+			throw new IllegalArgumentException(this.getClass().getName()+":getOConfigById:Id "
+				+id+" not a configuration of type O.");
+		}
+	// construct OConfig
+		c = new OConfig(getConfigName(id));
+		c.setCalibrateBefore(getConfigCalibrateBefore(id));
+		c.setCalibrateAfter(getConfigCalibrateAfter(id));
+		c.setFilterWheel(getConfigFilterWheel(id));
+	// setup detector
+		detector = new ODetector();
+		detector.setXBin(getConfigXBin(id));
+		detector.setYBin(getConfigYBin(id));
+		// note, other Detector fields not set, as they are not used by the instrument.
+
+	// setup window list
+		windowArray = new Window[detector.getMaxWindowCount()];
+		for(int i = 0; i < detector.getMaxWindowCount(); i++)
+		{
+		// Note, windows are only non-null if they are active in RCS created configs
+		// Lets re-create that effect here, we can use the config window flags.
+			if((getConfigWindowFlags(id) & (1<<i))>0)
+			{
+				windowArray[i] = new Window();
+
+				windowArray[i].setXs(getConfigXStart(id,i+1));
+				windowArray[i].setYs(getConfigYStart(id,i+1));
+				windowArray[i].setXe(getConfigXEnd(id,i+1));
+				windowArray[i].setYe(getConfigYEnd(id,i+1));
+			}
+			else
+				windowArray[i] = null;
+		}// end for on windows
+	// set windows into detector
+		detector.setWindows(windowArray);
+	// Note flags are held IN the window list, so must setWindowFlags AFTER detector windows set
+		detector.setWindowFlags(getConfigWindowFlags(id));
+	// set detector into config
+		c.setDetector(0,detector);
+	// return config
+		return c;
+	}
+
 // method to check values in the property file.
 	/**
 	 * Method to check whether a number is a legal configuration type number.
@@ -2111,6 +2214,9 @@ public class IcsGUIConfigProperties extends Properties
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.18  2010/10/07 13:24:06  cjm
+// Added THOR accessors.
+//
 // Revision 0.17  2009/11/24 14:17:10  cjm
 // Added Ringo2 support.
 //
