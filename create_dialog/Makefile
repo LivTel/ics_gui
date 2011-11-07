@@ -1,5 +1,5 @@
 # Makefile
-# $Header: /home/cjm/cvs/ics_gui/create_dialog/Makefile,v 0.10 2010-04-07 16:33:08 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/create_dialog/Makefile,v 0.11 2011-11-07 17:06:54 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -14,6 +14,7 @@ DOCS 		= $(SRCS:%.java=$(DOCSDIR)/%.html)
 
 CALIBRATE_DIALOG_SRCS	= ngat.message.ISS_INST.ARC ngat.message.ISS_INST.BIAS ngat.message.ISS_INST.DARK \
 			ngat.message.ISS_INST.DAY_CALIBRATE ngat.message.ISS_INST.LAMPFLAT \
+			ngat.message.ISS_INST.MULTBIAS ngat.message.ISS_INST.MULTDARK \
 			ngat.message.ISS_INST.SKYFLAT ngat.message.ISS_INST.TWILIGHT_CALIBRATE \
 			ngat.message.ISS_INST.FRODOSPEC_ARC \
 			ngat.message.ISS_INST.FRODOSPEC_BIAS ngat.message.ISS_INST.FRODOSPEC_DARK \
@@ -55,6 +56,8 @@ $(CCS_GUI_SRC_HOME)/java/BIASDialog.java:ngat.message.ISS_INST.BIAS
 $(CCS_GUI_SRC_HOME)/java/DARKDialog.java:ngat.message.ISS_INST.DARK
 $(CCS_GUI_SRC_HOME)/java/DAY_CALIBRATEDialog.java:ngat.message.ISS_INST.DAY_CALIBRATE
 $(CCS_GUI_SRC_HOME)/java/LAMPFLATDialog.java:ngat.message.ISS_INST.LAMPFLAT
+$(CCS_GUI_SRC_HOME)/java/MULTBIASDialog.java:ngat.message.ISS_INST.MULTBIAS
+$(CCS_GUI_SRC_HOME)/java/MULTDARKDialog.java:ngat.message.ISS_INST.MULTDARK
 $(CCS_GUI_SRC_HOME)/java/SKYFLATDialog.java:ngat.message.ISS_INST.SKYFLAT
 $(CCS_GUI_SRC_HOME)/java/TWILIGHT_CALIBRATEDialog.java:ngat.message.ISS_INST.TWILIGHT_CALIBRATE
 $(CCS_GUI_SRC_HOME)/java/FRODOSPEC_ARCDialog.java:ngat.message.ISS_INST.FRODOSPEC_ARC
@@ -107,6 +110,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.10  2010/04/07 16:33:08  cjm
+# Added FRODOSPEC_LAMPFLAT.
+#
 # Revision 0.9  2010/01/15 11:36:53  cjm
 # Added TIMED_MULTRUNAT dialog.
 #
