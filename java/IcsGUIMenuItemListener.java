@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // CcsGUIMenuItemListener.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIMenuItemListener.java,v 0.7 2006-05-16 17:12:15 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIMenuItemListener.java,v 0.8 2011-11-07 17:07:34 cjm Exp $
 import java.lang.*;
 import java.lang.reflect.*;
 import java.io.*;
@@ -38,7 +38,7 @@ public class CcsGUIMenuItemListener implements ActionListener
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIMenuItemListener.java,v 0.7 2006-05-16 17:12:15 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIMenuItemListener.java,v 0.8 2011-11-07 17:07:34 cjm Exp $");
 	/**
 	 * The parent to the menu item listener. The instance of the main program.
 	 */
@@ -193,7 +193,7 @@ public class CcsGUIMenuItemListener implements ActionListener
 			parent.log("Thread Monitor started.");
 			return;
 		}
-		if(commandString.equals("Spoof Requests"))
+		if(commandString.equals("Spoof ISS Requests"))
 		{
 			JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem)event.getSource();
 
@@ -217,6 +217,16 @@ public class CcsGUIMenuItemListener implements ActionListener
 				parent.setISSMessageDialog(false);
 				parent.log("Message Dialogs will NOT be brought up in response to ISS commands.");
 			}
+			return;
+		}
+		if(commandString.equals("Spoof BSS Requests"))
+		{
+			JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem)event.getSource();
+
+			if(cbmi.getState())
+				parent.startBSSServer();
+			else
+				parent.stopBSSServer();
 			return;
 		}
 		if(commandString.equals("Audio"))
@@ -367,6 +377,9 @@ public class CcsGUIMenuItemListener implements ActionListener
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.7  2006/05/16 17:12:15  cjm
+// gnuify: Added GNU General Public License.
+//
 // Revision 0.6  2003/09/19 14:08:45  cjm
 // Changed CcsGUI to IcsGUI.
 // Added Audio checkbox handling.

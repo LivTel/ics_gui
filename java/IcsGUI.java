@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.23 2011-09-30 14:49:12 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.24 2011-11-07 17:07:34 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -40,14 +40,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  */
 public class IcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.23 2011-09-30 14:49:12 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.24 2011-11-07 17:07:34 cjm Exp $");
 	/**
 	 * Internal constant used when converting temperatures in centigrade (from the CCD controller) to Kelvin.
 	 */
@@ -156,14 +156,27 @@ public class IcsGUI
 	 */
 	private int issPortNumber = 0;
 	/**
+	 * The port number to listen for connections from the ICS to the BSS on.
+	 */
+	private int bssPortNumber = 0;
+	/**
 	 * Reference to the ISS server thread.
 	 */
-	private CcsGUIServer server = null;
+	private IcsGUIISSServer issServer = null;
+	/**
+	 * Reference to the ISS server thread.
+	 */
+	private IcsGUIBSSServer bssServer = null;
 	/**
 	 * Whether to start the ISS server or not to spoof ISS calls at startup.
-	 * @see #server
+	 * @see #issServer
 	 */
 	private boolean initiallyStartISSServer = false;
+	/**
+	 * Whether to start the BSS server or not to spoof BSS calls at startup.
+	 * @see #bssServer
+	 */
+	private boolean initiallyStartBSSServer = false;
 	/**
 	 * Whether to optimise swing to work over a remote connection or not.
 	 * This means turning off double buffering, and making scroll panes scroll simply.
@@ -664,8 +677,8 @@ public class IcsGUI
 		menuItem.addActionListener(menuItemListener);
 		submenu.add(menuItem);
         // MULTBIAS
-		menuItem = new JMenuItem("Mult Bias",KeyEvent.VK_M);
-		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M,ActionEvent.CTRL_MASK));
+		menuItem = new JMenuItem("Mult Bias",KeyEvent.VK_I);
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I,ActionEvent.CTRL_MASK));
 		menuItem.getAccessibleContext().setAccessibleDescription("Send an Mult Bias command");
 		menuItem.addActionListener(menuItemListener);
 		submenu.add(menuItem);
@@ -758,13 +771,12 @@ public class IcsGUI
 		menuItem.addActionListener(menuItemListener);
 		submenu.add(menuItem);
         // RESUME
-		menuItem = new JMenuItem("Resume",KeyEvent.VK_U);
-		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U,ActionEvent.CTRL_MASK));
+		menuItem = new JMenuItem("Resume");
 		menuItem.getAccessibleContext().setAccessibleDescription("Send an Resume command");
 		menuItem.addActionListener(menuItemListener);
 		submenu.add(menuItem);
         // STOP
-		menuItem = new JMenuItem("Stop",KeyEvent.VK_S);
+		menuItem = new JMenuItem("Stop");
 		menuItem.getAccessibleContext().setAccessibleDescription("Send a Stop command");
 		menuItem.addActionListener(menuItemListener);
 		submenu.add(menuItem);
@@ -814,7 +826,7 @@ public class IcsGUI
 		menu.getAccessibleContext().setAccessibleDescription("The Instrument Support System Menu");
 		menuBar.add(menu);
         // Spoof ISS Requests
-		menuItem = new JCheckBoxMenuItem("Spoof Requests",initiallyStartISSServer);
+		menuItem = new JCheckBoxMenuItem("Spoof ISS Requests",initiallyStartISSServer);
 		menuItem.getAccessibleContext().
 			setAccessibleDescription("Starts a thread to Spoof requests sent to the ISS");
 		menuItem.addActionListener(menuItemListener);
@@ -826,6 +838,17 @@ public class IcsGUI
 		messageDialogMenuItem.addActionListener(menuItemListener);
 		messageDialogMenuItem.setEnabled(false);
 		menu.add(messageDialogMenuItem);
+	// Build the BSS menu.
+		menu = new JMenu("BSS");
+		menu.setMnemonic(KeyEvent.VK_B);
+		menu.getAccessibleContext().setAccessibleDescription("The Beam Steering System Menu");
+		menuBar.add(menu);
+        // Spoof BSS Requests
+		menuItem = new JCheckBoxMenuItem("Spoof BSS Requests",initiallyStartBSSServer);
+		menuItem.getAccessibleContext().
+			setAccessibleDescription("Starts a thread to Spoof requests sent to the BSS");
+		menuItem.addActionListener(menuItemListener);
+		menu.add(menuItem);
 	}
 
 	/**
@@ -886,7 +909,9 @@ public class IcsGUI
 	 * @see #frame
 	 * @see #initiallyStartISSServer
 	 * @see #startISSServer
-	 * @see #server
+	 * @see #initiallyStartBSSServer
+	 * @see #startBSSServer
+	 * @see #issServer
 	 * @see ngat.swing.GUIDialogManager
 	 * @see javax.swing.SwingUtilities#invokeLater
 	 */
@@ -899,6 +924,11 @@ public class IcsGUI
 		{
 			log("run:Starting ISS Server.");
 			startISSServer();
+		}
+		if(initiallyStartBSSServer)
+		{
+			log("run:Starting BSS Server.");
+			startBSSServer();
 		}
 		log("run:Adding frame to invokeLater GUIDialogManager.");
 		dialogManager = new GUIDialogManager(frame);
@@ -915,6 +945,7 @@ public class IcsGUI
 	 * @see CcsGUIStatus#removeClientThread
 	 * @see CcsGUIStatus#saveInstrumentConfig
 	 * @see #stopISSServer
+	 * @see #stopBSSServer
 	 * @see #log
 	 */
 	public void exit(int n)
@@ -965,6 +996,7 @@ public class IcsGUI
 			error(this.getClass().getName()+":trying to exit:saving CCD Config failed:"+e);
 		}
 		stopISSServer();
+		stopBSSServer();
 		System.exit(n);
 	}
 
@@ -1594,15 +1626,15 @@ public class IcsGUI
 	 * Calls the server run method to start the thread.
 	 * Sets the ISS Message Dialog menu item sensitive.
 	 * @see #issPortNumber
-	 * @see #server
+	 * @see #issServer
 	 * @see #messageDialogMenuItem
 	 */
 	public void startISSServer()
 	{
 	// create and start server
-		server = new CcsGUIServer("ICS GUI ISS Server",issPortNumber);
-		server.setParent(this);
-		server.start();
+		issServer = new IcsGUIISSServer("ICS GUI ISS Server",issPortNumber);
+		issServer.setParent(this);
+		issServer.start();
 		log("ISS Server started on port:"+issPortNumber+".");
 		messageDialogMenuItem.setEnabled(true);
 	}
@@ -1611,21 +1643,53 @@ public class IcsGUI
 	 * Method to stop the ISS server. If the server reference is non-null, calls it's close method.
 	 * Sets the server reference to null.
 	 * Sets the ISS Message Dialog menu item in-sensitive.
-	 * @see #server
-	 * @see CcsGUIServer#close
+	 * @see #issServer
+	 * @see IcsGUIISSServer#close
 	 * @see #messageDialogMenuItem
 	 */
 	public void stopISSServer()
 	{
-		if(server != null)
+		if(issServer != null)
 		{
-			server.close();
+			issServer.close();
 		}
-		server = null;
+		issServer = null;
 		log("ISS Server stopped.");
 		messageDialogMenuItem.setEnabled(false);
 	}
 
+	/**
+	 * Method to start running the BSS server.
+	 * Creates a new thread. Sets it's parent to this class instance.
+	 * Calls the server run method to start the thread.
+	 * @see #bssPortNumber
+	 * @see #bssServer
+	 */
+	public void startBSSServer()
+	{
+	// create and start server
+		bssServer = new IcsGUIBSSServer("ICS GUI BSS Server",bssPortNumber);
+		bssServer.setParent(this);
+		bssServer.start();
+		log("BSS Server started on port:"+bssPortNumber+".");
+	}
+
+	/**
+	 * Method to stop the BSS server. If the server reference is non-null, calls it's close method.
+	 * Sets the server reference to null.
+	 * @see #bssServer
+	 * @see IcsGUIISSServer#close
+	 * @see #messageDialogMenuItem
+	 */
+	public void stopBSSServer()
+	{
+		if(bssServer != null)
+		{
+			bssServer.close();
+		}
+		bssServer = null;
+		log("BSS Server stopped.");
+	}
 
 	/**
 	 * This routine parses arguments passed into the GUI. It only looks for property filenames argument
@@ -1674,8 +1738,10 @@ public class IcsGUI
 	 * @param args The list of arguments to parse.
 	 * @see #ccsAddress
 	 * @see #ccsPortNumber
+	 * @see #initiallyStartBSSServer
 	 * @see #initiallyStartISSServer
 	 * @see #remoteX
+	 * @see #bssPortNumber
 	 * @see #issPortNumber
 	 * @see #help
 	 * @see #parsePropertyFilenameArgument
@@ -1685,8 +1751,9 @@ public class IcsGUI
 	// initialise port numbers from properties file
 		try
 		{
-			ccsPortNumber = status.getPropertyInteger("ccs_gui.net.default_CCS_port_number");
-			issPortNumber = status.getPropertyInteger("ccs_gui.net.default_ISS_port_number");
+			ccsPortNumber = status.getPropertyInteger("ics_gui.net.ICS.port_number");
+			issPortNumber = status.getPropertyInteger("ics_gui.net.ISS.port_number");
+			bssPortNumber = status.getPropertyInteger("ics_gui.net.BSS.port_number");
 		}
 		catch(NumberFormatException e)
 		{
@@ -1696,7 +1763,7 @@ public class IcsGUI
 	// initialise address's from properties file
 		try
 		{
-			ccsAddress = InetAddress.getByName(status.getProperty("ccs_gui.net.default_CCS_address"));
+			ccsAddress = InetAddress.getByName(status.getProperty("ics_gui.net.ICS.address"));
 		}
 		catch(UnknownHostException e)
 		{
@@ -1706,7 +1773,21 @@ public class IcsGUI
 	// look through the argument list.
 		for(int i = 0; i < args.length;i++)
 		{
-			if(args[i].equals("-config")||args[i].equals("-co"))
+			if(args[i].equals("-bssport"))
+			{
+				if((i+1)< args.length)
+				{
+					bssPortNumber = Integer.parseInt(args[i+1]);
+					i++;
+				}
+				else
+					error("-bssport requires a port number");
+			}
+			else if(args[i].equals("-bssspoof"))
+			{
+				initiallyStartBSSServer = true;
+			}
+			else if(args[i].equals("-config")||args[i].equals("-co"))
 			{
 				// do nothing here, see parsePropertyFilenameArgument
 				// but move over filename argument.
@@ -1791,6 +1872,8 @@ public class IcsGUI
 		System.out.println(this.getClass().getName()+" Help:");
 		System.out.println("IcsGUI is the `Instrument Control System Graphical User Interface'.");
 		System.out.println("Options are:");
+		System.out.println("\t-bssspoof - Start an thread to pretend to be the BSS.");
+		System.out.println("\t-bssport <port number> - Port for BSS commands, if BSS spoofing is on.");
 		System.out.println("\t-[co]nfig <filename> - Change the property file to load.");
 		System.out.println("\t-instrument_config|-insco <filename> - Change the instrument config property file to load.");
 		System.out.println("\t-[icsip]|[icsaddress] <address> - Address to send ICS commands to.");
@@ -1804,6 +1887,9 @@ public class IcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.23  2011/09/30 14:49:12  cjm
+// Added MULTBIAS and MULTDARK Menu items.
+//
 // Revision 1.22  2010/01/21 14:38:04  cjm
 // Added extra TIMED_MULTRUNAT / RUNAT start time logging when sending commands to server.
 //
