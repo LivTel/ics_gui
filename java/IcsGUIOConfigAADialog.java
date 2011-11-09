@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUIOConfigAADialog.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIOConfigAADialog.java,v 1.1 2011-11-07 17:07:34 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIOConfigAADialog.java,v 1.2 2011-11-09 11:41:53 cjm Exp $
 import java.io.*;
 import java.lang.*;
 import java.util.*;
@@ -34,14 +34,14 @@ import ngat.util.*;
 /**
  * This class provides an Add and Amend facility for 'O' optical camera Configurations.
  * @author Chris Mottram
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIOConfigAADialog.java,v 1.1 2011-11-07 17:07:34 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIOConfigAADialog.java,v 1.2 2011-11-09 11:41:53 cjm Exp $");
 	/**
 	 * Button height.
 	 */
@@ -225,7 +225,7 @@ public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 
 	/**
 	 * Set the IcsGUI reference. Used for logging.
-	 * @param s The instance of IcsGUI to use.
+	 * @param o The instance of IcsGUI to use.
 	 * @see #icsGUI
 	 */
 	public void setIcsGUI(IcsGUI o)
@@ -423,8 +423,7 @@ public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 	/**
 	 * Method to populate the filter wheel combo boxs with filters loaded from a property file specified
 	 * in the main set of properties.
-	 * @see #lowerFilterWheelComboBox
-	 * @see #upperFilterWheelComboBox
+	 * @see #filterWheelComboBox
 	 * @see #icsGUIStatus
 	 * @exception FileNotFoundException Thrown if the current filter properties cannot be found.
 	 * @exception IOException Thrown if an IO error occurs whilst loading the filter properties.
@@ -491,4 +490,7 @@ public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2011/11/07 17:07:34  cjm
+// Initial revision
+//
 //

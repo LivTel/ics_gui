@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.24 2011-11-07 17:07:34 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.25 2011-11-09 11:42:18 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -40,14 +40,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  */
 public class IcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.24 2011-11-07 17:07:34 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.25 2011-11-09 11:42:18 cjm Exp $");
 	/**
 	 * Internal constant used when converting temperatures in centigrade (from the CCD controller) to Kelvin.
 	 */
@@ -1244,7 +1244,8 @@ public class IcsGUI
 	 * Method to set the ccd status label. The mode number is translated into an equivalent string.
 	 * Note, the list of strings in this method should be kept up to date with the 
 	 * currentMode number returned by GET_STATUSImplementation in the Ics process.
-	 * @param currentMode The mode number from the get status command.
+	 * @param redCurrentMode The mode number from the get status command for the red arm.
+	 * @param blueCurrentMode The mode number from the get status command for the bluu arm.
 	 */
 	public void setCCDStatusLabel(int redCurrentMode,int blueCurrentMode)
 	{
@@ -1887,6 +1888,9 @@ public class IcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.24  2011/11/07 17:07:34  cjm
+// Added support for fake BSS server.
+//
 // Revision 1.23  2011/09/30 14:49:12  cjm
 // Added MULTBIAS and MULTDARK Menu items.
 //

@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUIConfigProperties.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.19 2011-11-07 17:07:34 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.20 2011-11-09 11:42:23 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -30,14 +30,14 @@ import ngat.phase2.*;
  * in a Java properties file and this class extends java.util.Properties
  * @see java.util.Properties
  * @author Chris Mottram
- * @version $Revision: 0.19 $
+ * @version $Revision: 0.20 $
  */
 public class IcsGUIConfigProperties extends Properties
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.19 2011-11-07 17:07:34 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.20 2011-11-09 11:42:23 cjm Exp $");
 	/**
 	 * Configuration type specifier:CCD (RATCam).
 	 */
@@ -631,8 +631,8 @@ public class IcsGUIConfigProperties extends Properties
 
 	/**
 	 * Method to set the type of configuration id id.
+	 * @param id The configuration name.
 	 * @param type The type of the configuration.
-	 * @param n The configuration name.
 	 * @exception IllegalArgumentException Thrown if checkConfigType thinks the the type number is illegal.
 	 * @see #checkConfigType
 	 */
@@ -2214,6 +2214,9 @@ public class IcsGUIConfigProperties extends Properties
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.19  2011/11/07 17:07:34  cjm
+// Added support for config's for IO:O.
+//
 // Revision 0.18  2010/10/07 13:24:06  cjm
 // Added THOR accessors.
 //
