@@ -1,5 +1,5 @@
 # Makefile
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.46 2011-11-07 17:11:21 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.47 2011-11-23 11:04:52 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -84,7 +84,7 @@ SCRIPT_SRCS	= icsgui scsgui ccsgui xv_wrapper.csh
 SCRIPT_OBJS	= $(SCRIPT_SRCS:%=$(BINDIR)/%)
 
 GIF_SRCS	= lt.gif lt_icon.gif ratcam.gif ratcam_ltccd1.gif ratcam_ftccd1.gif ratcam_ftccd2.gif \
-		ratcam_ltccd2.gif ratcam_ltccd3.gif supircam.gif ftspec.gif nuview_capella.gif
+		ratcam_ltccd2.gif ratcam_ltccd3.gif supircam.gif ftspec.gif nuview_capella.gif io_o.jpg io_i.jpg
 GIF_OBJS	= $(GIF_SRCS:%=$(BINDIR)/%)
 
 JPG_SRCS	= ringo-BD64106.jpg thor.jpg
@@ -180,6 +180,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.46  2011/11/07 17:11:21  cjm
+# Added BSS and IO classes.
+#
 # Revision 0.45  2010/10/07 13:24:53  cjm
 # Added thor.
 #
