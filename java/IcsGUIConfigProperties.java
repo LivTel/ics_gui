@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUIConfigProperties.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.20 2011-11-09 11:42:23 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.21 2011-12-02 11:06:01 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -30,14 +30,14 @@ import ngat.phase2.*;
  * in a Java properties file and this class extends java.util.Properties
  * @see java.util.Properties
  * @author Chris Mottram
- * @version $Revision: 0.20 $
+ * @version $Revision: 0.21 $
  */
 public class IcsGUIConfigProperties extends Properties
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.20 2011-11-09 11:42:23 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.21 2011-12-02 11:06:01 cjm Exp $");
 	/**
 	 * Configuration type specifier:CCD (RATCam).
 	 */
@@ -390,7 +390,6 @@ public class IcsGUIConfigProperties extends Properties
 				remove(configIdStringXBin(id));
 				remove(configIdStringYBin(id));
 				remove(configIdStringEMGain(id));
-				remove(configIdStringFilter(id));
 				remove(configIdStringWindowFlags(id));
 				for(j=1;j<2;j++)
 				{
@@ -537,8 +536,6 @@ public class IcsGUIConfigProperties extends Properties
 					remove(configIdStringYBin(i));
 					setConfigEMGain(i-1,getConfigEMGain(i));
 					remove(configIdStringEMGain(i));
-					setConfigFilter(i-1,getConfigFilter(i));
-					remove(configIdStringFilter(i));
 
 					setConfigWindowFlags(i-1,getConfigWindowFlags(i));
 					remove(configIdStringWindowFlags(i));
@@ -906,7 +903,7 @@ public class IcsGUIConfigProperties extends Properties
 	}
 
 	/**
-	 * Method to get the filter string of configuration id id (THOR).
+	 * Method to get the filter string of configuration id id. Was used for THOR, no longer used.
 	 * @param id The id of the configuration.
 	 * @return The configuration filter string.
 	 * @see #configIdStringFilter
@@ -917,7 +914,7 @@ public class IcsGUIConfigProperties extends Properties
 	}
 
 	/**
-	 * Method to set the filter string of configuration id id (THOR).
+	 * Method to set the filter string of configuration id id. Was used for THOR, no longer used.
 	 * @param id The id of the configuration.
 	 * @param s The configuration filter string.
 	 * @see #configIdStringFilter
@@ -1750,7 +1747,6 @@ public class IcsGUIConfigProperties extends Properties
 	 * @see #getConfigCalibrateBefore
 	 * @see #getConfigCalibrateAfter
 	 * @see #getConfigEMGain
-	 * @see #getConfigFilter
 	 * @see #getConfigXBin
 	 * @see #getConfigYBin
 	 * @see #getConfigWindowFlags
@@ -1776,7 +1772,6 @@ public class IcsGUIConfigProperties extends Properties
 		c.setCalibrateBefore(getConfigCalibrateBefore(id));
 		c.setCalibrateAfter(getConfigCalibrateAfter(id));
 		c.setEmGain(getConfigEMGain(id));
-		c.setFilter(getConfigFilter(id));
 	// setup detector
 		detector = new THORDetector();
 		detector.setXBin(getConfigXBin(id));
@@ -2214,6 +2209,9 @@ public class IcsGUIConfigProperties extends Properties
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.20  2011/11/09 11:42:23  cjm
+// Fixed comments.
+//
 // Revision 0.19  2011/11/07 17:07:34  cjm
 // Added support for config's for IO:O.
 //
