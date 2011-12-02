@@ -1,5 +1,5 @@
 // IcsGUITHORConfigAADialog.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUITHORConfigAADialog.java,v 1.1 2010-10-07 13:24:06 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUITHORConfigAADialog.java,v 1.2 2011-12-02 11:05:33 cjm Exp $
 import java.lang.*;
 import java.util.*;
 import java.awt.*;
@@ -13,14 +13,14 @@ import ngat.swing.*;
 /**
  * This class provides an Add and Amend facility for THOR Configurations.
  * @author Chris Mottram
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class IcsGUITHORConfigAADialog extends JDialog implements ActionListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUITHORConfigAADialog.java,v 1.1 2010-10-07 13:24:06 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUITHORConfigAADialog.java,v 1.2 2011-12-02 11:05:33 cjm Exp $");
 	/**
 	 * Button height.
 	 */
@@ -59,7 +59,6 @@ public class IcsGUITHORConfigAADialog extends JDialog implements ActionListener
 	JCheckBox calibrateAfterCheckBox = null;
 	JTextField xBinTextField = null;
 	JTextField yBinTextField = null;
-	JTextField filterTextField = null;
 	JTextField emGainTextField = null;
 
 	JCheckBox windowFlagCheckBox[] = null;
@@ -77,10 +76,10 @@ public class IcsGUITHORConfigAADialog extends JDialog implements ActionListener
 	{
 		super(owner,"Add/Amend THOR Camera Configuration");
 		configProperties = c;
-	// there are 13 fields arranged vertically.
+	// there are 12 fields arranged vertically.
 	// there are 2 titled border height from 2 sets of titled border
 	// there is one set of buttons vertically 
-		int height = (13*FIELD_HEIGHT)+(2*TITLED_BORDER_HEIGHT)+BUTTON_HEIGHT;
+		int height = (12*FIELD_HEIGHT)+(2*TITLED_BORDER_HEIGHT)+BUTTON_HEIGHT;
 
 		getContentPane().setLayout(new SizedBoxLayout(getContentPane(),BoxLayout.Y_AXIS,
 			new Dimension(DIALOG_WIDTH,height)));
@@ -135,15 +134,6 @@ public class IcsGUITHORConfigAADialog extends JDialog implements ActionListener
 		subPanel.add(label);
 		emGainTextField = new JTextField();
 		subPanel.add(emGainTextField);
-	// sub panel
-		subPanel = new JPanel();
-		getContentPane().add(subPanel);
-		subPanel.setLayout(new SizedGridLayout(0,2,new Dimension(DIALOG_WIDTH,FIELD_HEIGHT)));
-	// filter position
-		label = new JLabel("Filter");
-		subPanel.add(label);
-		filterTextField = new JTextField();
-		subPanel.add(filterTextField);
 	// Windows
 		windowFlagCheckBox = new JCheckBox[WINDOW_COUNT];
 		windowXStartTextField = new JTextField[WINDOW_COUNT];
@@ -217,7 +207,6 @@ public class IcsGUITHORConfigAADialog extends JDialog implements ActionListener
 		xBinTextField.setText("1");
 		yBinTextField.setText("1");
 		emGainTextField.setText("1");
-		filterTextField.setText("red");
 		for(i=0;i<WINDOW_COUNT;i++)
 		{
 			windowFlagCheckBox[i].setSelected(false);
@@ -244,7 +233,6 @@ public class IcsGUITHORConfigAADialog extends JDialog implements ActionListener
 		xBinTextField.setText(configProperties.getConfigXBinString(id));
 		yBinTextField.setText(configProperties.getConfigYBinString(id));
 		emGainTextField.setText(configProperties.getConfigEMGainString(id));
-		filterTextField.setText(configProperties.getConfigFilter(id));
 		for(int i=0;i<WINDOW_COUNT;i++)
 		{
 			windowFlagCheckBox[i].setSelected((configProperties.getConfigWindowFlags(id)&(1<<i))>0);
@@ -283,7 +271,6 @@ public class IcsGUITHORConfigAADialog extends JDialog implements ActionListener
 		int yStart[] = new int[WINDOW_COUNT];
 		int xEnd[] = new int[WINDOW_COUNT];
 		int yEnd[] = new int[WINDOW_COUNT];
-		String filter = null;
 		boolean uniqueId = false;
 
 		if(commandString.equals("Ok"))
@@ -320,7 +307,6 @@ public class IcsGUITHORConfigAADialog extends JDialog implements ActionListener
 				emGain = Integer.parseInt(emGainTextField.getText());
 				if((emGain < 0)||(emGain > 100))
 					throw new NumberFormatException("EM Gain is out of range 0..100");
-				filter = filterTextField.getText();
 				windowFlags = 0;
 				for(i=0;i<WINDOW_COUNT;i++)
 				{
@@ -348,7 +334,6 @@ public class IcsGUITHORConfigAADialog extends JDialog implements ActionListener
 			configProperties.setConfigXBin(configId,xBin);
 			configProperties.setConfigYBin(configId,yBin);
 			configProperties.setConfigEMGain(configId,emGain);
-			configProperties.setConfigFilter(configId,filter);
 			configProperties.setConfigWindowFlags(configId,windowFlags);
 			for(i=0;i<WINDOW_COUNT;i++)
 			{
@@ -371,4 +356,7 @@ public class IcsGUITHORConfigAADialog extends JDialog implements ActionListener
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2010/10/07 13:24:06  cjm
+// Initial revision
+//
 //
