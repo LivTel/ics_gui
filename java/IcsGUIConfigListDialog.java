@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUIConfigListDialog.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigListDialog.java,v 0.16 2011-11-07 17:07:34 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigListDialog.java,v 0.17 2012-03-16 12:19:47 cjm Exp $
 import java.lang.*;
 import java.util.*;
 import java.awt.*;
@@ -37,7 +37,7 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public static String RCSID = new String("$Id: IcsGUIConfigListDialog.java,v 0.16 2011-11-07 17:07:34 cjm Exp $");
+	public static String RCSID = new String("$Id: IcsGUIConfigListDialog.java,v 0.17 2012-03-16 12:19:47 cjm Exp $");
 	/**
 	 * String to go on buttons.
 	 */
@@ -83,6 +83,10 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	 */
 	protected final static String CCD_O_BUTTON_STRING = "CCD Camera (O)";
 	/**
+	 * String to go on buttons.
+	 */
+	protected final static String POLARIMETER_RINGO3_BUTTON_STRING = "Polarimeter (Ringo 3)";
+	/**
 	 * List of strings that describe instruments. Note, make sure in the same order as 
 	 * IcsGUIConfigProperties.CONFIG_TYPE_LIST.
 	 * @see IcsGUIConfigProperties#CONFIG_TYPE_LIST
@@ -97,12 +101,14 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	 * @see #POLARIMETER_RINGO2_BUTTON_STRING
 	 * @see #CCD_THOR_BUTTON_STRING
 	 * @see #CCD_O_BUTTON_STRING
+	 * @see #POLARIMETER_RINGO3_BUTTON_STRING
 	 */
 	protected final static String INSTRUMENT_STRING_ARRAY[] = {CCD_RATCAM_BUTTON_STRING,
 		SPECTROGRAPH_MES_BUTTON_STRING,SPECTROGRAPH_NUVIEW_BUTTON_STRING,
 	        INFRA_RED_SUPIRCAM_BUTTON_STRING,SPECTROGRAPH_FTSPEC_BUTTON_STRING,
 		POLARIMETER_RINGOSTAR_BUTTON_STRING,SPECTROGRAPH_FRODOSPEC_BUTTON_STRING,CCD_RISE_BUTTON_STRING,
-		POLARIMETER_RINGO2_BUTTON_STRING,CCD_THOR_BUTTON_STRING,CCD_O_BUTTON_STRING};
+		POLARIMETER_RINGO2_BUTTON_STRING,CCD_THOR_BUTTON_STRING,CCD_O_BUTTON_STRING,
+								   POLARIMETER_RINGO3_BUTTON_STRING};
 	/**
 	 * String to pre-pend to add menu instrument entries.
 	 */
@@ -163,6 +169,10 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	 * The Add/Amend dialog to use when Add or Amend is selected for a O configuration.
 	 */
 	private IcsGUIOConfigAADialog addAmendODialog = null;
+	/**
+	 * The Add/Amend dialog to use when Add or Amend is selected for a Polarimeter (Ringo 3) configuration.
+	 */
+	private IcsGUIRingo3PolarimeterConfigAADialog addAmendRingo3PolarimeterDialog = null;
 	/**
 	 * The config dialog that caused this dialog to be managed.
 	 */
@@ -269,6 +279,9 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	// create a O add/amend dialog
 		addAmendODialog = new IcsGUIOConfigAADialog(owner,c);
 		addAmendODialog.addCcsConfigAADialogListener(this);
+	// create a Ringo3 Polarimater add/amend dialog
+		addAmendRingo3PolarimeterDialog = new IcsGUIRingo3PolarimeterConfigAADialog(owner,c);
+		addAmendRingo3PolarimeterDialog.addCcsConfigAADialogListener(this);
 	}
 
 	/**
@@ -408,6 +421,11 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 						addAmendODialog.setIcsGUIStatus(icsGUIStatus);
 						addAmendODialog.add();
 						break;
+					case IcsGUIConfigProperties.CONFIG_TYPE_POLARIMETER_RINGO3:
+						addAmendRingo3PolarimeterDialog.setLocation(getX()+getWidth(),getY());
+						addAmendRingo3PolarimeterDialog.pack();
+						addAmendRingo3PolarimeterDialog.add();
+						break;
 					case IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_MES:
 					default:
 						JOptionPane.showMessageDialog((Component)null,
@@ -477,6 +495,11 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 						addAmendODialog.setIcsGUI(icsGUI);
 						addAmendODialog.setIcsGUIStatus(icsGUIStatus);
 						addAmendODialog.amend(id);
+						break;
+					case IcsGUIConfigProperties.CONFIG_TYPE_POLARIMETER_RINGO3:
+						addAmendRingo3PolarimeterDialog.setLocation(getX()+getWidth(),getY());
+						addAmendRingo3PolarimeterDialog.pack();
+						addAmendRingo3PolarimeterDialog.amend(id);
 						break;
 					case IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_MES:
 					default:
@@ -727,6 +750,9 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.16  2011/11/07 17:07:34  cjm
+// Added support for config's for IO:O.
+//
 // Revision 0.15  2010/10/07 13:24:06  cjm
 // Added THOR accessors.
 //
