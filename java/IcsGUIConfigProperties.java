@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUIConfigProperties.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.22 2012-03-16 12:20:10 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.23 2012-03-19 11:47:33 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -30,14 +30,14 @@ import ngat.phase2.*;
  * in a Java properties file and this class extends java.util.Properties
  * @see java.util.Properties
  * @author Chris Mottram
- * @version $Revision: 0.22 $
+ * @version $Revision: 0.23 $
  */
 public class IcsGUIConfigProperties extends Properties
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.22 2012-03-16 12:20:10 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.23 2012-03-19 11:47:33 cjm Exp $");
 	/**
 	 * Configuration type specifier:CCD (RATCam).
 	 */
@@ -1979,8 +1979,11 @@ public class IcsGUIConfigProperties extends Properties
 		detector.setWindows(windowArray);
 	// Note flags are held IN the window list, so must setWindowFlags AFTER detector windows set
 		detector.setWindowFlags(getConfigWindowFlags(id));
-	// set detector into config
-		c.setDetector(0,detector);
+	// set detector into config. Ensure same detector for all detectors.
+		for(int i = 0; i < c.getMaxDetectorCount(); i++)
+		{
+			c.setDetector(i,detector);
+		}
 	// return config
 		return c;
 	}
@@ -2329,6 +2332,9 @@ public class IcsGUIConfigProperties extends Properties
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.22  2012/03/16 12:20:10  cjm
+// Added Ringo3 support.
+//
 // Revision 0.21  2011/12/02 11:06:01  cjm
 // Removed filter from THORConfig as it is no longer in the PhaseII.
 //
