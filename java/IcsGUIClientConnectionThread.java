@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // CcsGUIClientConnectionThread.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.32 2010-09-23 13:15:16 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.33 2012-11-29 16:35:43 cjm Exp $
 
 import java.awt.*;
 import java.lang.*;
@@ -37,14 +37,14 @@ import ngat.util.StringUtilities;
  * It implements the generic ISS instrument command protocol.
  * It is used to send commands from the CcsGUI to the Ccs.
  * @author Chris Mottram
- * @version $Revision: 0.32 $
+ * @version $Revision: 0.33 $
  */
 public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.32 2010-09-23 13:15:16 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.33 2012-11-29 16:35:43 cjm Exp $");
 	/**
 	 * The CcsGUI object.
 	 */
@@ -308,6 +308,7 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	 * @param getStatusDone The DONE object instance containing status data to display.
 	 * @see #processDone
 	 * @see #printGetStatusDoneTwoArms
+	 * @see #printGetStatusDoneRingoIII
 	 * @see IcsGUI#setCCDTemperatureLabelForeground
 	 * @see IcsGUI#setStatusBackground
 	 * @see ngat.message.ISS_INST.GET_STATUS_DONE#KEYWORD_INSTRUMENT_STATUS
@@ -410,11 +411,17 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 			parent.setFiltersSelectedLabel("UNKNOWN");
 			parent.log("Unknown filter type string:"+filterTypeString);
 		}
-		if(filterTypeString.equals("TWO_ARMS"))
+		if(instrumentString.equals("RingoIII"))
+		{
+			// special RingoIII case
+			printGetStatusDoneRingoIII(displayInfo,getStatusDone);
+		}
+		else if(filterTypeString.equals("TWO_ARMS"))
 		{
 			// special FrodoSpec case.
 			printGetStatusDoneTwoArms(displayInfo,getStatusDone);
 		}
+		// diddly new rule for Ringo3, see printGetStatusDoneTwoArms for examples of how to do this
 		else
 		{
 	// set remaining exposures status
@@ -500,7 +507,7 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	 * Method to display some status for FrodoSpec.
 	 * @param getStatusDone The DONE object instance containing status data to display.
 	 * @see #processDone
-	 * @see #printGetStatusDoneTwoArms
+	 * @see #printGetStatusDone
 	 */
 	private void printGetStatusDoneTwoArms(Hashtable displayInfo,GET_STATUS_DONE getStatusDone)
 	{
@@ -643,6 +650,124 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	}
 
 	/**
+	 * Update status based on hashtable contents, for RingoIII. This is complicated as it may have
+	 * more than one C layer controlling exposures (which may have different exposure statii at any one time),
+	 * and each C layer can have more than one camera, making CCD temperatures an issue.
+	 * @param displayInfo A Hashtable containing the keyword value pairs returned by RingoIII.
+	 * @param getStatusDone The GET_STATUS_DONE object. Used for extracting current exposure status.
+	 */
+	private void printGetStatusDoneRingoIII(Hashtable displayInfo,GET_STATUS_DONE getStatusDone)
+	{
+		Vector temperatureList = null;
+		Vector labelList = null;
+		Integer integerObject = null;
+		Double doubleObject = null;
+		Long longObject = null;
+		String labelString = null;
+		long exposureLength,elapsedExposureTime,currentTime;
+		int exposureCount,exposureNumber,cameraCount,cLayerIndex,cameraAndorIndex;
+
+		// set remaining exposures status
+		integerObject = (Integer)(displayInfo.get("Exposure Count"));// diddly OK
+		if(integerObject != null)
+			exposureCount = integerObject.intValue();
+		else
+			exposureCount = 0;
+		integerObject = (Integer)(displayInfo.get("Exposure Number"));// diddly "."+cLayerIndex+"."+andorCameraIndex
+		if(integerObject != null)
+			exposureNumber = integerObject.intValue();
+		else
+			exposureNumber = 0;
+		if(exposureCount <= 0)// special case MOVIE - or not exposing
+			parent.setRemainingExposuresLabel(0);
+		else
+			parent.setRemainingExposuresLabel(exposureCount-exposureNumber);
+		// set remaining exposure time label
+		if(getStatusDone.getCurrentMode() == GET_STATUS_DONE.MODE_EXPOSING)
+		{
+			integerObject = (Integer)(displayInfo.get("Exposure Length"));// diddly OK
+			if(integerObject != null)
+				exposureLength = integerObject.longValue();
+			else
+				exposureLength = 0;
+			// If Elapsed Exposure Time was included, use this to calculate remaining exposure time
+			if(displayInfo.containsKey("Elapsed Exposure Time"))// diddly not created by RingoIII
+			{
+				integerObject = (Integer)(displayInfo.get("Elapsed Exposure Time"));
+				elapsedExposureTime = integerObject.longValue();
+				parent.setRemainingExposureTimeLabel(exposureLength-elapsedExposureTime);
+			}
+			// otherwise, use current time - exposure start time to 
+			// calculate remaining exposure time
+			else
+			{
+				longObject = (Long)(displayInfo.get("Exposure Start Time"));// diddly OK
+				if(longObject != null)
+				{
+					parent.log("Elapsed Exposure Time not received, "+
+						   "using Exposure Start Time"+
+						   " to calculate remaining exposure time.");
+					currentTime = System.currentTimeMillis();
+					elapsedExposureTime = currentTime-longObject.longValue();
+					parent.log("Current Time:"+currentTime+" minus Exposure Start Time: "+
+						   longObject.longValue()+" equals Elapsed Exposure Time:"+
+						   elapsedExposureTime+".");
+					parent.setRemainingExposureTimeLabel(exposureLength-
+									     elapsedExposureTime);
+					parent.log("Remaining Exposure Time:"+
+						   (exposureLength-elapsedExposureTime)+
+						   " equals Exposure Length:"+exposureLength+
+						   " minus elapsed Exposure Time:"+elapsedExposureTime+".");
+				}
+			}
+		}
+		else
+			parent.setRemainingExposureTimeLabel(0L);
+		// extract temperatures
+		integerObject = (Integer)(displayInfo.get("Camera.Count"));
+		if(integerObject != null)
+			cameraCount = integerObject.intValue();
+		else
+			cameraCount = 0;
+		temperatureList = new Vector();
+		labelList = new Vector();
+		for(int cameraIndex = 0; cameraIndex < cameraCount; cameraIndex++)
+		{
+			// get camera clayer / andor index data
+			integerObject = (Integer)(displayInfo.get("Camera.C.Layer."+cameraIndex));
+			if(integerObject != null)
+				cLayerIndex = integerObject.intValue();
+			else
+				cLayerIndex = -1;
+			integerObject = (Integer)(displayInfo.get("Camera.Andor.Index."+cameraIndex));
+			if(integerObject != null)
+				cameraAndorIndex = integerObject.intValue();
+			else
+				cameraAndorIndex = -1;
+			// get name of camera
+			labelString = (String)(displayInfo.get("Name."+cLayerIndex+"."+cameraAndorIndex));
+			// if we can't find a name, make one up from the camera clayer/andor index data
+			if(labelString == null)
+				labelString = new String(""+cLayerIndex+"."+cameraAndorIndex);
+			// get the temperature for this camera
+			doubleObject = (Double)(displayInfo.get("Temperature."+cLayerIndex+"."+cameraAndorIndex));
+			if(doubleObject != null)
+			{
+				labelList.add(labelString);
+				temperatureList.add(doubleObject);
+			}
+		}// end for on cameraIndex
+		if(temperatureList.size() > 0)
+		{
+			parent.setCCDTemperatureLabel(labelList,temperatureList);
+		}
+		else
+		{
+			parent.log("Temperature not updated.");
+		}
+	}
+
+	/**
 	 * Method to print out parameters associated with a CALIBRATE_DONE (sub)class instance.
 	 * These parameters are <i>filename</i>, <i>peakCounts</i> and <i>meanCounts</i>.
 	 * @param calibrateDone The instance of the DONE message.
@@ -692,6 +817,10 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.32  2010/09/23 13:15:16  cjm
+// More testing whether exposure count and exposure number status are present.
+// More logging of how remaining exposure time is calculated.
+//
 // Revision 0.31  2009/02/19 11:19:28  cjm
 // Fixed the ArrayList so it is initialised before use.
 //
