@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.25 2011-11-09 11:42:18 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.26 2012-11-29 16:32:45 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -40,14 +40,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  */
 public class IcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.25 2011-11-09 11:42:18 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.26 2012-11-29 16:32:45 cjm Exp $");
 	/**
 	 * Internal constant used when converting temperatures in centigrade (from the CCD controller) to Kelvin.
 	 */
@@ -1468,6 +1468,48 @@ public class IcsGUI
 	}
 
 	/**
+	 * Method to set the CCD Temperature label for a <n> camera instrument.
+	 * The temperatures are converted into degrees centigrade and displayed.
+	 * @param labelList A Vector containing a list of string labels, one for each temperature.
+	 * @param temperatureList A list of Double objects, containing the temperature in degrees Kelvin.
+	 * @see #CENTIGRADE_TO_KELVIN
+	 */
+	public void setCCDTemperatureLabel(Vector labelList,Vector temperatureList)
+	{
+		DecimalFormat decimalFormat = null;
+		StringBuffer sb = null;
+		String s = null;
+		Double d = null;
+		double dvalue;
+
+	// format number to 2d.p.
+		decimalFormat = new DecimalFormat("###.00");
+		sb = new StringBuffer();
+		if(labelList.size() == temperatureList.size())
+		{
+			for(int i = 0; i < labelList.size(); i++)
+			{
+				s = (String)(labelList.get(i));
+				d = (Double)(temperatureList.get(i));
+				dvalue = d.doubleValue();
+				dvalue -= CENTIGRADE_TO_KELVIN;
+				sb.append(s+": "+decimalFormat.format(dvalue)+" C");
+				if(i < (labelList.size()-1))
+					sb.append(" ");
+			}// end for
+		}
+		else
+		{
+			sb.append("Label List Length:"+labelList.size()+" != Temperature List Length:"+
+				  temperatureList.size());
+		}
+		if(ccdTemperatureLabel != null)
+		{
+			SwingUtilities.invokeLater(new GUILabelSetter(ccdTemperatureLabel,sb.toString()));
+		}
+	}
+
+	/**
 	 * Method to set the CCD Temperature label foreground, based on the overall detector temperature status string.
 	 * This should have been retrieved from the GET_STATUS_DONE.KEYWORD_DETECTOR_TEMPERATURE_INSTRUMENT_STATUS
 	 * keyword. However, the instrument might not support this.
@@ -1888,6 +1930,9 @@ public class IcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.25  2011/11/09 11:42:18  cjm
+// Fixed comments.
+//
 // Revision 1.24  2011/11/07 17:07:34  cjm
 // Added support for fake BSS server.
 //
