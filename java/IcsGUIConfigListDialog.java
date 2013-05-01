@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUIConfigListDialog.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigListDialog.java,v 0.17 2012-03-16 12:19:47 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigListDialog.java,v 0.18 2013-05-01 12:26:42 cjm Exp $
 import java.lang.*;
 import java.util.*;
 import java.awt.*;
@@ -37,7 +37,7 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public static String RCSID = new String("$Id: IcsGUIConfigListDialog.java,v 0.17 2012-03-16 12:19:47 cjm Exp $");
+	public static String RCSID = new String("$Id: IcsGUIConfigListDialog.java,v 0.18 2013-05-01 12:26:42 cjm Exp $");
 	/**
 	 * String to go on buttons.
 	 */
@@ -53,7 +53,7 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	/**
 	 * String to go on buttons.
 	 */
-	protected final static String INFRA_RED_SUPIRCAM_BUTTON_STRING = "Infra Red Camera (SupIRCam)";
+	protected final static String INFRA_RED_SUPIRCAM_BUTTON_STRING = "Infra Red Camera (SupIRCam/IO:I)";
 	/**
 	 * String to go on buttons.
 	 */
@@ -750,6 +750,9 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.17  2012/03/16 12:19:47  cjm
+// Added Ringo3 support.
+//
 // Revision 0.16  2011/11/07 17:07:34  cjm
 // Added support for config's for IO:O.
 //
