@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUIOConfigAADialog.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIOConfigAADialog.java,v 1.3 2013-06-04 08:08:41 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIOConfigAADialog.java,v 1.4 2013-06-04 09:00:22 cjm Exp $
 import java.io.*;
 import java.lang.*;
 import java.util.*;
@@ -35,14 +35,14 @@ import ngat.util.*;
 /**
  * This class provides an Add and Amend facility for 'O' optical camera Configurations.
  * @author Chris Mottram
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIOConfigAADialog.java,v 1.3 2013-06-04 08:08:41 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIOConfigAADialog.java,v 1.4 2013-06-04 09:00:22 cjm Exp $");
 	/**
 	 * Button height.
 	 */
@@ -146,7 +146,7 @@ public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 		calibrateAfterCheckBox = new JCheckBox("Calibrate After");
 		subPanel.add(calibrateAfterCheckBox);
 		// filters
-		for(int i = OConfig.O_FILTER_INDEX_FILTER_WHEEL; i < OConfig.O_FILTER_INDEX_FILTER_SLIDE_UPPER; i++)
+		for(int i = OConfig.O_FILTER_INDEX_FILTER_WHEEL; i <= OConfig.O_FILTER_INDEX_FILTER_SLIDE_UPPER; i++)
 		{
 			// sub panel
 			subPanel = new JPanel();
@@ -288,7 +288,7 @@ public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 			System.err.println(this.getClass().getName()+":add:"+e);
 			e.printStackTrace(System.err);
 		}
-		for(int i = OConfig.O_FILTER_INDEX_FILTER_WHEEL; i < OConfig.O_FILTER_INDEX_FILTER_SLIDE_UPPER; i++)
+		for(int i = OConfig.O_FILTER_INDEX_FILTER_WHEEL; i <= OConfig.O_FILTER_INDEX_FILTER_SLIDE_UPPER; i++)
 		{
 			filterComboBox[i].setSelectedItem("None");
 		}
@@ -327,7 +327,7 @@ public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 			System.err.println(this.getClass().getName()+":add:"+e);
 			e.printStackTrace(System.err);
 		}
-		for(int i = OConfig.O_FILTER_INDEX_FILTER_WHEEL; i < OConfig.O_FILTER_INDEX_FILTER_SLIDE_UPPER; i++)
+		for(int i = OConfig.O_FILTER_INDEX_FILTER_WHEEL; i <= OConfig.O_FILTER_INDEX_FILTER_SLIDE_UPPER; i++)
 		{
 			filterComboBox[i].setSelectedItem(configProperties.getConfigFilterWheel(id,i));
 		}
@@ -427,7 +427,7 @@ public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 			configProperties.setConfigCalibrateBefore(configId,calibrateBeforeCheckBox.isSelected());
 			configProperties.setConfigCalibrateAfter(configId,calibrateAfterCheckBox.isSelected());
 			for(int i = OConfig.O_FILTER_INDEX_FILTER_WHEEL; 
-			    i < OConfig.O_FILTER_INDEX_FILTER_SLIDE_UPPER; i++)
+			    i <= OConfig.O_FILTER_INDEX_FILTER_SLIDE_UPPER; i++)
 			{
 				configProperties.setConfigFilterWheel(configId,i,
 								      (String)(filterComboBox[i].getSelectedItem()));
@@ -528,6 +528,9 @@ public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2013/06/04 08:08:41  cjm
+// Added support for neutral density filter slides.
+//
 // Revision 1.2  2011/11/09 11:41:53  cjm
 // Fixed comments.
 //
