@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUIConfigProperties.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.23 2012-03-19 11:47:33 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.24 2013-06-04 08:08:41 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -30,14 +30,14 @@ import ngat.phase2.*;
  * in a Java properties file and this class extends java.util.Properties
  * @see java.util.Properties
  * @author Chris Mottram
- * @version $Revision: 0.23 $
+ * @version $Revision: 0.24 $
  */
 public class IcsGUIConfigProperties extends Properties
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.23 2012-03-19 11:47:33 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.24 2013-06-04 08:08:41 cjm Exp $");
 	/**
 	 * Configuration type specifier:CCD (RATCam).
 	 */
@@ -51,7 +51,7 @@ public class IcsGUIConfigProperties extends Properties
 	 */
 	public final static int CONFIG_TYPE_SPECTROGRAPH_NUVIEW       = 2;
 	/**
-	 * Configuration type specifier:Infra-Red camera (SupIRCam).
+	 * Configuration type specifier:Infra-Red camera (SupIRCam/IO:I).
 	 */
 	public final static int CONFIG_TYPE_INFRA_RED_SUPIRCAM        = 3;
 	/**
@@ -321,6 +321,8 @@ public class IcsGUIConfigProperties extends Properties
 	 * Method to delete an id. This involves removing all the elements of the id, and them moving down
 	 * things with greater ids to the id numbers are still contiguous.
 	 * @param id The id of the configuration to remove.
+	 * @see ngat.phase2.OConfig#O_FILTER_INDEX_FILTER_WHEEL
+	 * @see ngat.phase2.OConfig#O_FILTER_INDEX_FILTER_SLIDE_UPPER
 	 */
 	public void deleteId(int id)
 	{
@@ -409,7 +411,11 @@ public class IcsGUIConfigProperties extends Properties
 				}
 				break;
 			case CONFIG_TYPE_CCD_O:
-				remove(configIdStringFilterWheel(id));
+				for(j = OConfig.O_FILTER_INDEX_FILTER_WHEEL; 
+				    j <= OConfig.O_FILTER_INDEX_FILTER_SLIDE_UPPER; j++)
+				{
+					remove(configIdStringFilterWheel(id,j));
+				}
 				remove(configIdStringXBin(id));
 				remove(configIdStringYBin(id));
 				remove(configIdStringWindowFlags(id));
@@ -575,8 +581,12 @@ public class IcsGUIConfigProperties extends Properties
 					}
 					break;
 				case CONFIG_TYPE_CCD_O:
-					setConfigFilterWheel(i-1,getConfigFilterWheel(i));
-					remove(configIdStringFilterWheel(i));
+					for(j = OConfig.O_FILTER_INDEX_FILTER_WHEEL; 
+					    j <= OConfig.O_FILTER_INDEX_FILTER_SLIDE_UPPER; j++)
+					{
+						setConfigFilterWheel(i-1,j,getConfigFilterWheel(i,j));
+						remove(configIdStringFilterWheel(i,j));
+					}
 					setConfigXBin(i-1,getConfigXBin(i));
 					remove(configIdStringXBin(i));
 					setConfigYBin(i-1,getConfigYBin(i));
@@ -926,7 +936,7 @@ public class IcsGUIConfigProperties extends Properties
 	}
 
 	/**
-	 * Method to get the filter wheel string of configuration id id (INFRA_RED_SUPIRCAM|CCD_O).
+	 * Method to get the filter wheel string of configuration id id (INFRA_RED_SUPIRCAM).
 	 * @param id The id of the configuration.
 	 * @return The configuration filter wheel string.
 	 */
@@ -936,7 +946,7 @@ public class IcsGUIConfigProperties extends Properties
 	}
 
 	/**
-	 * Method to set the upper filter wheel string of configuration id id (INFRA_RED_SUPIRCAM|CCD_O).
+	 * Method to set the upper filter wheel string of configuration id id (INFRA_RED_SUPIRCAM).
 	 * @param id The id of the configuration.
 	 * @param s The configuration filter wheel string.
 	 */
@@ -946,6 +956,45 @@ public class IcsGUIConfigProperties extends Properties
 		//put(configIdStringUpperFilterWheel(id),s);
 	// jdk 1.2.x
 		setProperty(configIdStringFilterWheel(id),s);
+	}
+
+	/**
+	 * Method to get the filter wheel string of configuration id id (CCD_O).
+	 * @param id The id of the configuration.
+	 * @param wheelIndex Which wheel to get the filter wheel string for. An integer, 1-based for IO:O,
+	 *       O_FILTER_INDEX_FILTER_WHEEL is the filter wheel, O_FILTER_INDEX_FILTER_SLIDE_LOWER is the lower
+	 *       filter slide, and O_FILTER_INDEX_FILTER_SLIDE_UPPER is the upper filter slide.
+	 * @return The configuration filter wheel string.
+	 * @see ngat.phase2.OConfig#O_FILTER_INDEX_FILTER_WHEEL
+	 * @see ngat.phase2.OConfig#O_FILTER_INDEX_FILTER_SLIDE_LOWER
+	 * @see ngat.phase2.OConfig#O_FILTER_INDEX_FILTER_SLIDE_UPPER
+	 * @see #configIdStringFilterWheel
+	 * @see #getProperty
+	 */
+	public String getConfigFilterWheel(int id,int wheelIndex)
+	{
+		return getProperty(configIdStringFilterWheel(id,wheelIndex));
+	}
+
+	/**
+	 * Method to set the upper filter wheel string of configuration id id (CCD_O).
+	 * @param wheelIndex Which wheel to get the filter wheel string for. An integer, 1-based for IO:O,
+	 *       O_FILTER_INDEX_FILTER_WHEEL is the filter wheel, O_FILTER_INDEX_FILTER_SLIDE_LOWER is the lower
+	 *       filter slide, and O_FILTER_INDEX_FILTER_SLIDE_UPPER is the upper filter slide.
+	 * @param id The id of the configuration.
+	 * @param s The configuration filter wheel string.
+	 * @see ngat.phase2.OConfig#O_FILTER_INDEX_FILTER_WHEEL
+	 * @see ngat.phase2.OConfig#O_FILTER_INDEX_FILTER_SLIDE_LOWER
+	 * @see ngat.phase2.OConfig#O_FILTER_INDEX_FILTER_SLIDE_UPPER
+	 * @see #configIdStringFilterWheel
+	 * @see #setProperty
+	 */
+	public void setConfigFilterWheel(int id,int wheelIndex,String s)
+	{
+	// jdk 1.1.x
+		//put(configIdStringUpperFilterWheel(id),s);
+	// jdk 1.2.x
+		setProperty(configIdStringFilterWheel(id,wheelIndex),s);
 	}
 
 	/**
@@ -1559,7 +1608,7 @@ public class IcsGUIConfigProperties extends Properties
 		if(getConfigType(id) != CONFIG_TYPE_INFRA_RED_SUPIRCAM)
 		{
 			throw new IllegalArgumentException(this.getClass().getName()+":getIRCamConfigById:Id "
-				+id+" not a configuration of type Infra Red (SupIRCam).");
+				+id+" not a configuration of type Infra Red (SupIRCam/IO:I).");
 		}
 	// construct IRCamConfig
 		c = new IRCamConfig(getConfigName(id));
@@ -1871,6 +1920,38 @@ public class IcsGUIConfigProperties extends Properties
 	 * @exception NumberFormatException Thrown if a numeric parameter is not returned from the properties
 	 * 	file as a legal number.
 	 * @exception IllegalArgumentException Thrown if the config id specified does not have a legal type.
+	 * @see #CONFIG_TYPE_CCD_O
+	 * @see #getConfigType
+	 * @see #getConfigName
+	 * @see #getConfigCalibrateBefore
+	 * @see #getConfigCalibrateAfter
+	 * @see #getConfigFilterWheel
+	 * @see #getConfigXBin
+	 * @see #getConfigYBin
+	 * @see #getConfigWindowFlags
+	 * @see #getConfigXStart
+	 * @see #getConfigYStart
+	 * @see #getConfigXEnd
+	 * @see #getConfigYEnd
+	 * @see #getConfigWindowFlags
+	 * @see ngat.phase2.OConfig
+	 * @see ngat.phase2.OConfig#O_FILTER_INDEX_FILTER_WHEEL
+	 * @see ngat.phase2.OConfig#O_FILTER_INDEX_FILTER_SLIDE_UPPER
+	 * @see ngat.phase2.OConfig#setCalibrateBefore
+	 * @see ngat.phase2.OConfig#setCalibrateAfter
+	 * @see ngat.phase2.OConfig#setFilterWheel
+	 * @see ngat.phase2.OConfig#setDetector
+	 * @see ngat.phase2.ODetector
+	 * @see ngat.phase2.ODetector#setXBin
+	 * @see ngat.phase2.ODetector#setYBin
+	 * @see ngat.phase2.ODetector#getMaxWindowCount
+	 * @see ngat.phase2.ODetector#setWindows
+	 * @see ngat.phase2.ODetector#setWindowFlags
+	 * @see ngat.phase2.Window
+	 * @see ngat.phase2.Window#setXs
+	 * @see ngat.phase2.Window#setYs
+	 * @see ngat.phase2.Window#setXe
+	 * @see ngat.phase2.Window#setYe
 	 */
 	private OConfig getOConfigById(int id) throws NumberFormatException, IllegalArgumentException
 	{
@@ -1888,13 +1969,15 @@ public class IcsGUIConfigProperties extends Properties
 		c = new OConfig(getConfigName(id));
 		c.setCalibrateBefore(getConfigCalibrateBefore(id));
 		c.setCalibrateAfter(getConfigCalibrateAfter(id));
-		c.setFilterWheel(getConfigFilterWheel(id));
+		for(int i = OConfig.O_FILTER_INDEX_FILTER_WHEEL; i <= OConfig.O_FILTER_INDEX_FILTER_SLIDE_UPPER; i++)
+		{
+			c.setFilterName(i,getConfigFilterWheel(id,i));
+		}
 	// setup detector
 		detector = new ODetector();
 		detector.setXBin(getConfigXBin(id));
 		detector.setYBin(getConfigYBin(id));
 		// note, other Detector fields not set, as they are not used by the instrument.
-
 	// setup window list
 		windowArray = new Window[detector.getMaxWindowCount()];
 		for(int i = 0; i < detector.getMaxWindowCount(); i++)
@@ -2117,6 +2200,19 @@ public class IcsGUIConfigProperties extends Properties
 	}
 
 	/**
+	 * Method to return a key for the filter wheel for a particular config id, and particular wheel index.
+	 * @param id The config id.
+	 * @param wheelIndex Which wheel, an integer. For IO:O this is 1-based, and is either 1 (filter wheel),2
+	 *        (lower filter slide) or 3 (upper filter sldie).
+	 * @return The key string.
+	 * @see #configIdString
+	 */
+	private String configIdStringFilterWheel(int id,int wheelIndex)
+	{
+		return new String(configIdString(id)+"filterWheel."+wheelIndex);
+	}
+
+	/**
 	 * Method to return a key for the filter for a particular config id.
 	 * @param id The config id.
 	 * @return The key string.
@@ -2332,6 +2428,10 @@ public class IcsGUIConfigProperties extends Properties
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.23  2012/03/19 11:47:33  cjm
+// getRingo3PolarimeterConfigById now inserts same detector for all detectors in config,
+// as Ringo3:CONFIGImplementation checks for this.
+//
 // Revision 0.22  2012/03/16 12:20:10  cjm
 // Added Ringo3 support.
 //
