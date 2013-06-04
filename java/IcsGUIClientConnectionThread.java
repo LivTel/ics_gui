@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // CcsGUIClientConnectionThread.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.33 2012-11-29 16:35:43 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.34 2013-06-04 08:08:41 cjm Exp $
 
 import java.awt.*;
 import java.lang.*;
@@ -37,14 +37,14 @@ import ngat.util.StringUtilities;
  * It implements the generic ISS instrument command protocol.
  * It is used to send commands from the CcsGUI to the Ccs.
  * @author Chris Mottram
- * @version $Revision: 0.33 $
+ * @version $Revision: 0.34 $
  */
 public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.33 2012-11-29 16:35:43 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.34 2013-06-04 08:08:41 cjm Exp $");
 	/**
 	 * The CcsGUI object.
 	 */
@@ -395,7 +395,8 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 		}
 		else if(filterTypeString.equals("ONE_WHEEL"))
 		{
-			parent.setFiltersSelectedLabel((String)(displayInfo.get("Filter Wheel:0")));
+			// IO:O's filter wheel now numbered from 1
+			parent.setFiltersSelectedLabel((String)(displayInfo.get("Filter Wheel:1")));
 		}
 		else if(filterTypeString.equals("FIXED"))
 		{
@@ -817,6 +818,10 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.33  2012/11/29 16:35:43  cjm
+// Added special routine to handle RingoIII GET_STATUS_DONE, needed
+// due to it having 3 cameras.
+//
 // Revision 0.32  2010/09/23 13:15:16  cjm
 // More testing whether exposure count and exposure number status are present.
 // More logging of how remaining exposure time is calculated.
