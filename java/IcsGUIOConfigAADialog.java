@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUIOConfigAADialog.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIOConfigAADialog.java,v 1.2 2011-11-09 11:41:53 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIOConfigAADialog.java,v 1.3 2013-06-04 08:08:41 cjm Exp $
 import java.io.*;
 import java.lang.*;
 import java.util.*;
@@ -28,20 +28,21 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import ngat.phase2.OConfig;
 import ngat.swing.*;
 import ngat.util.*;
 
 /**
  * This class provides an Add and Amend facility for 'O' optical camera Configurations.
  * @author Chris Mottram
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIOConfigAADialog.java,v 1.2 2011-11-09 11:41:53 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIOConfigAADialog.java,v 1.3 2013-06-04 08:08:41 cjm Exp $");
 	/**
 	 * Button height.
 	 */
@@ -86,7 +87,16 @@ public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 	JTextField nameTextField = null;
 	JCheckBox calibrateBeforeCheckBox = null;
 	JCheckBox calibrateAfterCheckBox = null;
-	JComboBox filterWheelComboBox = null;
+	/**
+	 * An array of JComboBox's, one per filter wheel (actually 1 wheel and 2 slides).
+	 * IO:O filters are 1-based, so the array has four elements, 0 is empty, 1 is O_FILTER_INDEX_FILTER_WHEEL,
+	 * 2 is O_FILTER_INDEX_FILTER_SLIDE_LOWER and 3 is O_FILTER_INDEX_FILTER_SLIDE_UPPER.
+	 * @see ngat.phase2.OConfig#O_FILTER_INDEX_COUNT
+	 * @see ngat.phase2.OConfig#O_FILTER_INDEX_FILTER_WHEEL
+	 * @see ngat.phase2.OConfig#O_FILTER_INDEX_FILTER_SLIDE_LOWER
+	 * @see ngat.phase2.OConfig#O_FILTER_INDEX_FILTER_SLIDE_UPPER
+	 */
+	JComboBox filterComboBox[] = new JComboBox[OConfig.O_FILTER_INDEX_COUNT];
 	JTextField xBinTextField = null;
 	JTextField yBinTextField = null;
 	JCheckBox windowFlagCheckBox[] = null;
@@ -105,10 +115,10 @@ public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 		super(owner,"Add/Amend O Camera Configuration");
 //		setResizable(false);
 		configProperties = c;
-	// there are 15 fields arranged vertically.
+	// there are 17 fields arranged vertically.
 	// there are 2 titled border height from 2 sets of titled border
 	// there is one set of buttons vertically 
-		int height = (15*FIELD_HEIGHT)+(2*TITLED_BORDER_HEIGHT)+BUTTON_HEIGHT;
+		int height = (17*FIELD_HEIGHT)+(2*TITLED_BORDER_HEIGHT)+BUTTON_HEIGHT;
 
 		getContentPane().setLayout(new SizedBoxLayout(getContentPane(),BoxLayout.Y_AXIS,
 			new Dimension(DIALOG_WIDTH,height)));
@@ -135,15 +145,30 @@ public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 	// calibrateAfter flag
 		calibrateAfterCheckBox = new JCheckBox("Calibrate After");
 		subPanel.add(calibrateAfterCheckBox);
-	// sub panel
-		subPanel = new JPanel();
-		getContentPane().add(subPanel);
-		subPanel.setLayout(new SizedGridLayout(0,2,new Dimension(DIALOG_WIDTH,FIELD_HEIGHT)));
-	// filter position
-		label = new JLabel("Filter");
-		subPanel.add(label);
-		filterWheelComboBox = new JComboBox();
-		subPanel.add(filterWheelComboBox);
+		// filters
+		for(int i = OConfig.O_FILTER_INDEX_FILTER_WHEEL; i < OConfig.O_FILTER_INDEX_FILTER_SLIDE_UPPER; i++)
+		{
+			// sub panel
+			subPanel = new JPanel();
+			getContentPane().add(subPanel);
+			subPanel.setLayout(new SizedGridLayout(0,2,new Dimension(DIALOG_WIDTH,FIELD_HEIGHT)));
+			// filter position combo box
+			switch(i)
+			{
+				case OConfig.O_FILTER_INDEX_FILTER_WHEEL:
+					label = new JLabel("Filter Wheel");
+					break;
+				case OConfig.O_FILTER_INDEX_FILTER_SLIDE_LOWER:
+					label = new JLabel("Lower Filter Slide");
+					break;
+				case OConfig.O_FILTER_INDEX_FILTER_SLIDE_UPPER:
+					label = new JLabel("Upper Filter Slide");
+					break;
+			}
+			subPanel.add(label);
+			filterComboBox[i] = new JComboBox();
+			subPanel.add(filterComboBox[i]);
+		}
 	// sub panel
 		subPanel = new JPanel();
 		getContentPane().add(subPanel);
@@ -245,11 +270,10 @@ public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 
 	/**
 	 * Method to manage the config Add/Amend dialog in add mode.
+	 * @see #setFilterComboBoxs
 	 */
 	public void add()
 	{
-		int i;
-
 		configId = configProperties.getNewConfigId();
 
 		nameTextField.setText("Configuration "+configId);
@@ -257,17 +281,20 @@ public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 		calibrateAfterCheckBox.setSelected(false);
 		try
 		{
-			setFilterWheelComboBox();
+			setFilterComboBoxs();
 		}
 		catch(Exception e)
 		{
 			System.err.println(this.getClass().getName()+":add:"+e);
 			e.printStackTrace(System.err);
 		}
-		filterWheelComboBox.setSelectedItem("None");
+		for(int i = OConfig.O_FILTER_INDEX_FILTER_WHEEL; i < OConfig.O_FILTER_INDEX_FILTER_SLIDE_UPPER; i++)
+		{
+			filterComboBox[i].setSelectedItem("None");
+		}
 		xBinTextField.setText("1");
 		yBinTextField.setText("1");
-		for(i=0;i<WINDOW_COUNT;i++)
+		for(int i=0;i<WINDOW_COUNT;i++)
 		{
 			windowFlagCheckBox[i].setSelected(false);
 			windowXStartTextField[i].setText("-1");
@@ -281,6 +308,7 @@ public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 	/**
 	 * Method to manage the config Add/Amend dialog in amend mode.
 	 * @param id The id to amend
+	 * @see #setFilterComboBoxs
 	 */
 	public void amend(int id)
 	{
@@ -291,7 +319,7 @@ public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 		calibrateAfterCheckBox.setSelected(configProperties.getConfigCalibrateAfter(id));
 		try
 		{
-			setFilterWheelComboBox();
+			setFilterComboBoxs();
 		}
 		catch(Exception e)
 		{
@@ -299,7 +327,10 @@ public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 			System.err.println(this.getClass().getName()+":add:"+e);
 			e.printStackTrace(System.err);
 		}
-		filterWheelComboBox.setSelectedItem(configProperties.getConfigFilterWheel(id));
+		for(int i = OConfig.O_FILTER_INDEX_FILTER_WHEEL; i < OConfig.O_FILTER_INDEX_FILTER_SLIDE_UPPER; i++)
+		{
+			filterComboBox[i].setSelectedItem(configProperties.getConfigFilterWheel(id,i));
+		}
 		xBinTextField.setText(configProperties.getConfigXBinString(id));
 		yBinTextField.setText(configProperties.getConfigYBinString(id));
 		for(int i=0;i<WINDOW_COUNT;i++)
@@ -334,7 +365,6 @@ public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 		String commandString = event.getActionCommand();
 		String s = null;
 		int testId = 0;
-		int i;
 		int xBin,yBin,windowFlags;
 		int xStart[] = new int[WINDOW_COUNT];
 		int yStart[] = new int[WINDOW_COUNT];
@@ -374,7 +404,7 @@ public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 				if(yBin < 1)
 					throw new NumberFormatException("Y Binning is less than one");
 				windowFlags = 0;
-				for(i=0;i<WINDOW_COUNT;i++)
+				for(int i=0;i<WINDOW_COUNT;i++)
 				{
 					if(windowFlagCheckBox[i].isSelected())
 						windowFlags |= (1<<i);
@@ -396,12 +426,16 @@ public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 			configProperties.setConfigType(configId,IcsGUIConfigProperties.CONFIG_TYPE_CCD_O);
 			configProperties.setConfigCalibrateBefore(configId,calibrateBeforeCheckBox.isSelected());
 			configProperties.setConfigCalibrateAfter(configId,calibrateAfterCheckBox.isSelected());
-			configProperties.setConfigFilterWheel(configId,
-							      (String)(filterWheelComboBox.getSelectedItem()));
+			for(int i = OConfig.O_FILTER_INDEX_FILTER_WHEEL; 
+			    i < OConfig.O_FILTER_INDEX_FILTER_SLIDE_UPPER; i++)
+			{
+				configProperties.setConfigFilterWheel(configId,i,
+								      (String)(filterComboBox[i].getSelectedItem()));
+			}
 			configProperties.setConfigXBin(configId,xBin);
 			configProperties.setConfigYBin(configId,yBin);
 			configProperties.setConfigWindowFlags(configId,windowFlags);
-			for(i=0;i<WINDOW_COUNT;i++)
+			for(int i=0;i<WINDOW_COUNT;i++)
 			{
 				configProperties.setConfigXStart(configId,i+1,xStart[i]);
 				configProperties.setConfigYStart(configId,i+1,yStart[i]);
@@ -423,14 +457,15 @@ public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 	/**
 	 * Method to populate the filter wheel combo boxs with filters loaded from a property file specified
 	 * in the main set of properties.
-	 * @see #filterWheelComboBox
+	 * @see #filterComboBox
 	 * @see #icsGUIStatus
 	 * @exception FileNotFoundException Thrown if the current filter properties cannot be found.
 	 * @exception IOException Thrown if an IO error occurs whilst loading the filter properties.
 	 * @exception NGATPropertyException Thrown if a property has an illegal value.
 	 * @exception IllegalArgumentException Thrown if the filter index is an unexpected value.
+	 * @see #filterComboBox
 	 */
-	protected void setFilterWheelComboBox() throws FileNotFoundException,IOException,NGATPropertyException,
+	protected void setFilterComboBoxs() throws FileNotFoundException,IOException,NGATPropertyException,
 						       IllegalArgumentException
 	{
 		NGATProperties filterProperties = null;
@@ -439,10 +474,10 @@ public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 		String filterName = null;
 		int filterWheelCount,filterCount;
 
-		icsGUI.log(this.getClass().getName()+":setFilterWheelComboBox:Started.");
+		icsGUI.log(this.getClass().getName()+":setFilterComboBoxs:Started.");
 		if(icsGUIStatus == null)
 		{
-			icsGUI.log(this.getClass().getName()+":setFilterWheelComboBox:icsGUIStatus is null.");
+			icsGUI.log(this.getClass().getName()+":setFilterComboBoxs:icsGUIStatus is null.");
 			return;
 		}
 		// get filter property filename
@@ -450,46 +485,52 @@ public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 		if((filterPropertiesFilename == null)||(filterPropertiesFilename.equals("")))
 		{
 			icsGUI.log(this.getClass().getName()+
-					   ":setFilterWheelComboBox:filterPropertiesFilename is null.");
+					   ":setFilterComboBoxs:filterPropertiesFilename is null.");
 			return;
 		}
-		icsGUI.log(this.getClass().getName()+":setFilterWheelComboBox:filterPropertiesFilename is "+
+		icsGUI.log(this.getClass().getName()+":setFilterComboBoxs:filterPropertiesFilename is "+
 				   filterPropertiesFilename+".");
 		// load filterProperties
 		filterProperties = new NGATProperties();
 		fileInputStream = new FileInputStream(filterPropertiesFilename);
 		filterProperties.load(fileInputStream);
 		fileInputStream.close();
+		filterWheelCount = filterProperties.getInt("filterwheel.count");
+		icsGUI.log(this.getClass().getName()+":setFilterComboBoxs:filterWheelCount is "+
+			   filterWheelCount+".");
 		// clear current combo box list, ready for latest one.
 		// Note must check items are in list first, as old JVMs(1.2.1) throw IndexOutOfBoundsException
-		if(filterWheelComboBox.getItemCount() > 0)
-			filterWheelComboBox.removeAllItems();
+		for(int filterWheelIndex = 1; filterWheelIndex <= filterWheelCount; filterWheelIndex++)
+		{
+			if(filterComboBox[filterWheelIndex].getItemCount() > 0)
+				filterComboBox[filterWheelIndex].removeAllItems();
+		}
 		// for each filter wheel
-		filterWheelCount = filterProperties.getInt("filterwheel.count");
-		icsGUI.log(this.getClass().getName()+":setFilterWheelComboBox:filterWheelCount is "+
-			   filterWheelCount+".");
-		for(int filterWheelIndex = 0; filterWheelIndex < filterWheelCount; filterWheelIndex++)
+		for(int filterWheelIndex = 1; filterWheelIndex <= filterWheelCount; filterWheelIndex++)
 		{
 			// loop over number of filters in wheel
 			filterCount = filterProperties.getInt("filterwheel."+filterWheelIndex+".count");
-			icsGUI.log(this.getClass().getName()+":setFilterWheelComboBox:filterCount is "+
-				   filterCount+".");
+			icsGUI.log(this.getClass().getName()+":setFilterComboBoxs:filterWheelIndex: "+
+				   filterWheelIndex+":filterCount is "+filterCount+".");
 			for(int i  = 0; i < filterCount; i++)
 			{
 				// get filter type name
 				filterName = filterProperties.getProperty("filterwheel."+filterWheelIndex+"."+
 									  i+".type");
-				icsGUI.log(this.getClass().getName()+":setFilterWheelComboBox:filter "+i+
-					   " is "+filterName+".");
+				icsGUI.log(this.getClass().getName()+":setFilterComboBoxs:filterWheelIndex: "+
+					   filterWheelIndex+":filter "+i+" is "+filterName+".");
 				// add to relevant combobox
-				filterWheelComboBox.addItem(filterName);
+				filterComboBox[filterWheelIndex].addItem(filterName);
 			}
 		}
-		icsGUI.log(this.getClass().getName()+":setFilterWheelComboBox:Finished.");
+		icsGUI.log(this.getClass().getName()+":setFilterComboBoxs:Finished.");
 	}
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2011/11/09 11:41:53  cjm
+// Fixed comments.
+//
 // Revision 1.1  2011/11/07 17:07:34  cjm
 // Initial revision
 //
