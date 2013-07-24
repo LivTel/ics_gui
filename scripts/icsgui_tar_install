@@ -1,6 +1,6 @@
 #!/bin/csh
-# $Header: /home/cjm/cvs/ics_gui/scripts/icsgui_tar_install,v 1.2 2009-08-24 10:28:19 cjm Exp $
-# Version: $Revision: 1.2 $
+# $Header: /home/cjm/cvs/ics_gui/scripts/icsgui_tar_install,v 1.3 2013-07-24 11:24:13 cjm Exp $
+# Version: $Revision: 1.3 $
 # By $Author: cjm $
 # install a deployment tar created by icsgui_make_deployment
 # Usage:
@@ -83,7 +83,8 @@ tar xvf ${deployment_tar}
 echo "Removing deployment tar."
 rm -f ${deployment_tar}
 echo "Setting up ${icc} ownership."
-chown -R eng:ltdev /${icc}/*
+#chown -R eng:ltdev /${icc}/*
+chown -R eng:eng /${icc}/*
 echo "Editing eng .cshrc"
 cat ~eng/.cshrc | awk -f ${current_dir}/tmc_cshrc_edit.awk > ~eng/.cshrc.tmp
 cat ~eng/.cshrc.tmp ${current_dir}/tmc_cshrc > ~eng/.cshrc
@@ -104,4 +105,7 @@ endif
 echo "Installation completed."
 #
 # $Log: not supported by cvs2svn $
+# Revision 1.2  2009/08/24 10:28:19  cjm
+# Added chown root:root / and chmod 1755 / to fix / permissions on install.
+#
 #
