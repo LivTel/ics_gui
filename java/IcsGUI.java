@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.26 2012-11-29 16:32:45 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.27 2013-07-24 12:32:18 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -40,14 +40,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 1.26 $
+ * @version $Revision: 1.27 $
  */
 public class IcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.26 2012-11-29 16:32:45 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.27 2013-07-24 12:32:18 cjm Exp $");
 	/**
 	 * Internal constant used when converting temperatures in centigrade (from the CCD controller) to Kelvin.
 	 */
@@ -1382,6 +1382,28 @@ public class IcsGUI
 	}
 
 	/**
+	 * Method to set the selected filters label. If one of the parameters is null, the String
+	 * 'Unknown' is used instead. This is used for IO:O filter settings.
+	 * @param filterString1 The name of the filter wheel's selected filter.
+	 * @param filterString2 The name of the first filter slides's selected filter.
+	 * @param filterString3 The name of the second filter slides's selected filter.
+	 */
+	public void setFiltersSelectedLabel(String filterString1,String filterString2,String filterString3)
+	{
+		if(filterString1 == null)
+			filterString1 = new String("Unknown");
+		if(filterString2 == null)
+			filterString2 = new String("Unknown");
+		if(filterString3 == null)
+			filterString3 = new String("Unknown");
+		if(filterSelectedLabel != null)
+		{
+			SwingUtilities.invokeLater(new GUILabelSetter(filterSelectedLabel,"1:"+filterString1+
+								      " 2:"+filterString2+" 3:"+filterString3));
+		}
+	}
+
+	/**
 	 * Method to set the selected filters label. This is used for Nu-View filter settings.
 	 * @param wavelength A Double object with the wavelegnth of the filter, in angstroms.
 	 */
@@ -1930,6 +1952,9 @@ public class IcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.26  2012/11/29 16:32:45  cjm
+// Added setCCDTemperatureLabel for an n camera instrument.
+//
 // Revision 1.25  2011/11/09 11:42:18  cjm
 // Fixed comments.
 //
