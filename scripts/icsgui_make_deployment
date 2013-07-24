@@ -1,6 +1,6 @@
 #!/bin/csh
-# $Header: /home/cjm/cvs/ics_gui/scripts/icsgui_make_deployment,v 1.9 2013-07-24 10:54:31 cjm Exp $
-# Version: $Revision: 1.9 $
+# $Header: /home/cjm/cvs/ics_gui/scripts/icsgui_make_deployment,v 1.10 2013-07-24 10:55:13 cjm Exp $
+# Version: $Revision: 1.10 $
 # By $Author: cjm $
 # Make a deployment tar file.
 # This contains:
@@ -318,6 +318,6 @@ gzip ${deployment_tar}
 echo "Deployment tar : ${deployment_tar_dir}/${deployment_tar}.gz"
 echo "Installation script : ${current_dir}/icsgui_tar_install"
 rm -rf ${deployment_dir}
-echo "Download from http://ltccd1.livjm.ac.uk/~dev/ccs_gui/deployment/index.html."
+echo "Download from http://ltdevsrv.livjm.ac.uk/~dev/ccs_gui/deployment/index.html."
 echo "Download: ${deployment_tar}.gz icsgui_tar_install tmc_cshrc tmc_cshrc_edit.awk README.DEPLOYMENT."
 echo "Deployment ready."
