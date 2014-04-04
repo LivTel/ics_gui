@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUIConfigProperties.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.24 2013-06-04 08:08:41 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.25 2014-04-04 11:17:00 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -30,14 +30,14 @@ import ngat.phase2.*;
  * in a Java properties file and this class extends java.util.Properties
  * @see java.util.Properties
  * @author Chris Mottram
- * @version $Revision: 0.24 $
+ * @version $Revision: 0.25 $
  */
 public class IcsGUIConfigProperties extends Properties
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.24 2013-06-04 08:08:41 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.25 2014-04-04 11:17:00 cjm Exp $");
 	/**
 	 * Configuration type specifier:CCD (RATCam).
 	 */
@@ -87,6 +87,10 @@ public class IcsGUIConfigProperties extends Properties
 	 */
 	public final static int CONFIG_TYPE_POLARIMETER_RINGO3        = 11;
 	/**
+	 * Configuration type specifier:Spectrograph (Sprat).
+	 */
+	public final static int CONFIG_TYPE_SPECTROGRAPH_SPRAT        = 12;
+	/**
 	 * List of legal values that can be held in the config type field.
 	 * @see #CONFIG_TYPE_CCD_RATCAM
 	 * @see #CONFIG_TYPE_SPECTROGRAPH_MES
@@ -100,11 +104,13 @@ public class IcsGUIConfigProperties extends Properties
 	 * @see #CONFIG_TYPE_CCD_THOR
 	 * @see #CONFIG_TYPE_CCD_O
 	 * @see #CONFIG_TYPE_POLARIMETER_RINGO3
+	 * @see #CONFIG_TYPE_SPECTROGRAPH_SPRAT
 	 */
 	public final static int CONFIG_TYPE_LIST[] = {CONFIG_TYPE_CCD_RATCAM,CONFIG_TYPE_SPECTROGRAPH_MES,
 		CONFIG_TYPE_SPECTROGRAPH_NUVIEW,CONFIG_TYPE_INFRA_RED_SUPIRCAM,CONFIG_TYPE_SPECTROGRAPH_FTSPEC,
 		CONFIG_TYPE_POLARIMETER_RINGOSTAR,CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC,CONFIG_TYPE_CCD_RISE,
-		CONFIG_TYPE_POLARIMETER_RINGO2,CONFIG_TYPE_CCD_THOR,CONFIG_TYPE_CCD_O,CONFIG_TYPE_POLARIMETER_RINGO3};
+		CONFIG_TYPE_POLARIMETER_RINGO2,CONFIG_TYPE_CCD_THOR,CONFIG_TYPE_CCD_O,CONFIG_TYPE_POLARIMETER_RINGO3,
+						      CONFIG_TYPE_SPECTROGRAPH_SPRAT};
 	/**
 	 * Default filename for properties file.
 	 */
@@ -241,6 +247,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * @see #getTHORConfigById
 	 * @see #getOConfigById
 	 * @see #getRingo3PolarimeterConfigById
+	 * @see #getSpratConfigById
 	 */
 	public InstrumentConfig getConfigById(int id) throws NumberFormatException, IllegalArgumentException
 	{
@@ -286,6 +293,9 @@ public class IcsGUIConfigProperties extends Properties
 				break;
 			case CONFIG_TYPE_POLARIMETER_RINGO3:
 				c = getRingo3PolarimeterConfigById(id);
+				break;
+			case CONFIG_TYPE_SPECTROGRAPH_SPRAT:
+				c = getSpratConfigById(id);
 				break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":getConfigById:Id "
@@ -441,6 +451,21 @@ public class IcsGUIConfigProperties extends Properties
 					remove(configIdWindowStringYEnd(id,j));
 				}
 				break;
+			case CONFIG_TYPE_SPECTROGRAPH_SPRAT:
+				remove(configIdStringXBin(id));
+				remove(configIdStringYBin(id));
+				remove(configIdStringSlitPosition(id));
+				remove(configIdStringGrismPosition(id));
+				remove(configIdStringGrismRotation(id));
+				remove(configIdStringWindowFlags(id));
+				for(j=1;j<2;j++)
+				{
+					remove(configIdWindowStringXStart(id,j));
+					remove(configIdWindowStringYStart(id,j));
+					remove(configIdWindowStringXEnd(id,j));
+					remove(configIdWindowStringYEnd(id,j));
+				}
+				break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":deleteId:Id "
 					+id+" type "+type+" not a supported type of configuration.");
@@ -486,7 +511,7 @@ public class IcsGUIConfigProperties extends Properties
 						remove(configIdWindowStringYEnd(i,j));
 					}
 					break;
-			case CONFIG_TYPE_SPECTROGRAPH_MES:
+				case CONFIG_TYPE_SPECTROGRAPH_MES:
 					setConfigXBin(i-1,getConfigXBin(i));
 					remove(configIdStringXBin(i));
 					setConfigYBin(i-1,getConfigYBin(i));
@@ -494,7 +519,7 @@ public class IcsGUIConfigProperties extends Properties
 					setConfigFilterSlideName(i-1,getConfigFilterSlideName(i));
 					remove(configIdStringFilterSlideName(i));
 					break;
-			case CONFIG_TYPE_SPECTROGRAPH_NUVIEW:
+				case CONFIG_TYPE_SPECTROGRAPH_NUVIEW:
 					setConfigXBin(i-1,getConfigXBin(i));
 					remove(configIdStringXBin(i));
 					setConfigYBin(i-1,getConfigYBin(i));
@@ -502,23 +527,23 @@ public class IcsGUIConfigProperties extends Properties
 					setConfigWavelength(i-1,getConfigWavelength(i));
 					remove(configIdStringWavelength(i));
 					break;
-			case CONFIG_TYPE_INFRA_RED_SUPIRCAM:
+				case CONFIG_TYPE_INFRA_RED_SUPIRCAM:
 					setConfigFilterWheel(i-1,getConfigFilterWheel(i));
 					remove(configIdStringFilterWheel(i));
 					break;
-			case CONFIG_TYPE_SPECTROGRAPH_FTSPEC:
+				case CONFIG_TYPE_SPECTROGRAPH_FTSPEC:
 					setConfigXBin(i-1,getConfigXBin(i));
 					remove(configIdStringXBin(i));
 					setConfigYBin(i-1,getConfigYBin(i));
 					remove(configIdStringYBin(i));
 					break;
-			case CONFIG_TYPE_POLARIMETER_RINGOSTAR:
+				case CONFIG_TYPE_POLARIMETER_RINGOSTAR:
 					setConfigXBin(i-1,getConfigXBin(i));
 					remove(configIdStringXBin(i));
 					setConfigYBin(i-1,getConfigYBin(i));
 					remove(configIdStringYBin(i));
 					break;
-			case CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC:
+				case CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC:
 					setConfigXBin(i-1,getConfigXBin(i));
 					remove(configIdStringXBin(i));
 					setConfigYBin(i-1,getConfigYBin(i));
@@ -528,13 +553,13 @@ public class IcsGUIConfigProperties extends Properties
 					setConfigResolution(i-1,getConfigResolution(i));
 					remove(configIdStringResolution(i));
 					break;
-			case CONFIG_TYPE_CCD_RISE:
+				case CONFIG_TYPE_CCD_RISE:
 					setConfigXBin(i-1,getConfigXBin(i));
 					remove(configIdStringXBin(i));
 					setConfigYBin(i-1,getConfigYBin(i));
 					remove(configIdStringYBin(i));
 					break;
-			case CONFIG_TYPE_POLARIMETER_RINGO2:
+				case CONFIG_TYPE_POLARIMETER_RINGO2:
 					setConfigXBin(i-1,getConfigXBin(i));
 					remove(configIdStringXBin(i));
 					setConfigYBin(i-1,getConfigYBin(i));
@@ -558,7 +583,7 @@ public class IcsGUIConfigProperties extends Properties
 						remove(configIdWindowStringYEnd(i,j));
 					}
 					break;
-			case CONFIG_TYPE_CCD_THOR:
+				case CONFIG_TYPE_CCD_THOR:
 					setConfigXBin(i-1,getConfigXBin(i));
 					remove(configIdStringXBin(i));
 					setConfigYBin(i-1,getConfigYBin(i));
@@ -606,7 +631,7 @@ public class IcsGUIConfigProperties extends Properties
 						remove(configIdWindowStringYEnd(i,j));
 					}
 					break;
-			case CONFIG_TYPE_POLARIMETER_RINGO3:
+				case CONFIG_TYPE_POLARIMETER_RINGO3:
 					setConfigXBin(i-1,getConfigXBin(i));
 					remove(configIdStringXBin(i));
 					setConfigYBin(i-1,getConfigYBin(i));
@@ -629,9 +654,35 @@ public class IcsGUIConfigProperties extends Properties
 						remove(configIdWindowStringYEnd(i,j));
 					}
 					break;
-			default:
-				throw new IllegalArgumentException(this.getClass().getName()+":deleteId:Id "
-					+i+" type "+type+" not a supported type of configuration.");
+				case CONFIG_TYPE_SPECTROGRAPH_SPRAT:
+					setConfigXBin(i-1,getConfigXBin(i));
+					remove(configIdStringXBin(i));
+					setConfigYBin(i-1,getConfigYBin(i));
+					remove(configIdStringYBin(i));
+					setConfigSlitPosition(i-1,getConfigSlitPosition(i));
+					remove(configIdStringSlitPosition(i));
+					setConfigGrismPosition(i-1,getConfigGrismPosition(i));
+					remove(configIdStringGrismPosition(i));
+					setConfigGrismRotation(i-1,getConfigGrismRotation(i));
+					remove(configIdStringGrismRotation(i));
+
+					setConfigWindowFlags(i-1,getConfigWindowFlags(i));
+					remove(configIdStringWindowFlags(i));
+					for(j=1;j<2;j++)
+					{
+						setConfigXStart(i-1,j,getConfigXStart(i,j));
+						remove(configIdWindowStringXStart(i,j));
+						setConfigYStart(i-1,j,getConfigYStart(i,j));
+						remove(configIdWindowStringYStart(i,j));
+						setConfigXEnd(i-1,j,getConfigXEnd(i,j));
+						remove(configIdWindowStringXEnd(i,j));
+						setConfigYEnd(i-1,j,getConfigYEnd(i,j));
+						remove(configIdWindowStringYEnd(i,j));
+					}
+					break;
+				default:
+					throw new IllegalArgumentException(this.getClass().getName()+":deleteId:Id "
+						  +i+" type "+type+" not a supported type of configuration.");
 			}
 			i++;
 		}// while ids exist
@@ -1452,6 +1503,176 @@ public class IcsGUIConfigProperties extends Properties
 		setProperty(configIdStringTriggerType(id),triggerTypeString);
 	}
 
+	/**
+	 * Method to get the slit position of configuration id id as a string.
+	 * This is a Sprat only configuration value.
+	 * @param id The id of the configuration.
+	 * @return The configuration slit position.
+	 * @exception IllegalArgumentException Thrown if the relevant property 
+	 * 	"ccs_gui_config."id".slit.position" does not contain either "in" or "out".
+	 * @see ngat.phase2.SpratConfig#POSITION_IN
+	 * @see ngat.phase2.SpratConfig#POSITION_OUT
+	 */
+	public int getConfigSlitPosition(int id) throws IllegalArgumentException
+	{
+		String s = null;
+
+		s = getProperty(configIdStringSlitPosition(id));
+		if(s.equals("in"))
+			return SpratConfig.POSITION_IN;
+		else if (s.equals("out"))
+			return SpratConfig.POSITION_OUT;
+		throw new IllegalArgumentException(this.getClass().getName()+
+						   ":getConfigSlitPosition:Illegal slit position string:"+s);
+	}
+
+	/**
+	 * Method to get the slit position of configuration id id as a string.
+	 * @param id The id of the configuration.
+	 * @return The configuration slit position as a string.
+	 */
+	public String getConfigSlitPositionString(int id)
+	{
+		return getProperty(configIdStringSlitPosition(id));
+	}
+
+	/**
+	 * Method to set the slit position of configuration id id.
+	 * This is a Sprat only configuration value.
+	 * @param id The id of the configuration.
+	 * @param position The configuration slit position.
+	 * @exception IllegalArgumentException Thrown if the slit position can't be mapped to a string.
+	 * @see ngat.phase2.SpratConfig#POSITION_IN
+	 * @see ngat.phase2.SpratConfig#POSITION_OUT
+	 */
+	public void setConfigSlitPosition(int id,int position) throws IllegalArgumentException
+	{
+		String slitPositionString = null;
+
+		if(position == SpratConfig.POSITION_IN)
+			slitPositionString = "in";
+		else if(position == SpratConfig.POSITION_OUT)
+			slitPositionString = "out";
+		else
+		{
+			throw new IllegalArgumentException(this.getClass().getName()+
+							   ":setConfigSlitPosition:Illegal slit position:"+position);
+		}
+		setProperty(configIdStringSlitPosition(id),slitPositionString);
+	}
+
+	/**
+	 * Method to get the grism position of configuration id id as a string.
+	 * This is a Sprat only configuration value.
+	 * @param id The id of the configuration.
+	 * @return The configuration grism position.
+	 * @exception IllegalArgumentException Thrown if the relevant property 
+	 * 	"ccs_gui_config."id".grism.position" does not contain either "in" or "out".
+	 * @see ngat.phase2.SpratConfig#POSITION_IN
+	 * @see ngat.phase2.SpratConfig#POSITION_OUT
+	 */
+	public int getConfigGrismPosition(int id) throws IllegalArgumentException
+	{
+		String s = null;
+
+		s = getProperty(configIdStringGrismPosition(id));
+		if(s.equals("in"))
+			return SpratConfig.POSITION_IN;
+		else if (s.equals("out"))
+			return SpratConfig.POSITION_OUT;
+		throw new IllegalArgumentException(this.getClass().getName()+
+						   ":getConfigGrismPosition:Illegal grism position string:"+s);
+	}
+
+	/**
+	 * Method to get the grism position of configuration id id as a string.
+	 * @param id The id of the configuration.
+	 * @return The configuration grism position as a string.
+	 */
+	public String getConfigGrismPositionString(int id)
+	{
+		return getProperty(configIdStringGrismPosition(id));
+	}
+
+	/**
+	 * Method to set the grism position of configuration id id.
+	 * This is a Sprat only configuration value.
+	 * @param id The id of the configuration.
+	 * @param position The configuration grism position.
+	 * @exception IllegalArgumentException Thrown if the grism position can't be mapped to a string.
+	 * @see ngat.phase2.SpratConfig#POSITION_IN
+	 * @see ngat.phase2.SpratConfig#POSITION_OUT
+	 */
+	public void setConfigGrismPosition(int id,int position) throws IllegalArgumentException
+	{
+		String grismPositionString = null;
+
+		if(position == SpratConfig.POSITION_IN)
+			grismPositionString = "in";
+		else if(position == SpratConfig.POSITION_OUT)
+			grismPositionString = "out";
+		else
+		{
+			throw new IllegalArgumentException(this.getClass().getName()+
+							   ":setConfigGrismPosition:Illegal grism position:"+position);
+		}
+		setProperty(configIdStringGrismPosition(id),grismPositionString);
+	}
+
+	/**
+	 * Method to get the grism rotation of configuration id id as a string.
+	 * This is a Sprat only configuration value.
+	 * @param id The id of the configuration.
+	 * @return The configuration grism rotation.
+	 * @exception IllegalArgumentException Thrown if the relevant property 
+	 * 	"ccs_gui_config."id".grism.rotation" does not contain either "0" or "1".
+	 */
+	public int getConfigGrismRotation(int id) throws IllegalArgumentException
+	{
+		String s = null;
+
+		s = getProperty(configIdStringGrismRotation(id));
+		if(s.equals("0"))
+			return 0;
+		else if (s.equals("1"))
+			return 1;
+		throw new IllegalArgumentException(this.getClass().getName()+
+						   ":getConfigGrismRotation:Illegal grism rotation string:"+s);
+	}
+
+	/**
+	 * Method to get the grism rotation of configuration id id as a string.
+	 * @param id The id of the configuration.
+	 * @return The configuration grism rotation as a string.
+	 */
+	public String getConfigGrismRotationString(int id)
+	{
+		return getProperty(configIdStringGrismRotation(id));
+	}
+
+	/**
+	 * Method to set the grism rotation of configuration id id.
+	 * This is a Sprat only configuration value.
+	 * @param id The id of the configuration.
+	 * @param rotation The configuration grism rotation.
+	 * @exception IllegalArgumentException Thrown if the grism rotation can't be mapped to a string.
+	 */
+	public void setConfigGrismRotation(int id,int rotation) throws IllegalArgumentException
+	{
+		String grismRotationString = null;
+
+		if(rotation == 0)
+			grismRotationString = "0";
+		else if(rotation == 1)
+			grismRotationString = "1";
+		else
+		{
+			throw new IllegalArgumentException(this.getClass().getName()+
+							   ":setConfigGrismRotation:Illegal grism rotation:"+rotation);
+		}
+		setProperty(configIdStringGrismRotation(id),grismRotationString);
+	}
+
 // methods to create an instance of an instrument config
 	/**
 	 * Method to return a CCDConfig, constructed from the information against id id.
@@ -1883,8 +2104,6 @@ public class IcsGUIConfigProperties extends Properties
 		detector = new THORDetector();
 		detector.setXBin(getConfigXBin(id));
 		detector.setYBin(getConfigYBin(id));
-		// note, other Detector fields not set, as they are not used by the instrument.
-	// don't set windows into detector, use default windows.
 	// setup window list
 		windowArray = new Window[detector.getMaxWindowCount()];
 		for(int i = 0; i < detector.getMaxWindowCount(); i++)
@@ -1939,7 +2158,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * @see ngat.phase2.OConfig#O_FILTER_INDEX_FILTER_SLIDE_UPPER
 	 * @see ngat.phase2.OConfig#setCalibrateBefore
 	 * @see ngat.phase2.OConfig#setCalibrateAfter
-	 * @see ngat.phase2.OConfig#setFilterWheel
+	 * @see ngat.phase2.OConfig#setFilterName
 	 * @see ngat.phase2.OConfig#setDetector
 	 * @see ngat.phase2.ODetector
 	 * @see ngat.phase2.ODetector#setXBin
@@ -2067,6 +2286,65 @@ public class IcsGUIConfigProperties extends Properties
 		{
 			c.setDetector(i,detector);
 		}
+	// return config
+		return c;
+	}
+
+	/**
+	 * Method to return a SpratConfig, constructed from the information against id id.
+	 * @param id The Id number.
+	 * @return The constructed SpratConfig.
+	 * @exception NumberFormatException Thrown if a numeric parameter is not returned from the properties
+	 * 	file as a legal number.
+	 * @exception IllegalArgumentException Thrown if the config id specified does not have a legal type.
+	 */
+	private SpratConfig getSpratConfigById(int id) throws NumberFormatException, IllegalArgumentException
+	{
+		SpratConfig c = null;
+		SpratDetector detector = null;
+		Window windowArray[];
+
+	// check type
+		if(getConfigType(id) != CONFIG_TYPE_SPECTROGRAPH_SPRAT)
+		{
+			throw new IllegalArgumentException(this.getClass().getName()+":getSpratConfigById:Id "
+				+id+" not a configuration of type Sprat.");
+		}
+	// construct SpratConfig
+		c = new SpratConfig(getConfigName(id));
+		c.setCalibrateBefore(getConfigCalibrateBefore(id));
+		c.setCalibrateAfter(getConfigCalibrateAfter(id));
+		c.setSlitPosition(getConfigSlitPosition(id));
+		c.setGrismPosition(getConfigGrismPosition(id));
+		c.setGrismRotation(getConfigGrismRotation(id));
+	// setup detector
+		detector = new SpratDetector();
+		detector.setXBin(getConfigXBin(id));
+		detector.setYBin(getConfigYBin(id));
+	// setup window list
+		windowArray = new Window[detector.getMaxWindowCount()];
+		for(int i = 0; i < detector.getMaxWindowCount(); i++)
+		{
+		// Note, windows are only non-null if they are active in RCS created configs
+		// Lets re-create that effect here, we can use the config window flags.
+			if((getConfigWindowFlags(id) & (1<<i))>0)
+			{
+				windowArray[i] = new Window();
+
+				windowArray[i].setXs(getConfigXStart(id,i+1));
+				windowArray[i].setYs(getConfigYStart(id,i+1));
+				windowArray[i].setXe(getConfigXEnd(id,i+1));
+				windowArray[i].setYe(getConfigYEnd(id,i+1));
+			}
+			else
+				windowArray[i] = null;
+		}// end for on windows
+	// set windows into detector
+		detector.setWindows(windowArray);
+	// Note flags are held IN the window list, so must setWindowFlags AFTER detector windows set
+		detector.setWindowFlags(getConfigWindowFlags(id));
+	// set detector into config
+		c.setDetector(0,detector);
 	// return config
 		return c;
 	}
@@ -2350,6 +2628,39 @@ public class IcsGUIConfigProperties extends Properties
 	}
 
 	/**
+	 * Method to return a key for the slit position for a particular config id.
+	 * @param id The config id.
+	 * @return The key string.
+	 * @see #configIdString
+	 */
+	private String configIdStringSlitPosition(int id)
+	{
+		return new String(configIdString(id)+"slit.position");
+	}
+
+	/**
+	 * Method to return a key for the grism position for a particular config id.
+	 * @param id The config id.
+	 * @return The key string.
+	 * @see #configIdString
+	 */
+	private String configIdStringGrismPosition(int id)
+	{
+		return new String(configIdString(id)+"grism.position");
+	}
+
+	/**
+	 * Method to return a key for the grism rotation for a particular config id.
+	 * @param id The config id.
+	 * @return The key string.
+	 * @see #configIdString
+	 */
+	private String configIdStringGrismRotation(int id)
+	{
+		return new String(configIdString(id)+"grism.rotation");
+	}
+
+	/**
 	 * Method to return a partial key string for a configuration of a particular id.
 	 * @param id The Id of the required configuration.
 	 * @return A string suitable for use as a partial key in the hashtable.
@@ -2428,6 +2739,9 @@ public class IcsGUIConfigProperties extends Properties
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.24  2013/06/04 08:08:41  cjm
+// Changes for IO:O to support neutral density filter slides.
+//
 // Revision 0.23  2012/03/19 11:47:33  cjm
 // getRingo3PolarimeterConfigById now inserts same detector for all detectors in config,
 // as Ringo3:CONFIGImplementation checks for this.
