@@ -1,5 +1,5 @@
 # Makefile
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.48 2012-03-16 12:21:14 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.49 2014-04-04 14:42:21 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -24,7 +24,8 @@ CONFIG_SRCS	= IcsGUIConfigProperties.java IcsGUIConfigListDialog.java CcsGUIConf
 		IcsGUIFixedFormatSpecConfigAADialog.java IcsGUIPolarimeterConfigAADialog.java \
 		IcsGUIFrodoSpecConfigAADialog.java IcsGUIRISEConfigAADialog.java \
 		IcsGUIRingo2PolarimeterConfigAADialog.java IcsGUIRingo3PolarimeterConfigAADialog.java \
-		IcsGUITHORConfigAADialog.java IcsGUIOConfigAADialog.java CcsConfigAADialogListener.java 
+		IcsGUISpratConfigAADialog.java IcsGUITHORConfigAADialog.java \
+		IcsGUIOConfigAADialog.java CcsConfigAADialogListener.java 
 UPDATE_SRCS	= CcsGUIUpdateListener.java CcsGUIUpdateThread.java
 
 DIALOG_SRCS	= ACQUIREDialog.java $(CALIBRATE_DIALOG_SRCS) $(EXPOSE_DIALOG_SRCS) $(INTERRUPT_DIALOG_SRCS) $(SETUP_DIALOG_SRCS)
@@ -50,11 +51,13 @@ PROPERTY_SRCS	= $(CCS_GUI_PROPERTY_SRCS) $(CCS_GUI_CONFIG_PROPERTY_SRCS) \
 CCS_GUI_PROPERTY_SRCS	= ltccd2.ccs_gui.properties ltccd4.ccs_gui.properties \
 	ltobs9.ratcam.ccs_gui.properties ltobs9.supircam.ccs_gui.properties ltobs9.frodospec.ccs_gui.properties \
 	ltobs9.ftspec.ics_gui.properties ltobs9.nuview1.ics_gui.properties ltobs9.rise.ics_gui.properties \
+	ltobs9.ioi.ccs_gui.properties \
 	supircam2.ccs_gui.properties nuview1.ccs_gui.properties ratcam1.ccs_gui.properties \
 	lttmc.ccs_gui.properties frodospec1.ccs_gui.properties estar6.ccs_gui.properties ringo1.ccs_gui.properties \
 	ringo2.ccs_gui.properties ltobs9.ringo2.ccs_gui.properties \
 	tiptilt1.ccs_gui.properties ltobs9.thor.ccs_gui.properties thor.ccs_gui.properties micc1.ccs_gui.properties \
-	rise.ccs_gui.properties ltobs9.o.ccs_gui.properties o1.ccs_gui.properties ringo3.ccs_gui.properties 
+	rise.ccs_gui.properties ltobs9.o.ccs_gui.properties o1.ccs_gui.properties ringo3.ccs_gui.properties \
+	ringo3-1.ccs_gui.properties ioi1.ccs_gui.properties tlan-operator.ccs_gui.properties
 # No longer used
 #ltccd1.ccs_gui.properties ltccd3.ccs_gui.properties ftccd1.ccs_gui.properties ftccd2.ccs_gui.properties spectrograph.scs_gui.properties ltobs9.fartcam.ccs_gui.properties ltobs9.dillcamsouth.ccs_gui.properties ltobs9.spectrograph.scs_gui.properties supircam1.ccs_gui.properties ftspec1.ccs_gui.properties ftspec2.ccs_gui.properties spectrograph.ccs_gui.properties ftntmc.ccs_gui.properties ftstmc.ccs_gui.properties ftsocc.ccs_gui.properties 
 
@@ -63,7 +66,8 @@ CCS_GUI_CONFIG_PROPERTY_SRCS = ltccd2.ccs_gui_config.properties ltccd4.ccs_gui_c
 	ratcam1.ccs_gui_config.properties frodospec1.ccs_gui_config.properties estar6.ccs_gui_config.properties \
 	ringo1.ccs_gui_config.properties ringo2.ccs_gui_config.properties ltobs9.ringo2.ccs_gui_config.properties \
 	tiptilt1.ccs_gui_config.properties thor.ccs_gui_config.properties micc1.ccs_gui_config.properties \
-	rise.ccs_gui_config.properties o1.ccs_gui_config.properties ringo3.ccs_gui_config.properties 
+	rise.ccs_gui_config.properties o1.ccs_gui_config.properties ringo3.ccs_gui_config.properties \
+	ringo3-1.ccs_gui_config.properties ioi1.ccs_gui_config.properties tlan-operator.ccs_gui_config.properties
 # No longer used
 #ltccd1.ccs_gui_config.properties ltccd3.ccs_gui_config.properties ftccd1.ccs_gui_config.properties ftccd2.ccs_gui_config.properties supircam1.ccs_gui_config.properties ftspec1.ccs_gui_config.properties ftspec2.ccs_gui_config.properties spectrograph.ccs_gui_config.properties ftntmc.ccs_gui_config.properties ftstmc.ccs_gui_config.properties 
 
@@ -72,11 +76,13 @@ CCS_GUI_FITS_PROPERTY_SRCS = ltccd2.ccs_gui.fits.properties ltccd4.ccs_gui.fits.
 	frodospec1.ccs_gui.fits.properties estar6.ccs_gui.fits.properties ringo1.ccs_gui.fits.properties \
 	ringo2.ccs_gui.fits.properties ltobs9.ringo2.ccs_gui.fits.properties tiptilt1.ccs_gui.fits.properties \
 	thor.ccs_gui.fits.properties micc1.ccs_gui.fits.properties rise.ccs_gui.fits.properties \
-	o1.ccs_gui.fits.properties ringo3.ccs_gui.fits.properties 
+	o1.ccs_gui.fits.properties ringo3.ccs_gui.fits.properties ringo3-1.ccs_gui.fits.properties \
+	ioi1.ccs_gui.fits.properties tlan-operator.ccs_gui.fits.properties
 # No longer used
 #ltccd1.ccs_gui.fits.properties ltccd3.ccs_gui.fits.properties ftccd1.ccs_gui.fits.properties ftccd2.ccs_gui.fits.properties ftspec1.ccs_gui.fits.properties ftspec2.ccs_gui.fits.properties spectrograph.ccs_gui.fits.properties ftntmc.ccs_gui.fits.properties ftstmc.ccs_gui.fits.properties 
 CCS_GUI_FITS_BSS_PROPERTY_SRCS = o1.ics_gui.fits.bss.properties lttmc.ics_gui.fits.bss.properties \
-				thor.ics_gui.fits.bss.properties
+				thor.ics_gui.fits.bss.properties ioi1.ics_gui.fits.bss.properties \
+				tlan-operator.ics_gui.fits.bss.properties
 
 PROPERTY_OBJS	= $(PROPERTY_SRCS:%.properties=$(BINDIR)/%.properties)
 
@@ -84,7 +90,8 @@ SCRIPT_SRCS	= icsgui scsgui ccsgui xv_wrapper.csh
 SCRIPT_OBJS	= $(SCRIPT_SRCS:%=$(BINDIR)/%)
 
 GIF_SRCS	= lt.gif lt_icon.gif ratcam.gif ratcam_ltccd1.gif ratcam_ftccd1.gif ratcam_ftccd2.gif \
-		ratcam_ltccd2.gif ratcam_ltccd3.gif supircam.gif ftspec.gif nuview_capella.gif io_o.jpg io_i.jpg
+		ratcam_ltccd2.gif ratcam_ltccd3.gif supircam.gif ftspec.gif nuview_capella.gif rise.gif \
+		io_o.jpg io_i.jpg
 GIF_OBJS	= $(GIF_SRCS:%=$(BINDIR)/%)
 
 JPG_SRCS	= ringo-BD64106.jpg thor.jpg
@@ -180,6 +187,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.48  2012/03/16 12:21:14  cjm
+# Added Ringo3 support.
+#
 # Revision 0.47  2011/11/23 11:04:52  cjm
 # Added io jpegs.
 #
