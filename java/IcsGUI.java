@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.27 2013-07-24 12:32:18 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.28 2014-09-02 10:01:39 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -40,14 +40,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 1.27 $
+ * @version $Revision: 1.28 $
  */
 public class IcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.27 2013-07-24 12:32:18 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.28 2014-09-02 10:01:39 cjm Exp $");
 	/**
 	 * Internal constant used when converting temperatures in centigrade (from the CCD controller) to Kelvin.
 	 */
@@ -1859,6 +1859,13 @@ public class IcsGUI
 				if((i+1)< args.length)
 					i++;
 			}
+			else if(args[i].equals("-instrument_config")||args[i].equals("-insco"))
+			{
+				// do nothing here, see parsePropertyFilenameArgument
+				// but move over filename argument.
+				if((i+1)< args.length)
+					i++;
+			}
 			else if(args[i].equals("-log"))
 			{
 				if((i+1)< args.length)
@@ -1952,6 +1959,9 @@ public class IcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.27  2013/07/24 12:32:18  cjm
+// New setFiltersSelectedLabel method with 3 parameters written for IO:O filter wheels.
+//
 // Revision 1.26  2012/11/29 16:32:45  cjm
 // Added setCCDTemperatureLabel for an n camera instrument.
 //
