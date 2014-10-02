@@ -1,5 +1,5 @@
 # Makefile
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.50 2014-09-04 13:29:40 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.51 2014-10-02 15:35:51 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -59,7 +59,7 @@ CCS_GUI_PROPERTY_SRCS	= ltccd2.ccs_gui.properties ltccd4.ccs_gui.properties \
 	rise.ccs_gui.properties ltobs9.o.ccs_gui.properties o1.ccs_gui.properties ringo3.ccs_gui.properties \
 	ringo3-1.ccs_gui.properties ioi1.ccs_gui.properties tlan-operator.ccs_gui.properties \
 	frodospec1.frodospec.ccs_gui.properties frodospec1.sprat.ccs_gui.properties sprat1.sprat.ccs_gui.properties \
-	ioi1.ioi.ccs_gui.properties ioi1.sprat.ccs_gui.properties
+	ioi1.ioi.ccs_gui.properties ioi1.sprat.ccs_gui.properties observer1.ccs_gui.properties 
 # No longer used
 #ltccd1.ccs_gui.properties ltccd3.ccs_gui.properties ftccd1.ccs_gui.properties ftccd2.ccs_gui.properties 
 # spectrograph.scs_gui.properties ltobs9.fartcam.ccs_gui.properties ltobs9.dillcamsouth.ccs_gui.properties 
@@ -76,7 +76,8 @@ CCS_GUI_CONFIG_PROPERTY_SRCS = ltccd2.ccs_gui_config.properties ltccd4.ccs_gui_c
 	rise.ccs_gui_config.properties o1.ccs_gui_config.properties ringo3.ccs_gui_config.properties \
 	ringo3-1.ccs_gui_config.properties ioi1.ccs_gui_config.properties tlan-operator.ccs_gui_config.properties \
 	frodospec1.frodospec.ccs_gui_config.properties frodospec1.sprat.ccs_gui_config.properties \
-	sprat1.sprat.ccs_gui_config.properties ioi1.ioi.ccs_gui_config.properties ioi1.sprat.ccs_gui_config.properties 
+	sprat1.sprat.ccs_gui_config.properties ioi1.ioi.ccs_gui_config.properties \
+	ioi1.sprat.ccs_gui_config.properties observer1.ccs_gui_config.properties 
 # No longer used
 #ltccd1.ccs_gui_config.properties ltccd3.ccs_gui_config.properties ftccd1.ccs_gui_config.properties 
 # ftccd2.ccs_gui_config.properties supircam1.ccs_gui_config.properties ftspec1.ccs_gui_config.properties 
@@ -92,7 +93,7 @@ CCS_GUI_FITS_PROPERTY_SRCS = ltccd2.ccs_gui.fits.properties ltccd4.ccs_gui.fits.
 	o1.ccs_gui.fits.properties ringo3.ccs_gui.fits.properties ringo3-1.ccs_gui.fits.properties \
 	ioi1.ccs_gui.fits.properties tlan-operator.ccs_gui.fits.properties \
 	frodospec1.ccs_gui.fits.properties \
-	sprat1.ccs_gui.fits.properties ioi1.ccs_gui.fits.properties 
+	sprat1.ccs_gui.fits.properties ioi1.ccs_gui.fits.properties observer1.ccs_gui.fits.properties 
 # No longer used
 #ltccd1.ccs_gui.fits.properties ltccd3.ccs_gui.fits.properties ftccd1.ccs_gui.fits.properties 
 # ftccd2.ccs_gui.fits.properties ftspec1.ccs_gui.fits.properties ftspec2.ccs_gui.fits.properties 
@@ -100,8 +101,8 @@ CCS_GUI_FITS_PROPERTY_SRCS = ltccd2.ccs_gui.fits.properties ltccd4.ccs_gui.fits.
 # frodospec1.ccs_gui.fits.properties sprat1.ccs_gui.fits.properties
 CCS_GUI_FITS_BSS_PROPERTY_SRCS = o1.ics_gui.fits.bss.properties lttmc.ics_gui.fits.bss.properties \
 				thor.ics_gui.fits.bss.properties ioi1.ics_gui.fits.bss.properties \
-				tlan-operator.ics_gui.fits.bss.properties ioi1.ioi.ics_gui.fits.bss.properties 
-
+				tlan-operator.ics_gui.fits.bss.properties ioi1.ioi.ics_gui.fits.bss.properties \
+				observer1.ics_gui.fits.bss.properties 
 PROPERTY_OBJS	= $(PROPERTY_SRCS:%.properties=$(BINDIR)/%.properties)
 
 SCRIPT_SRCS	= icsgui scsgui ccsgui frodospecgui spratgui ioigui xv_wrapper.csh
@@ -214,6 +215,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.50  2014/09/04 13:29:40  cjm
+# Property updates for sprat. frodospecgui / spratgui / ioigui scripts added.
+#
 # Revision 0.49  2014/04/04 14:42:21  cjm
 # Added IcsGUISpratConfigAADialog.java and various config files.
 #
