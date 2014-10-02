@@ -1,6 +1,6 @@
 #!/bin/csh
-# $Header: /home/cjm/cvs/ics_gui/scripts/icsgui_make_deployment,v 1.10 2013-07-24 10:55:13 cjm Exp $
-# Version: $Revision: 1.10 $
+# $Header: /home/cjm/cvs/ics_gui/scripts/icsgui_make_deployment,v 1.11 2014-10-02 15:24:40 cjm Exp $
+# Version: $Revision: 1.11 $
 # By $Author: cjm $
 # Make a deployment tar file.
 # This contains:
@@ -24,6 +24,9 @@ switch ( ${machine_name} )
 	set camera_name = "ratcam"
 	breaksw
     case "tlan-operator":
+	set camera_name = "o"
+	breaksw
+    case "observer1":
 	set camera_name = "o"
 	breaksw
     case "ftntmc":
