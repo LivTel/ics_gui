@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUIConfigProperties.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.25 2014-04-04 11:17:00 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.26 2015-06-09 13:13:23 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -30,14 +30,14 @@ import ngat.phase2.*;
  * in a Java properties file and this class extends java.util.Properties
  * @see java.util.Properties
  * @author Chris Mottram
- * @version $Revision: 0.25 $
+ * @version $Revision: 0.26 $
  */
 public class IcsGUIConfigProperties extends Properties
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.25 2014-04-04 11:17:00 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.26 2015-06-09 13:13:23 cjm Exp $");
 	/**
 	 * Configuration type specifier:CCD (RATCam).
 	 */
@@ -91,6 +91,10 @@ public class IcsGUIConfigProperties extends Properties
 	 */
 	public final static int CONFIG_TYPE_SPECTROGRAPH_SPRAT        = 12;
 	/**
+	 * Configuration type specifier:Spectrograph (LOTUS).
+	 */
+	public final static int CONFIG_TYPE_SPECTROGRAPH_LOTUS        = 13;
+	/**
 	 * List of legal values that can be held in the config type field.
 	 * @see #CONFIG_TYPE_CCD_RATCAM
 	 * @see #CONFIG_TYPE_SPECTROGRAPH_MES
@@ -105,12 +109,13 @@ public class IcsGUIConfigProperties extends Properties
 	 * @see #CONFIG_TYPE_CCD_O
 	 * @see #CONFIG_TYPE_POLARIMETER_RINGO3
 	 * @see #CONFIG_TYPE_SPECTROGRAPH_SPRAT
+	 * @see #CONFIG_TYPE_SPECTROGRAPH_LOTUS
 	 */
 	public final static int CONFIG_TYPE_LIST[] = {CONFIG_TYPE_CCD_RATCAM,CONFIG_TYPE_SPECTROGRAPH_MES,
 		CONFIG_TYPE_SPECTROGRAPH_NUVIEW,CONFIG_TYPE_INFRA_RED_SUPIRCAM,CONFIG_TYPE_SPECTROGRAPH_FTSPEC,
 		CONFIG_TYPE_POLARIMETER_RINGOSTAR,CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC,CONFIG_TYPE_CCD_RISE,
 		CONFIG_TYPE_POLARIMETER_RINGO2,CONFIG_TYPE_CCD_THOR,CONFIG_TYPE_CCD_O,CONFIG_TYPE_POLARIMETER_RINGO3,
-						      CONFIG_TYPE_SPECTROGRAPH_SPRAT};
+						      CONFIG_TYPE_SPECTROGRAPH_SPRAT,CONFIG_TYPE_SPECTROGRAPH_LOTUS};
 	/**
 	 * Default filename for properties file.
 	 */
@@ -248,6 +253,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * @see #getOConfigById
 	 * @see #getRingo3PolarimeterConfigById
 	 * @see #getSpratConfigById
+	 * @see #getLOTUSConfigById
 	 */
 	public InstrumentConfig getConfigById(int id) throws NumberFormatException, IllegalArgumentException
 	{
@@ -296,6 +302,9 @@ public class IcsGUIConfigProperties extends Properties
 				break;
 			case CONFIG_TYPE_SPECTROGRAPH_SPRAT:
 				c = getSpratConfigById(id);
+				break;
+			case CONFIG_TYPE_SPECTROGRAPH_LOTUS:
+				c = getLOTUSConfigById(id);
 				break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":getConfigById:Id "
@@ -457,6 +466,19 @@ public class IcsGUIConfigProperties extends Properties
 				remove(configIdStringSlitPosition(id));
 				remove(configIdStringGrismPosition(id));
 				remove(configIdStringGrismRotation(id));
+				remove(configIdStringWindowFlags(id));
+				for(j=1;j<2;j++)
+				{
+					remove(configIdWindowStringXStart(id,j));
+					remove(configIdWindowStringYStart(id,j));
+					remove(configIdWindowStringXEnd(id,j));
+					remove(configIdWindowStringYEnd(id,j));
+				}
+				break;
+			case CONFIG_TYPE_SPECTROGRAPH_LOTUS:
+				remove(configIdStringXBin(id));
+				remove(configIdStringYBin(id));
+				remove(configIdStringSlitWidth(id));
 				remove(configIdStringWindowFlags(id));
 				for(j=1;j<2;j++)
 				{
@@ -665,6 +687,28 @@ public class IcsGUIConfigProperties extends Properties
 					remove(configIdStringGrismPosition(i));
 					setConfigGrismRotation(i-1,getConfigGrismRotation(i));
 					remove(configIdStringGrismRotation(i));
+
+					setConfigWindowFlags(i-1,getConfigWindowFlags(i));
+					remove(configIdStringWindowFlags(i));
+					for(j=1;j<2;j++)
+					{
+						setConfigXStart(i-1,j,getConfigXStart(i,j));
+						remove(configIdWindowStringXStart(i,j));
+						setConfigYStart(i-1,j,getConfigYStart(i,j));
+						remove(configIdWindowStringYStart(i,j));
+						setConfigXEnd(i-1,j,getConfigXEnd(i,j));
+						remove(configIdWindowStringXEnd(i,j));
+						setConfigYEnd(i-1,j,getConfigYEnd(i,j));
+						remove(configIdWindowStringYEnd(i,j));
+					}
+					break;
+				case CONFIG_TYPE_SPECTROGRAPH_LOTUS:
+					setConfigXBin(i-1,getConfigXBin(i));
+					remove(configIdStringXBin(i));
+					setConfigYBin(i-1,getConfigYBin(i));
+					remove(configIdStringYBin(i));
+					setConfigSlitWidth(i-1,getConfigSlitWidth(i));
+					remove(configIdStringSlitWidth(i));
 
 					setConfigWindowFlags(i-1,getConfigWindowFlags(i));
 					remove(configIdStringWindowFlags(i));
@@ -1673,6 +1717,64 @@ public class IcsGUIConfigProperties extends Properties
 		setProperty(configIdStringGrismRotation(id),grismRotationString);
 	}
 
+	/**
+	 * Method to get the slit width of configuration id id as a string.
+	 * This is a LOTUS only configuration value.
+	 * @param id The id of the configuration.
+	 * @return The configuration slit position.
+	 * @exception IllegalArgumentException Thrown if the relevant property 
+	 * 	"ccs_gui_config."id".slit.width" does not contain either "narrow" or "wide".
+	 * @see ngat.phase2.LOTUSConfig#SLIT_WIDTH_NARROW
+	 * @see ngat.phase2.LOTUSConfig#SLIT_WIDTH_WIDE
+	 */
+	public int getConfigSlitWidth(int id) throws IllegalArgumentException
+	{
+		String s = null;
+
+		s = getProperty(configIdStringSlitWidth(id));
+		if(s.equals("narrow"))
+			return LOTUSConfig.SLIT_WIDTH_NARROW;
+		else if (s.equals("wide"))
+			return LOTUSConfig.SLIT_WIDTH_WIDE;
+		throw new IllegalArgumentException(this.getClass().getName()+
+						   ":getConfigSlitWidth:Illegal slit width string:"+s);
+	}
+
+	/**
+	 * Method to get the slit width of configuration id id as a string.
+	 * @param id The id of the configuration.
+	 * @return The configuration slit position as a string.
+	 */
+	public String getConfigSlitWidthString(int id)
+	{
+		return getProperty(configIdStringSlitWidth(id));
+	}
+
+	/**
+	 * Method to set the slit width of configuration id id.
+	 * This is a LOTUS only configuration value.
+	 * @param id The id of the configuration.
+	 * @param width The configuration slit width.
+	 * @exception IllegalArgumentException Thrown if the slit width can't be mapped to a string.
+	 * @see ngat.phase2.LOTUSConfig#SLIT_WIDTH_NARROW
+	 * @see ngat.phase2.LOTUSConfig#SLIT_WIDTH_WIDE
+	 */
+	public void setConfigSlitWidth(int id,int width) throws IllegalArgumentException
+	{
+		String slitWidthString = null;
+
+		if(width == LOTUSConfig.SLIT_WIDTH_NARROW)
+			slitWidthString = "narrow";
+		else if(width == LOTUSConfig.SLIT_WIDTH_WIDE)
+			slitWidthString = "wide";
+		else
+		{
+			throw new IllegalArgumentException(this.getClass().getName()+
+							   ":setConfigSlitWidth:Illegal slit width:"+width);
+		}
+		setProperty(configIdStringSlitWidth(id),slitWidthString);
+	}
+
 // methods to create an instance of an instrument config
 	/**
 	 * Method to return a CCDConfig, constructed from the information against id id.
@@ -2349,6 +2451,63 @@ public class IcsGUIConfigProperties extends Properties
 		return c;
 	}
 
+	/**
+	 * Method to return a LOTUSConfig, constructed from the information against id id.
+	 * @param id The Id number.
+	 * @return The constructed LOTUSConfig.
+	 * @exception NumberFormatException Thrown if a numeric parameter is not returned from the properties
+	 * 	file as a legal number.
+	 * @exception IllegalArgumentException Thrown if the config id specified does not have a legal type.
+	 */
+	private LOTUSConfig getLOTUSConfigById(int id) throws NumberFormatException, IllegalArgumentException
+	{
+		LOTUSConfig c = null;
+		LOTUSDetector detector = null;
+		Window windowArray[];
+
+	// check type
+		if(getConfigType(id) != CONFIG_TYPE_SPECTROGRAPH_LOTUS)
+		{
+			throw new IllegalArgumentException(this.getClass().getName()+":getLOTUSConfigById:Id "
+				+id+" not a configuration of type LOTUS.");
+		}
+	// construct LOTUSConfig
+		c = new LOTUSConfig(getConfigName(id));
+		c.setCalibrateBefore(getConfigCalibrateBefore(id));
+		c.setCalibrateAfter(getConfigCalibrateAfter(id));
+		c.setSlitWidth(getConfigSlitWidth(id));
+	// setup detector
+		detector = new LOTUSDetector();
+		detector.setXBin(getConfigXBin(id));
+		detector.setYBin(getConfigYBin(id));
+	// setup window list
+		windowArray = new Window[detector.getMaxWindowCount()];
+		for(int i = 0; i < detector.getMaxWindowCount(); i++)
+		{
+		// Note, windows are only non-null if they are active in RCS created configs
+		// Lets re-create that effect here, we can use the config window flags.
+			if((getConfigWindowFlags(id) & (1<<i))>0)
+			{
+				windowArray[i] = new Window();
+
+				windowArray[i].setXs(getConfigXStart(id,i+1));
+				windowArray[i].setYs(getConfigYStart(id,i+1));
+				windowArray[i].setXe(getConfigXEnd(id,i+1));
+				windowArray[i].setYe(getConfigYEnd(id,i+1));
+			}
+			else
+				windowArray[i] = null;
+		}// end for on windows
+	// set windows into detector
+		detector.setWindows(windowArray);
+	// Note flags are held IN the window list, so must setWindowFlags AFTER detector windows set
+		detector.setWindowFlags(getConfigWindowFlags(id));
+	// set detector into config
+		c.setDetector(0,detector);
+	// return config
+		return c;
+	}
+
 // method to check values in the property file.
 	/**
 	 * Method to check whether a number is a legal configuration type number.
@@ -2661,6 +2820,17 @@ public class IcsGUIConfigProperties extends Properties
 	}
 
 	/**
+	 * Method to return a key for the slit width for a particular config id.
+	 * @param id The config id.
+	 * @return The key string.
+	 * @see #configIdString
+	 */
+	private String configIdStringSlitWidth(int id)
+	{
+		return new String(configIdString(id)+"slit.width");
+	}
+
+	/**
 	 * Method to return a partial key string for a configuration of a particular id.
 	 * @param id The Id of the required configuration.
 	 * @return A string suitable for use as a partial key in the hashtable.
@@ -2739,6 +2909,9 @@ public class IcsGUIConfigProperties extends Properties
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.25  2014/04/04 11:17:00  cjm
+// Added Sprat configs.
+//
 // Revision 0.24  2013/06/04 08:08:41  cjm
 // Changes for IO:O to support neutral density filter slides.
 //
