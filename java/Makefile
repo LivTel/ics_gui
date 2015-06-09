@@ -1,5 +1,5 @@
 # Makefile
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.51 2014-10-02 15:35:51 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.52 2015-06-09 13:16:06 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -22,7 +22,7 @@ SERVER_SRCS	= IcsGUIISSServer.java IcsGUIISSServerConnectionThread.java \
 CONFIG_SRCS	= IcsGUIConfigProperties.java IcsGUIConfigListDialog.java CcsGUIConfigButtonListener.java \
 		IcsGUICCDConfigAADialog.java IcsGUILowResSpecConfigAADialog.java IcsGUIIRCamConfigAADialog.java \
 		IcsGUIFixedFormatSpecConfigAADialog.java IcsGUIPolarimeterConfigAADialog.java \
-		IcsGUIFrodoSpecConfigAADialog.java IcsGUIRISEConfigAADialog.java \
+		IcsGUIFrodoSpecConfigAADialog.java IcsGUILOTUSConfigAADialog.java IcsGUIRISEConfigAADialog.java \
 		IcsGUIRingo2PolarimeterConfigAADialog.java IcsGUIRingo3PolarimeterConfigAADialog.java \
 		IcsGUISpratConfigAADialog.java IcsGUITHORConfigAADialog.java \
 		IcsGUIOConfigAADialog.java CcsConfigAADialogListener.java 
@@ -59,7 +59,8 @@ CCS_GUI_PROPERTY_SRCS	= ltccd2.ccs_gui.properties ltccd4.ccs_gui.properties \
 	rise.ccs_gui.properties ltobs9.o.ccs_gui.properties o1.ccs_gui.properties ringo3.ccs_gui.properties \
 	ringo3-1.ccs_gui.properties ioi1.ccs_gui.properties tlan-operator.ccs_gui.properties \
 	frodospec1.frodospec.ccs_gui.properties frodospec1.sprat.ccs_gui.properties sprat1.sprat.ccs_gui.properties \
-	ioi1.ioi.ccs_gui.properties ioi1.sprat.ccs_gui.properties observer1.ccs_gui.properties 
+	ioi1.ioi.ccs_gui.properties ioi1.sprat.ccs_gui.properties observer1.ccs_gui.properties \
+	lotus1.lotus.ccs_gui.properties 
 # No longer used
 #ltccd1.ccs_gui.properties ltccd3.ccs_gui.properties ftccd1.ccs_gui.properties ftccd2.ccs_gui.properties 
 # spectrograph.scs_gui.properties ltobs9.fartcam.ccs_gui.properties ltobs9.dillcamsouth.ccs_gui.properties 
@@ -77,7 +78,8 @@ CCS_GUI_CONFIG_PROPERTY_SRCS = ltccd2.ccs_gui_config.properties ltccd4.ccs_gui_c
 	ringo3-1.ccs_gui_config.properties ioi1.ccs_gui_config.properties tlan-operator.ccs_gui_config.properties \
 	frodospec1.frodospec.ccs_gui_config.properties frodospec1.sprat.ccs_gui_config.properties \
 	sprat1.sprat.ccs_gui_config.properties ioi1.ioi.ccs_gui_config.properties \
-	ioi1.sprat.ccs_gui_config.properties observer1.ccs_gui_config.properties 
+	ioi1.sprat.ccs_gui_config.properties observer1.ccs_gui_config.properties \
+	lotus1.lotus.ccs_gui_config.properties 
 # No longer used
 #ltccd1.ccs_gui_config.properties ltccd3.ccs_gui_config.properties ftccd1.ccs_gui_config.properties 
 # ftccd2.ccs_gui_config.properties supircam1.ccs_gui_config.properties ftspec1.ccs_gui_config.properties 
@@ -93,7 +95,8 @@ CCS_GUI_FITS_PROPERTY_SRCS = ltccd2.ccs_gui.fits.properties ltccd4.ccs_gui.fits.
 	o1.ccs_gui.fits.properties ringo3.ccs_gui.fits.properties ringo3-1.ccs_gui.fits.properties \
 	ioi1.ccs_gui.fits.properties tlan-operator.ccs_gui.fits.properties \
 	frodospec1.ccs_gui.fits.properties \
-	sprat1.ccs_gui.fits.properties ioi1.ccs_gui.fits.properties observer1.ccs_gui.fits.properties 
+	sprat1.ccs_gui.fits.properties ioi1.ccs_gui.fits.properties observer1.ccs_gui.fits.properties \
+	lotus1.ccs_gui.fits.properties 
 # No longer used
 #ltccd1.ccs_gui.fits.properties ltccd3.ccs_gui.fits.properties ftccd1.ccs_gui.fits.properties 
 # ftccd2.ccs_gui.fits.properties ftspec1.ccs_gui.fits.properties ftspec2.ccs_gui.fits.properties 
@@ -105,7 +108,7 @@ CCS_GUI_FITS_BSS_PROPERTY_SRCS = o1.ics_gui.fits.bss.properties lttmc.ics_gui.fi
 				observer1.ics_gui.fits.bss.properties 
 PROPERTY_OBJS	= $(PROPERTY_SRCS:%.properties=$(BINDIR)/%.properties)
 
-SCRIPT_SRCS	= icsgui scsgui ccsgui frodospecgui spratgui ioigui xv_wrapper.csh
+SCRIPT_SRCS	= icsgui scsgui ccsgui frodospecgui spratgui ioigui lotusgui xv_wrapper.csh
 SCRIPT_OBJS	= $(SCRIPT_SRCS:%=$(BINDIR)/%)
 
 GIF_SRCS	= lt.gif lt_icon.gif ratcam.gif ratcam_ltccd1.gif ratcam_ftccd1.gif ratcam_ftccd2.gif \
@@ -163,6 +166,9 @@ $(BINDIR)/spratgui: spratgui
 $(BINDIR)/ioigui: ioigui
 	$(CP) ioigui $@
 
+$(BINDIR)/lotusgui: lotusgui
+	$(CP) lotusgui $@
+
 $(BINDIR)/xv_wrapper.csh: xv_wrapper.csh
 	$(CP) xv_wrapper.csh $@
 
@@ -215,6 +221,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.51  2014/10/02 15:35:51  cjm
+# Added observer1.
+#
 # Revision 0.50  2014/09/04 13:29:40  cjm
 # Property updates for sprat. frodospecgui / spratgui / ioigui scripts added.
 #
