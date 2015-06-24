@@ -1,5 +1,5 @@
 # Makefile
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.52 2015-06-09 13:16:06 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.53 2015-06-24 13:29:58 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -60,7 +60,7 @@ CCS_GUI_PROPERTY_SRCS	= ltccd2.ccs_gui.properties ltccd4.ccs_gui.properties \
 	ringo3-1.ccs_gui.properties ioi1.ccs_gui.properties tlan-operator.ccs_gui.properties \
 	frodospec1.frodospec.ccs_gui.properties frodospec1.sprat.ccs_gui.properties sprat1.sprat.ccs_gui.properties \
 	ioi1.ioi.ccs_gui.properties ioi1.sprat.ccs_gui.properties observer1.ccs_gui.properties \
-	lotus1.lotus.ccs_gui.properties 
+	lotus1.lotus.ccs_gui.properties lotus2.lotus.ccs_gui.properties ltobs9.lotus.ccs_gui.properties
 # No longer used
 #ltccd1.ccs_gui.properties ltccd3.ccs_gui.properties ftccd1.ccs_gui.properties ftccd2.ccs_gui.properties 
 # spectrograph.scs_gui.properties ltobs9.fartcam.ccs_gui.properties ltobs9.dillcamsouth.ccs_gui.properties 
@@ -79,7 +79,7 @@ CCS_GUI_CONFIG_PROPERTY_SRCS = ltccd2.ccs_gui_config.properties ltccd4.ccs_gui_c
 	frodospec1.frodospec.ccs_gui_config.properties frodospec1.sprat.ccs_gui_config.properties \
 	sprat1.sprat.ccs_gui_config.properties ioi1.ioi.ccs_gui_config.properties \
 	ioi1.sprat.ccs_gui_config.properties observer1.ccs_gui_config.properties \
-	lotus1.lotus.ccs_gui_config.properties 
+	lotus1.lotus.ccs_gui_config.properties lotus2.lotus.ccs_gui_config.properties 
 # No longer used
 #ltccd1.ccs_gui_config.properties ltccd3.ccs_gui_config.properties ftccd1.ccs_gui_config.properties 
 # ftccd2.ccs_gui_config.properties supircam1.ccs_gui_config.properties ftspec1.ccs_gui_config.properties 
@@ -96,7 +96,7 @@ CCS_GUI_FITS_PROPERTY_SRCS = ltccd2.ccs_gui.fits.properties ltccd4.ccs_gui.fits.
 	ioi1.ccs_gui.fits.properties tlan-operator.ccs_gui.fits.properties \
 	frodospec1.ccs_gui.fits.properties \
 	sprat1.ccs_gui.fits.properties ioi1.ccs_gui.fits.properties observer1.ccs_gui.fits.properties \
-	lotus1.ccs_gui.fits.properties 
+	lotus1.ccs_gui.fits.properties lotus2.ccs_gui.fits.properties 
 # No longer used
 #ltccd1.ccs_gui.fits.properties ltccd3.ccs_gui.fits.properties ftccd1.ccs_gui.fits.properties 
 # ftccd2.ccs_gui.fits.properties ftspec1.ccs_gui.fits.properties ftspec2.ccs_gui.fits.properties 
@@ -119,6 +119,9 @@ GIF_OBJS	= $(GIF_SRCS:%=$(BINDIR)/%)
 JPG_SRCS	= ringo-BD64106.jpg thor.jpg
 JPG_OBJS	= $(JPG_SRCS:%=$(BINDIR)/%)
 
+PNG_SRCS	= lotus.png
+PNG_OBJS	= $(PNG_SRCS:%=$(BINDIR)/%)
+
 SOUND_SRCS	= wav/command_completed.wav wav/command_failed.wav wav/filename.wav \
 		wav/welcome.wav wav/iss_message.wav \
 		wav/hal1moment.wav wav/halfault.wav wav/halfunctnl.wav wav/halgoodevening.wav wav/halmessage4u.wav \
@@ -127,7 +130,7 @@ SOUND_OBJS	= $(SOUND_SRCS:%=$(BINDIR)/%)
 
 
 
-top: $(OBJS) properties gifs jpgs scripts sounds docs
+top: $(OBJS) properties gifs jpgs pngs scripts sounds docs
 
 #
 # java sources
@@ -189,6 +192,14 @@ $(BINDIR)/%.jpg: %.jpg
 	$(CP) $< $@
 
 #
+# pngs
+#
+pngs: $(PNG_OBJS) 
+
+$(BINDIR)/%.png: %.png
+	$(CP) $< $@
+
+#
 # sounds
 #
 sounds: $(SOUND_OBJS) 
@@ -221,6 +232,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.52  2015/06/09 13:16:06  cjm
+# Added support for LOTUS.
+#
 # Revision 0.51  2014/10/02 15:35:51  cjm
 # Added observer1.
 #
