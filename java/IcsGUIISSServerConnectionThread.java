@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUIISSServerConnectionThread.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIISSServerConnectionThread.java,v 1.1 2011-11-07 17:07:34 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIISSServerConnectionThread.java,v 1.2 2015-09-02 14:58:17 cjm Exp $
 import java.lang.*;
 import java.lang.reflect.InvocationTargetException;
 import java.io.*;
@@ -39,14 +39,14 @@ import ngat.swing.GUIMessageDialogShower;
  * This class extends the TCPServerConnectionThread class for the IcsGUI application. This
  * allows IcsGUI to emulate the ISS's response to the instrument sending it commands.
  * @author Chris Mottram
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class IcsGUIISSServerConnectionThread extends TCPServerConnectionThread
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIISSServerConnectionThread.java,v 1.1 2011-11-07 17:07:34 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIISSServerConnectionThread.java,v 1.2 2015-09-02 14:58:17 cjm Exp $");
 	/**
 	 * Default time taken to respond to a command.
 	 */
@@ -160,6 +160,14 @@ public class IcsGUIISSServerConnectionThread extends TCPServerConnectionThread
 						((OFFSET_RA_DEC)command).getDecOffset()+" and press Ok."),
 						" ISS Command Received ",JOptionPane.INFORMATION_MESSAGE));
 				}
+				else if(command instanceof OFFSET_X_Y)
+				{
+					SwingUtilities.invokeAndWait(new GUIMessageDialogShower((Component)null,
+						(Object)("Please process Command "+command.getClass().getName()+
+						":"+((OFFSET_X_Y)command).getXOffset()+","+
+						((OFFSET_X_Y)command).getYOffset()+" and press Ok."),
+						" ISS Command Received ",JOptionPane.INFORMATION_MESSAGE));
+				}
 				else
 				{
 					SwingUtilities.invokeAndWait(new GUIMessageDialogShower((Component)null,
@@ -270,6 +278,18 @@ public class IcsGUIISSServerConnectionThread extends TCPServerConnectionThread
 			offsetRaDecDone.setSuccessful(true);
 			done = offsetRaDecDone;
 		}
+		if(command instanceof OFFSET_X_Y)
+		{
+			OFFSET_X_Y offsetXYCommand = (OFFSET_X_Y)command;
+			OFFSET_X_Y_DONE offsetXYDone = new OFFSET_X_Y_DONE(command.getId());
+
+			parent.log(command.getClass().getName()+" to "+
+				offsetXYCommand.getXOffset()+","+offsetXYCommand.getYOffset()+".");
+			offsetXYDone.setErrorNum(0);
+			offsetXYDone.setErrorString("");
+			offsetXYDone.setSuccessful(true);
+			done = offsetXYDone;
+		}
 		if(command instanceof OFFSET_ROTATOR)
 		{
 			OFFSET_ROTATOR offsetRotatorCommand = (OFFSET_ROTATOR)command;
@@ -327,6 +347,9 @@ public class IcsGUIISSServerConnectionThread extends TCPServerConnectionThread
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2011/11/07 17:07:34  cjm
+// Initial revision
+//
 // Revision 0.12  2006/05/16 17:12:16  cjm
 // gnuify: Added GNU General Public License.
 //
