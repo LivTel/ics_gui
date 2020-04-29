@@ -1,5 +1,5 @@
 # Makefile
-# $Header: /home/cjm/cvs/ics_gui/Makefile,v 1.3 2007-09-26 17:40:32 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/Makefile,v 1.4 2020-04-29 13:56:15 cjm Exp $ 
 
 include ../Makefile.common
 
@@ -46,10 +46,13 @@ backup: checkin
 	do \
 		(echo backup in $$i...; cd $$i; $(MAKE) backup); \
 	done;
-	tar cvf $(BACKUP_DIR)/ccs_gui.tar .
-	compress $(BACKUP_DIR)/ccs_gui.tar
+	tar cvf $(BACKUP_DIR)/ics_gui.tar .
+	compress $(BACKUP_DIR)/ics_gui.tar
 
 # $Log: not supported by cvs2svn $
+# Revision 1.3  2007/09/26 17:40:32  cjm
+# Swaped back to cd's - Solaris make doesn't support -C.
+#
 # Revision 1.2  2007/01/09 15:21:56  cjm
 # Swapped 'cd's for $(MAKE) -C.
 #
