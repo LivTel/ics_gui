@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.28 2014-09-02 10:01:39 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.29 2020-04-29 13:52:26 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -40,14 +40,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 1.28 $
+ * @version $Revision: 1.29 $
  */
 public class IcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.28 2014-09-02 10:01:39 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.29 2020-04-29 13:52:26 cjm Exp $");
 	/**
 	 * Internal constant used when converting temperatures in centigrade (from the CCD controller) to Kelvin.
 	 */
@@ -1490,7 +1490,7 @@ public class IcsGUI
 	}
 
 	/**
-	 * Method to set the CCD Temperature label for a <n> camera instrument.
+	 * Method to set the CCD Temperature label for a &lt;n&gt; camera instrument.
 	 * The temperatures are converted into degrees centigrade and displayed.
 	 * @param labelList A Vector containing a list of string labels, one for each temperature.
 	 * @param temperatureList A list of Double objects, containing the temperature in degrees Kelvin.
@@ -1959,6 +1959,10 @@ public class IcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.28  2014/09/02 10:01:39  cjm
+// Added an empty -instrument_config to parseArguments, so
+// parseArguments does not give an error. The argument is actually handled in parsePropertyFilenameArgument.
+//
 // Revision 1.27  2013/07/24 12:32:18  cjm
 // New setFiltersSelectedLabel method with 3 parameters written for IO:O filter wheels.
 //

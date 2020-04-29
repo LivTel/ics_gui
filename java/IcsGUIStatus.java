@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // CcsGUIStatus.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIStatus.java,v 0.7 2008-04-29 11:03:33 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIStatus.java,v 0.8 2020-04-29 13:52:26 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -28,14 +28,14 @@ import ngat.sound.*;
 /**
  * This class holds status information for the CcsGUI program.
  * @author Chris Mottram
- * @version $Revision: 0.7 $
+ * @version $Revision: 0.8 $
  */
 public class CcsGUIStatus
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIStatus.java,v 0.7 2008-04-29 11:03:33 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIStatus.java,v 0.8 2020-04-29 13:52:26 cjm Exp $");
 	/**
 	 * File name containing properties for ccs gui.
 	 */
@@ -200,7 +200,7 @@ public class CcsGUIStatus
 	 * Play a sample specified by the property.
 	 * @param audioThread The audio thread to play the sample with.
 	 * @param propertyName The name of a property key. The value contains a sample "name",
-	 *      or a list of names is available from the property key (&lt;property key&gt;.&lt;N&gt),
+	 *      or a list of names is available from the property key (&lt;property key&gt;.&lt;N&gt;),
 	 *      and a random name is selected.
 	 */
 	public void play(SoundThread audioThread,String propertyName)
@@ -305,6 +305,10 @@ public class CcsGUIStatus
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.7  2008/04/29 11:03:33  cjm
+// Added new loadInstrumentConfig with filename parameter to make use of new IcsGUIConfigProperties setPropertiesFilename
+// method.
+//
 // Revision 0.6  2006/05/16 17:12:17  cjm
 // gnuify: Added GNU General Public License.
 //
