@@ -1,24 +1,24 @@
 /*   
     Copyright 2006, Astrophysics Research Institute, Liverpool John Moores University.
 
-    This file is part of CcsGUI.
+    This file is part of IcsGUI.
 
-    CcsGUI is free software; you can redistribute it and/or modify
+    IcsGUI is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    CcsGUI is distributed in the hope that it will be useful,
+    IcsGUI is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with CcsGUI; if not, write to the Free Software
+    along with IcsGUI; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUIOConfigAADialog.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIOConfigAADialog.java,v 1.4 2013-06-04 09:00:22 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIOConfigAADialog.java,v 1.5 2020-05-05 10:20:39 cjm Exp $
 import java.io.*;
 import java.lang.*;
 import java.util.*;
@@ -35,14 +35,14 @@ import ngat.util.*;
 /**
  * This class provides an Add and Amend facility for 'O' optical camera Configurations.
  * @author Chris Mottram
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIOConfigAADialog.java,v 1.4 2013-06-04 09:00:22 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIOConfigAADialog.java,v 1.5 2020-05-05 10:20:39 cjm Exp $");
 	/**
 	 * Button height.
 	 */
@@ -74,15 +74,15 @@ public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 	/**
 	 * The listener for this dialog.
 	 */
-	CcsConfigAADialogListener listener = null;
+	IcsConfigAADialogListener listener = null;
 	/**
 	 * A reference to the IcsGUI instance, used for logging calls.
 	 */
 	protected IcsGUI icsGUI = null;
 	/**
-	 * A copy of the reference to the instance of CcsGUIStatus.
+	 * A copy of the reference to the instance of IcsGUIStatus.
 	 */
-	protected CcsGUIStatus icsGUIStatus = null;
+	protected IcsGUIStatus icsGUIStatus = null;
 
 	JTextField nameTextField = null;
 	JCheckBox calibrateBeforeCheckBox = null;
@@ -260,10 +260,10 @@ public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 
 	/**
 	 * Set the IcsGUIStatus reference. Used to get a list of valid filters for the combo boxs.
-	 * @param s The instance of CcsGUIStatus to use.
+	 * @param s The instance of IcsGUIStatus to use.
 	 * @see #icsGUIStatus
 	 */
-	public void setIcsGUIStatus(CcsGUIStatus s)
+	public void setIcsGUIStatus(IcsGUIStatus s)
 	{
 		icsGUIStatus = s;
 	}
@@ -349,7 +349,7 @@ public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 	 * the listener is informed. Only one listener can be added to this dialog.
 	 * @param l The listener to set for this dialog.
 	 */
-	public void addCcsConfigAADialogListener(CcsConfigAADialogListener l)
+	public void addIcsConfigAADialogListener(IcsConfigAADialogListener l)
 	{
 		listener = l;
 	}
@@ -528,6 +528,9 @@ public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.4  2013/06/04 09:00:22  cjm
+// Fixed filter slide indexing problems.
+//
 // Revision 1.3  2013/06/04 08:08:41  cjm
 // Added support for neutral density filter slides.
 //
