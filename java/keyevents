@@ -1,0 +1,3 @@
+#!/bin/csh
+# Get used menuItem KeyEvents
+grep JMenuItem IcsGUI.java | grep KeyEvent | sed "s/.*KeyEvent.\(VK_.\).*/\1/" | sort

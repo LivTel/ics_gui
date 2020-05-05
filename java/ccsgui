@@ -1,0 +1,3 @@
+#!/bin/csh
+cd ${LT_BIN_HOME}/ccs_gui/java
+java IcsGUI -issspoof $* &
