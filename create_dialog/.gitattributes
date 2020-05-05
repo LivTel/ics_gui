@@ -1,0 +1,14 @@
+*.java filter=rcs-keywords
+Makefile filter=rcs-keywords
+Makefile.common filter=rcs-keywords
+*.properties filter=rcs-keywords
+*gui filter=rcs-keywords
+keyevents filter=rcs-keywords
+xv_wrapper.csh filter=rcs-keywords
+*.tex filter=rcs-keywords
+icsgui_make_deployment filter=rcs-keywords
+icsgui_tar_install filter=rcs-keywords
+README filter=rcs-keywords
+README.DEPLOYMENT filter=rcs-keywords
+tmc_cshrc filter=rcs-keywords
+tmc_cshrc_edit.awk filter=rcs-keywords
