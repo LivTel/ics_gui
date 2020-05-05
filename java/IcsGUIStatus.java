@@ -1,24 +1,24 @@
 /*   
     Copyright 2006, Astrophysics Research Institute, Liverpool John Moores University.
 
-    This file is part of CcsGUI.
+    This file is part of IcsGUI.
 
-    CcsGUI is free software; you can redistribute it and/or modify
+    IcsGUI is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    CcsGUI is distributed in the hope that it will be useful,
+    IcsGUI is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with CcsGUI; if not, write to the Free Software
+    along with IcsGUI; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-// CcsGUIStatus.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIStatus.java,v 0.8 2020-04-29 13:52:26 cjm Exp $
+// IcsGUIStatus.java
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIStatus.java,v 0.9 2020-05-05 10:20:39 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -26,26 +26,26 @@ import java.util.*;
 import ngat.sound.*;
 
 /**
- * This class holds status information for the CcsGUI program.
+ * This class holds status information for the IcsGUI program.
  * @author Chris Mottram
- * @version $Revision: 0.8 $
+ * @version $Revision: 0.9 $
  */
-public class CcsGUIStatus
+public class IcsGUIStatus
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIStatus.java,v 0.8 2020-04-29 13:52:26 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIStatus.java,v 0.9 2020-05-05 10:20:39 cjm Exp $");
 	/**
 	 * File name containing properties for ccs gui.
 	 */
-	private final static String PROPERTY_FILE_NAME = new String("./ccs_gui.properties");
+	private final static String PROPERTY_FILE_NAME = new String("./ics_gui.properties");
 	/**
 	 * The logging level.
 	 */
 	private int logLevel = 0;//CcsConstants.CCS_LOG_LEVEL_NONE;
 	/**
-	 * A list of properties held in the properties file. This contains configuration information in ccs_gui
+	 * A list of properties held in the properties file. This contains configuration information in ics_gui
 	 * that needs to be changed irregularily.
 	 */
 	private Properties properties = null;
@@ -65,7 +65,7 @@ public class CcsGUIStatus
 	 * @see #properties
 	 * @see #configProperties
 	 */
-	public CcsGUIStatus()
+	public IcsGUIStatus()
 	{
 		super();
 		clientThreadList = new Vector();
@@ -75,6 +75,8 @@ public class CcsGUIStatus
 
 	/**
 	 * The load method for the class. This loads the property file from disc, using the default filename.
+	 * @throws FileNotFoundException Thrown if the load fails.
+	 * @throws IOException  Thrown if the load fails.
 	 * @see #load(java.lang.String)
 	 * @see #PROPERTY_FILE_NAME
 	 */
@@ -86,6 +88,8 @@ public class CcsGUIStatus
 	/**
 	 * The load method for the class. This loads the property file from disc, from the specified filename.
 	 * @param filename The filename of a valid properties file to load.
+	 * @throws FileNotFoundException Thrown if the load fails.
+	 * @throws IOException  Thrown if the load fails.
 	 * @see #properties
 	 */
 	public void load(String filename) throws FileNotFoundException,IOException
@@ -101,6 +105,9 @@ public class CcsGUIStatus
 	 * Method to load Instrument Configurations from a non-standard property filename.
 	 * Calls configProperties.setPropertiesFilename to set the filename.
 	 * Calls configProperties.load to load the properties filename.
+	 * @param filename The filename to load the instrument configurations from.
+	 * @throws FileNotFoundException Thrown if the load fails.
+	 * @throws IOException  Thrown if the load fails.
 	 * @see #configProperties
 	 * @see IcsGUIConfigProperties#setPropertiesFilename
 	 * @see IcsGUIConfigProperties#load
@@ -114,6 +121,8 @@ public class CcsGUIStatus
 	/**
 	 * Method to load Instrument Configurations.
 	 * Calls configProperties.load.
+	 * @throws FileNotFoundException Thrown if the load fails.
+	 * @throws IOException  Thrown if the load fails.
 	 * @see #configProperties
 	 * @see IcsGUIConfigProperties#load
 	 */
@@ -125,6 +134,7 @@ public class CcsGUIStatus
 	/**
 	 * Method to save Instrument Configurations.
 	 * Calls configProperties.load.
+	 * @throws IOException  Thrown if saving the instrument config fails.
 	 * @see #configProperties
 	 * @see IcsGUIConfigProperties#save
 	 */
@@ -154,8 +164,9 @@ public class CcsGUIStatus
 	/**
 	 * Add a client thread to the list.
 	 * @param thread The thread to add.
+	 * @see #clientThreadList
 	 */
-	public synchronized void addClientThread(CcsGUIClientConnectionThread thread)
+	public synchronized void addClientThread(IcsGUIClientConnectionThread thread)
 	{
 		clientThreadList.addElement(thread);
 	}
@@ -163,23 +174,28 @@ public class CcsGUIStatus
 	/**
 	 * Get the thread at index index in the list
 	 * @param index The index in the list.
+	 * @return The IcsGUIClientConnectionThread instance at the index alement in clientThreadList.
+	 * @see #clientThreadList
 	 */
-	public synchronized CcsGUIClientConnectionThread clientThreadAt(int index)
+	public synchronized IcsGUIClientConnectionThread clientThreadAt(int index)
 	{
-		return (CcsGUIClientConnectionThread)clientThreadList.elementAt(index);
+		return (IcsGUIClientConnectionThread)clientThreadList.elementAt(index);
 	}
 
 	/**
 	 * Delete a client thread from the list.
 	 * @param thread The thread to add.
+	 * @see #clientThreadList
 	 */
-	public synchronized void removeClientThread(CcsGUIClientConnectionThread thread)
+	public synchronized void removeClientThread(IcsGUIClientConnectionThread thread)
 	{
 		clientThreadList.removeElement(thread);
 	}
 
 	/**
 	 * Method to get the number of client threads in the list.
+	 * @return The number of client threads in clientThreadList.
+	 * @see #clientThreadList
 	 */
 	public synchronized int clientThreadListCount()
 	{
@@ -305,6 +321,9 @@ public class CcsGUIStatus
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.8  2020/04/29 13:52:26  cjm
+// Fixed comment.
+//
 // Revision 0.7  2008/04/29 11:03:33  cjm
 // Added new loadInstrumentConfig with filename parameter to make use of new IcsGUIConfigProperties setPropertiesFilename
 // method.

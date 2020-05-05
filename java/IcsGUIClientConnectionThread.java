@@ -1,24 +1,24 @@
 /*   
     Copyright 2006, Astrophysics Research Institute, Liverpool John Moores University.
 
-    This file is part of CcsGUI.
+    This file is part of IcsGUI.
 
-    CcsGUI is free software; you can redistribute it and/or modify
+    IcsGUI is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    CcsGUI is distributed in the hope that it will be useful,
+    IcsGUI is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with CcsGUI; if not, write to the Free Software
+    along with IcsGUI; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-// CcsGUIClientConnectionThread.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.35 2013-07-24 12:32:21 cjm Exp $
+// IcsGUIClientConnectionThread.java
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIClientConnectionThread.java,v 0.36 2020-05-05 10:20:39 cjm Exp $
 
 import java.awt.*;
 import java.lang.*;
@@ -33,27 +33,30 @@ import ngat.message.ISS_INST.*;
 import ngat.util.StringUtilities;
 
 /**
- * The CcsGUIClientConnectionThread extends TCPClientConnectionThread. 
+ * The IcsGUIClientConnectionThread extends TCPClientConnectionThread. 
  * It implements the generic ISS instrument command protocol.
- * It is used to send commands from the CcsGUI to the Ccs.
+ * It is used to send commands from the IcsGUI to the Ccs.
  * @author Chris Mottram
- * @version $Revision: 0.35 $
+ * @version $Revision: 0.36 $
  */
-public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
+public class IcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.35 2013-07-24 12:32:21 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.36 2020-05-05 10:20:39 cjm Exp $");
 	/**
-	 * The CcsGUI object.
+	 * The IcsGUI object.
 	 */
 	private IcsGUI parent = null;
 
 	/**
 	 * A constructor for this class. Currently just calls the parent class's constructor.
+	 * @param address The client address to connect to for this connection.
+	 * @param portNumber The port number to use for this connection.
+	 * @param c The command to send over the connection to the client.
 	 */
-	public CcsGUIClientConnectionThread(InetAddress address,int portNumber,COMMAND c)
+	public IcsGUIClientConnectionThread(InetAddress address,int portNumber,COMMAND c)
 	{
 		super(address,portNumber,c);
 	}
@@ -316,7 +319,7 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	 */
 	private void printGetStatusDone(GET_STATUS_DONE getStatusDone)
 	{
-		CcsGUIStatus status = null;
+		IcsGUIStatus status = null;
 		Hashtable displayInfo = null;
 		String instrumentString = null;
 		String statusString = null;
@@ -513,6 +516,7 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 
 	/**
 	 * Method to display some status for FrodoSpec.
+	 * @param displayInfo The Hashtable containg status data for Frodospec.
 	 * @param getStatusDone The DONE object instance containing status data to display.
 	 * @see #processDone
 	 * @see #printGetStatusDone
@@ -825,6 +829,10 @@ public class CcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.35  2013/07/24 12:32:21  cjm
+// filter type for IO:O is now THREE_FILTERS, new setFiltersSelectedLabel method
+// with 3 parameters now invoked.
+//
 // Revision 0.34  2013/06/04 08:08:41  cjm
 // Changed as IO:Os filter wheel now renumbered.
 //
