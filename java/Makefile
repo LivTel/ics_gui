@@ -1,5 +1,5 @@
 # Makefile
-# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.56 2020-05-05 10:36:30 cjm Exp $ 
+# $Header: /home/cjm/cvs/ics_gui/java/Makefile,v 0.57 2020-05-05 13:46:31 cjm Exp $ 
 include ../../Makefile.common
 include	../Makefile.common
 
@@ -111,7 +111,7 @@ ICS_GUI_FITS_BSS_PROPERTY_SRCS = o1.ics_gui.fits.bss.properties lttmc.ics_gui.fi
 				observer1.ics_gui.fits.bss.properties ltoperator.ics_gui.fits.bss.properties 
 PROPERTY_OBJS	= $(PROPERTY_SRCS:%.properties=$(BINDIR)/%.properties)
 
-SCRIPT_SRCS	= icsgui scsgui ccsgui frodospecgui spratgui ioigui lotusgui xv_wrapper.csh
+SCRIPT_SRCS	= icsgui scsgui ccsgui frodospecgui spratgui ioigui lotusgui xv_wrapper.csh keyevents
 SCRIPT_OBJS	= $(SCRIPT_SRCS:%=$(BINDIR)/%)
 
 GIF_SRCS	= lt.gif lt_icon.gif ratcam.gif ratcam_ltccd1.gif ratcam_ftccd1.gif ratcam_ftccd2.gif \
@@ -222,7 +222,7 @@ checkout:
 	$(CO) $(CO_OPTIONS) $(MAIN_SRCS)
 
 checkin:
-	-$(CI) $(CI_OPTIONS) $(MAIN_SRCS)
+	-$(CI) $(CI_OPTIONS) $(MAIN_SRCS) $(PROPERTY_SRCS) $(SCRIPT_SRCS)
 
 clean: tidy
 	-$(RM) $(RM_OPTIONS) $(OBJS) $(DIALOG_SRCS)
@@ -235,6 +235,9 @@ backup: tidy
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.56  2020/05/05 10:36:30  cjm
+# Changed CcsGUI to IcsGUI. Changed ccs_gui to ics_gui. Changed CCS_GUI to ICS_GUI.
+#
 # Revision 0.55  2019/11/01 15:42:17  cjm
 # Added moptop1 configs.
 #
