@@ -24,7 +24,7 @@ end
 
 # Useful command aliass
 alias ccs_reboot       		'/${LT_HOME}/bin/scripts/ccs_reboot.csh'
-alias icsgui           		'/${LT_HOME}/bin/ccs_gui/java/icsgui'
+alias icsgui           		'/${LT_HOME}/bin/ics_gui/java/icsgui'
 alias myps             		'ps -e -o pid,pcpu,vsz,ruser,args'
 alias fits_add_keyword_value    '/${LT_HOME}/bin/ccd/misc/i386-linux/fits_add_keyword_value'
 alias fits_get_keyword_value    '/${LT_HOME}/bin/ccd/misc/i386-linux/fits_get_keyword_value'
