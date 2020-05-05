@@ -1,24 +1,24 @@
 /*   
     Copyright 2006, Astrophysics Research Institute, Liverpool John Moores University.
 
-    This file is part of CcsGUI.
+    This file is part of IcsGUI.
 
-    CcsGUI is free software; you can redistribute it and/or modify
+    IcsGUI is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    CcsGUI is distributed in the hope that it will be useful,
+    IcsGUI is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with CcsGUI; if not, write to the Free Software
+    along with IcsGUI; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-// CcsCommandDialog.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsCommandDialog.java,v 0.2 2006-05-16 17:12:11 cjm Exp $
+// IcsCommandDialog.java -*- mode: Fundamental;-*-
+// $Header: /home/cjm/cvs/ics_gui/java/IcsCommandDialog.java,v 0.3 2020-05-05 10:20:39 cjm Exp $
 
 import java.awt.*;
 import javax.swing.*;
@@ -28,12 +28,12 @@ import javax.swing.*;
  * which enables the send command dialogs to return something useful.
  * It is an abstract class, sub-classes must over-ride the <i>setID</i> method. 
  */
-public abstract class CcsCommandDialog extends JDialog
+public abstract class IcsCommandDialog extends JDialog
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsCommandDialog.java,v 0.2 2006-05-16 17:12:11 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsCommandDialog.java,v 0.3 2020-05-05 10:20:39 cjm Exp $");
 	/**
 	 * GUIDialogListener, holds a reference to callback when Ok/Cancel pressed.
 	 */
@@ -41,8 +41,10 @@ public abstract class CcsCommandDialog extends JDialog
 
 	/**
 	 * Constructor.
+	 * @param owner The frame owning this dialog.
+	 * @param title The title of this dialog.
 	 */
-	public CcsCommandDialog(Frame owner,String title)
+	public IcsCommandDialog(Frame owner,String title)
 	{
 		super(owner,title);
 	}
@@ -68,6 +70,9 @@ public abstract class CcsCommandDialog extends JDialog
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.2  2006/05/16 17:12:11  cjm
+// gnuify: Added GNU General Public License.
+//
 // Revision 0.1  1999/11/22 09:53:49  cjm
 // initial revision.
 //

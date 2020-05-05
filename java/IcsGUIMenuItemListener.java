@@ -1,24 +1,24 @@
 /*   
     Copyright 2006, Astrophysics Research Institute, Liverpool John Moores University.
 
-    This file is part of CcsGUI.
+    This file is part of IcsGUI.
 
-    CcsGUI is free software; you can redistribute it and/or modify
+    IcsGUI is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    CcsGUI is distributed in the hope that it will be useful,
+    IcsGUI is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with CcsGUI; if not, write to the Free Software
+    along with IcsGUI; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-// CcsGUIMenuItemListener.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIMenuItemListener.java,v 0.8 2011-11-07 17:07:34 cjm Exp $
+// IcsGUIMenuItemListener.java
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIMenuItemListener.java,v 0.9 2020-05-05 10:20:39 cjm Exp $
 import java.lang.*;
 import java.lang.reflect.*;
 import java.io.*;
@@ -31,14 +31,14 @@ import javax.swing.*;
 import ngat.util.ThreadMonitorFrame;
 
 /**
- * This class is an ActionListener for the CcsGUI menu bar items.
+ * This class is an ActionListener for the IcsGUI menu bar items.
  */
-public class CcsGUIMenuItemListener implements ActionListener
+public class IcsGUIMenuItemListener implements ActionListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIMenuItemListener.java,v 0.8 2011-11-07 17:07:34 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIMenuItemListener.java,v 0.9 2020-05-05 10:20:39 cjm Exp $");
 	/**
 	 * The parent to the menu item listener. The instance of the main program.
 	 */
@@ -68,19 +68,19 @@ public class CcsGUIMenuItemListener implements ActionListener
 	 * @see #uniqueCommandId
 	 * @see #dialogListener
 	 */
-	public CcsGUIMenuItemListener(IcsGUI p)
+	public IcsGUIMenuItemListener(IcsGUI p)
 	{
 		super();
 
 		parent = p;
 		dialogClassNameList = new Hashtable();
 		uniqueCommandId = 0;
-		dialogListener = new CcsGUIDialogListener(p);
+		dialogListener = new IcsGUIDialogListener(p);
 	}
 
 	/**
 	 * This fills the dialogClassNameList hashtable with
-	 * a mapping from menu item names to CcsCommandDialogs. The mapping between menu item name and
+	 * a mapping from menu item names to IcsCommandDialogs. The mapping between menu item name and
 	 * command dialog class name is held in the properties file, which must have been loaded before
 	 * this method is invoked.
 	 * <ul>
@@ -97,8 +97,8 @@ public class CcsGUIMenuItemListener implements ActionListener
 	 */
 	public void createMapping()
 	{
-		CcsCommandDialog dialog = null;
-		CcsGUIStatus status = null;
+		IcsCommandDialog dialog = null;
+		IcsGUIStatus status = null;
 		String menuName = null;
 		String dialogClassName = null;
 		int index;
@@ -144,9 +144,9 @@ public class CcsGUIMenuItemListener implements ActionListener
 					if(dialog instanceof CONFIGDialog)
 					{
 						CONFIGDialog configDialog = (CONFIGDialog)dialog;
-						CcsGUIConfigButtonListener configButtonListener = null;
+						IcsGUIConfigButtonListener configButtonListener = null;
 	
-						configButtonListener = new CcsGUIConfigButtonListener(parent,
+						configButtonListener = new IcsGUIConfigButtonListener(parent,
 							configDialog);
 						configDialog.addConfigButtonActionListener(configButtonListener);
 						configDialog.setConfigProperties(parent.getStatus().
@@ -172,7 +172,7 @@ public class CcsGUIMenuItemListener implements ActionListener
 	public void actionPerformed(ActionEvent event)
 	{
 		String commandString = event.getActionCommand();
-		CcsCommandDialog dialog = null;
+		IcsCommandDialog dialog = null;
 
 		if(commandString.equals("Exit"))
 		{
@@ -186,7 +186,7 @@ public class CcsGUIMenuItemListener implements ActionListener
 		}
 		if(commandString.equals("Thread Monitor"))
 		{
-			ThreadMonitorFrame threadMonitorFrame = new ThreadMonitorFrame("Ccs GUI");
+			ThreadMonitorFrame threadMonitorFrame = new ThreadMonitorFrame("Ics GUI");
 			threadMonitorFrame.getThreadMonitor().setUpdateTime(1000);
 			threadMonitorFrame.pack();
 			threadMonitorFrame.setVisible(true);
@@ -246,7 +246,7 @@ public class CcsGUIMenuItemListener implements ActionListener
 			return;
 		}
 	// get the dialog class name
-		dialog = (CcsCommandDialog)dialogClassNameList.get(commandString);
+		dialog = (IcsCommandDialog)dialogClassNameList.get(commandString);
 		if(dialog == null)
 		{
 			parent.error("Failed to find mapping to dialog for menu:"+commandString);
@@ -299,9 +299,18 @@ public class CcsGUIMenuItemListener implements ActionListener
 	 * <li>It invokes the constructor with parent.getFrame().
 	 * <li>The dialog instance is returned.
 	 * </ul>
+	 * @param dialogClassName The name of the dialog class to create an instance of.
+	 * @return An instance of the specified dialog.
+	 * @throws ClassNotFoundException Thrown if the dialog cannot be created.
+	 * @throws NoSuchMethodException Thrown if the dialog cannot be created.
+	 * @throws SecurityException Thrown if the dialog cannot be created.
+	 * @throws InstantiationException Thrown if the dialog cannot be created.
+	 * @throws IllegalAccessException Thrown if the dialog cannot be created.
+	 * @throws IllegalArgumentException Thrown if the dialog cannot be created.
+	 * @throws InvocationTargetException Thrown if the dialog cannot be created.
 	 * @see #parent
 	 */
-	private final CcsCommandDialog createDialog(String dialogClassName) throws ClassNotFoundException, 
+	private final IcsCommandDialog createDialog(String dialogClassName) throws ClassNotFoundException, 
 		NoSuchMethodException, SecurityException, InstantiationException, 
 		IllegalAccessException, IllegalArgumentException, InvocationTargetException
 	{
@@ -309,7 +318,7 @@ public class CcsGUIMenuItemListener implements ActionListener
 		Class parameterTypeArray[] = new Class[1];
 		Object parameterArray[] = new Object[1];
 		Constructor constructor = null;
-		CcsCommandDialog dialog = null;
+		IcsCommandDialog dialog = null;
 
 	// get the dialog Class object instance
 		try
@@ -350,7 +359,7 @@ public class CcsGUIMenuItemListener implements ActionListener
 		parameterArray[0] = (Frame)(parent.getFrame());
 		try
 		{
-			dialog = (CcsCommandDialog)constructor.newInstance(parameterArray);
+			dialog = (IcsCommandDialog)constructor.newInstance(parameterArray);
 		}
 		catch(InstantiationException e)
 		{
@@ -377,6 +386,9 @@ public class CcsGUIMenuItemListener implements ActionListener
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.8  2011/11/07 17:07:34  cjm
+// Added support for fake BSS server.
+//
 // Revision 0.7  2006/05/16 17:12:15  cjm
 // gnuify: Added GNU General Public License.
 //
