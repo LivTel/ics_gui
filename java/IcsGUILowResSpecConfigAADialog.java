@@ -1,24 +1,24 @@
 /*   
     Copyright 2006, Astrophysics Research Institute, Liverpool John Moores University.
 
-    This file is part of CcsGUI.
+    This file is part of IcsGUI.
 
-    CcsGUI is free software; you can redistribute it and/or modify
+    IcsGUI is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    CcsGUI is distributed in the hope that it will be useful,
+    IcsGUI is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with CcsGUI; if not, write to the Free Software
+    along with IcsGUI; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUILowResSpecConfigAADialog.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUILowResSpecConfigAADialog.java,v 0.3 2006-05-16 17:12:29 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUILowResSpecConfigAADialog.java,v 0.4 2020-05-05 10:20:39 cjm Exp $
 import java.lang.*;
 import java.util.*;
 import java.awt.*;
@@ -32,14 +32,14 @@ import ngat.swing.*;
 /**
  * This class provides an Add and Amend facility for Low Resolution Spectrograph Configurations.
  * @author Chris Mottram
- * @version $Revision: 0.3 $
+ * @version $Revision: 0.4 $
  */
 public class IcsGUILowResSpecConfigAADialog extends JDialog implements ActionListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUILowResSpecConfigAADialog.java,v 0.3 2006-05-16 17:12:29 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUILowResSpecConfigAADialog.java,v 0.4 2020-05-05 10:20:39 cjm Exp $");
 	/**
 	 * Button height.
 	 */
@@ -71,7 +71,7 @@ public class IcsGUILowResSpecConfigAADialog extends JDialog implements ActionLis
 	/**
 	 * The listener for this dialog.
 	 */
-	CcsConfigAADialogListener listener = null;
+	IcsConfigAADialogListener listener = null;
 
 	JTextField nameTextField = null;
 	JCheckBox calibrateBeforeCheckBox = null;
@@ -203,7 +203,7 @@ public class IcsGUILowResSpecConfigAADialog extends JDialog implements ActionLis
 	 * the listener is informed. Only one listener can be added to this dialog.
 	 * @param l The listener to set for this dialog.
 	 */
-	public void addCcsConfigAADialogListener(CcsConfigAADialogListener l)
+	public void addIcsConfigAADialogListener(IcsConfigAADialogListener l)
 	{
 		listener = l;
 	}
@@ -287,6 +287,9 @@ public class IcsGUILowResSpecConfigAADialog extends JDialog implements ActionLis
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.3  2006/05/16 17:12:29  cjm
+// gnuify: Added GNU General Public License.
+//
 // Revision 0.2  2001/07/10 18:21:28  cjm
 // Rewritten.
 //

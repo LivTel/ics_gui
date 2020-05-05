@@ -1,24 +1,24 @@
 /*   
     Copyright 2006, Astrophysics Research Institute, Liverpool John Moores University.
 
-    This file is part of CcsGUI.
+    This file is part of IcsGUI.
 
-    CcsGUI is free software; you can redistribute it and/or modify
+    IcsGUI is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    CcsGUI is distributed in the hope that it will be useful,
+    IcsGUI is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with CcsGUI; if not, write to the Free Software
+    along with IcsGUI; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUIConfigListDialog.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigListDialog.java,v 0.20 2015-06-09 13:13:39 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigListDialog.java,v 0.21 2020-05-05 10:20:39 cjm Exp $
 import java.lang.*;
 import java.util.*;
 import java.awt.*;
@@ -32,12 +32,12 @@ import ngat.swing.*;
 /**
  * This class provides a list of configurations for the instrument GUI. 
  */
-public class IcsGUIConfigListDialog extends JDialog implements ActionListener, CcsConfigAADialogListener
+public class IcsGUIConfigListDialog extends JDialog implements ActionListener, IcsConfigAADialogListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public static String RCSID = new String("$Id: IcsGUIConfigListDialog.java,v 0.20 2015-06-09 13:13:39 cjm Exp $");
+	public static String RCSID = new String("$Id: IcsGUIConfigListDialog.java,v 0.21 2020-05-05 10:20:39 cjm Exp $");
 	/**
 	 * String to go on buttons.
 	 */
@@ -200,9 +200,9 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	 */
 	private IcsGUI icsGUI = null;
 	/**
-	 * A copy of the reference to the instance of CcsGUIStatus.
+	 * A copy of the reference to the instance of IcsGUIStatus.
 	 */
-	private CcsGUIStatus icsGUIStatus = null;
+	private IcsGUIStatus icsGUIStatus = null;
 	/**
 	 * Internal JList that actually displays the Instrument Configurations.
 	 */
@@ -221,6 +221,7 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	 * @param owner The parent frame of this dialog. Used in calling Dialog's constructor.
 	 * @param c A reference to the object holding the instrument Configuration data. Used to fill the list,
 	 *	and for updating purposes.
+	 * @param i The instance of the IcsGUI that is creating this dialog.
 	 * @see #constructFileMenu
 	 * @see #constructFilterMenu
 	 * @see #icsGUI
@@ -269,43 +270,43 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 		panel.add(scrollPane);
 	// create a CCD add/amend dialog
 		addAmendCCDDialog = new IcsGUICCDConfigAADialog(owner,c);
-		addAmendCCDDialog.addCcsConfigAADialogListener(this);
+		addAmendCCDDialog.addIcsConfigAADialogListener(this);
 	// create a NuView add/amend dialog
 		addAmendNuViewDialog = new IcsGUILowResSpecConfigAADialog(owner,c);
-		addAmendNuViewDialog.addCcsConfigAADialogListener(this);
+		addAmendNuViewDialog.addIcsConfigAADialogListener(this);
 	// create a IRCam add/amend dialog
 		addAmendIRCamDialog = new IcsGUIIRCamConfigAADialog(owner,c);
-		addAmendIRCamDialog.addCcsConfigAADialogListener(this);
+		addAmendIRCamDialog.addIcsConfigAADialogListener(this);
 	// create a FTSpec add/amend dialog
 		addAmendFTSpecDialog = new IcsGUIFixedFormatSpecConfigAADialog(owner,c);
-		addAmendFTSpecDialog.addCcsConfigAADialogListener(this);
+		addAmendFTSpecDialog.addIcsConfigAADialogListener(this);
 	// create a Polarimater add/amend dialog
 		addAmendPolarimeterDialog = new IcsGUIPolarimeterConfigAADialog(owner,c);
-		addAmendPolarimeterDialog.addCcsConfigAADialogListener(this);
+		addAmendPolarimeterDialog.addIcsConfigAADialogListener(this);
 	// create a FrodoSpec add/amend dialog
 		addAmendFrodoSpecDialog = new IcsGUIFrodoSpecConfigAADialog(owner,c);
-		addAmendFrodoSpecDialog.addCcsConfigAADialogListener(this);
+		addAmendFrodoSpecDialog.addIcsConfigAADialogListener(this);
 	// create a RISE add/amend dialog
 		addAmendRISEDialog = new IcsGUIRISEConfigAADialog(owner,c);
-		addAmendRISEDialog.addCcsConfigAADialogListener(this);
+		addAmendRISEDialog.addIcsConfigAADialogListener(this);
 	// create a Ringo2 Polarimater add/amend dialog
 		addAmendRingo2PolarimeterDialog = new IcsGUIRingo2PolarimeterConfigAADialog(owner,c);
-		addAmendRingo2PolarimeterDialog.addCcsConfigAADialogListener(this);
+		addAmendRingo2PolarimeterDialog.addIcsConfigAADialogListener(this);
 	// create a THOR add/amend dialog
 		addAmendTHORDialog = new IcsGUITHORConfigAADialog(owner,c);
-		addAmendTHORDialog.addCcsConfigAADialogListener(this);
+		addAmendTHORDialog.addIcsConfigAADialogListener(this);
 	// create a O add/amend dialog
 		addAmendODialog = new IcsGUIOConfigAADialog(owner,c);
-		addAmendODialog.addCcsConfigAADialogListener(this);
+		addAmendODialog.addIcsConfigAADialogListener(this);
 	// create a Ringo3 Polarimater add/amend dialog
 		addAmendRingo3PolarimeterDialog = new IcsGUIRingo3PolarimeterConfigAADialog(owner,c);
-		addAmendRingo3PolarimeterDialog.addCcsConfigAADialogListener(this);
+		addAmendRingo3PolarimeterDialog.addIcsConfigAADialogListener(this);
 	// create a Sprat add/amend dialog
 		addAmendSpratDialog = new IcsGUISpratConfigAADialog(owner,c);
-		addAmendSpratDialog.addCcsConfigAADialogListener(this);
+		addAmendSpratDialog.addIcsConfigAADialogListener(this);
 	// create a LOTUS add/amend dialog
 		addAmendLOTUSDialog = new IcsGUILOTUSConfigAADialog(owner,c);
-		addAmendLOTUSDialog.addCcsConfigAADialogListener(this);
+		addAmendLOTUSDialog.addIcsConfigAADialogListener(this);
 	}
 
 	/**
@@ -606,7 +607,7 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 	}
 
 	/**
-	 * Method implementing the CcsConfigAADialogListener interface. Called when an
+	 * Method implementing the IcsConfigAADialogListener interface. Called when an
 	 * Instrument Configuration is added/amended. Calls setData, to reset the list.
 	 * @param ok Boolean, true if the Ok button was pressed on the dialog.
 	 * @param id The id of the Instrument Configuration if ok was true.
@@ -794,6 +795,9 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.20  2015/06/09 13:13:39  cjm
+// Added LOTUS Config Add/Amend.
+//
 // Revision 0.19  2014/04/04 11:17:39  cjm
 // Added Sprat Config Add/Amend.
 //
@@ -836,7 +840,7 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, C
 // add buttons, and to choose a default config filter to filter by.
 //
 // Revision 0.6  2003/08/22 14:05:18  cjm
-// Added reference to CcsGUIStatus to alow CONFIGDialog (and its subdialogs)
+// Added reference to IcsGUIStatus to alow CONFIGDialog (and its subdialogs)
 // access to properties.
 //
 // Revision 0.5  2003/08/21 14:29:04  cjm

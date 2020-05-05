@@ -1,5 +1,5 @@
 // IcsGUILOTUSConfigAADialog.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUILOTUSConfigAADialog.java,v 1.1 2015-06-09 13:13:46 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUILOTUSConfigAADialog.java,v 1.2 2020-05-05 10:20:39 cjm Exp $
 import java.lang.*;
 import java.util.*;
 import java.awt.*;
@@ -14,14 +14,14 @@ import ngat.phase2.LOTUSConfig;
 /**
  * This class provides an Add and Amend facility for LOTUS Configurations.
  * @author Chris Mottram
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class IcsGUILOTUSConfigAADialog extends JDialog implements ActionListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUILOTUSConfigAADialog.java,v 1.1 2015-06-09 13:13:46 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUILOTUSConfigAADialog.java,v 1.2 2020-05-05 10:20:39 cjm Exp $");
 	/**
 	 * Button height.
 	 */
@@ -53,7 +53,7 @@ public class IcsGUILOTUSConfigAADialog extends JDialog implements ActionListener
 	/**
 	 * The listener for this dialog.
 	 */
-	CcsConfigAADialogListener listener = null;
+	IcsConfigAADialogListener listener = null;
 
 	JTextField nameTextField = null;
 	JCheckBox calibrateBeforeCheckBox = null;
@@ -253,7 +253,7 @@ public class IcsGUILOTUSConfigAADialog extends JDialog implements ActionListener
 	 * the listener is informed. Only one listener can be added to this dialog.
 	 * @param l The listener to set for this dialog.
 	 */
-	public void addCcsConfigAADialogListener(CcsConfigAADialogListener l)
+	public void addIcsConfigAADialogListener(IcsConfigAADialogListener l)
 	{
 		listener = l;
 	}
@@ -365,4 +365,7 @@ public class IcsGUILOTUSConfigAADialog extends JDialog implements ActionListener
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2015/06/09 13:13:46  cjm
+// Initial revision
+//
 //

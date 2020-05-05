@@ -1,24 +1,24 @@
 /*   
     Copyright 2006, Astrophysics Research Institute, Liverpool John Moores University.
 
-    This file is part of CcsGUI.
+    This file is part of IcsGUI.
 
-    CcsGUI is free software; you can redistribute it and/or modify
+    IcsGUI is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    CcsGUI is distributed in the hope that it will be useful,
+    IcsGUI is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with CcsGUI; if not, write to the Free Software
+    along with IcsGUI; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-// CcsConfigAADialogListener.java -*- mode: Fundamental;-*-
-// $Header: /home/cjm/cvs/ics_gui/java/IcsConfigAADialogListener.java,v 0.3 2008-11-13 15:43:21 cjm Exp $
+// IcsConfigAADialogListener.java -*- mode: Fundamental;-*-
+// $Header: /home/cjm/cvs/ics_gui/java/IcsConfigAADialogListener.java,v 0.4 2020-05-05 10:20:39 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -30,9 +30,9 @@ import javax.swing.*;
 import ngat.message.base.*;
 
 /**
- * This is an interface, that is used for callbacks when a Ccs Config Dialog callback is needed.
+ * This is an interface, that is used for callbacks when a Ics Config Dialog callback is needed.
  */
-public interface CcsConfigAADialogListener
+public interface IcsConfigAADialogListener
 {
 	/**
 	 * Method called when Ok or Cancel is pressed.
@@ -43,6 +43,9 @@ public interface CcsConfigAADialogListener
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.3  2008/11/13 15:43:21  cjm
+// Fixed comment.
+//
 // Revision 0.2  2006/05/16 17:12:11  cjm
 // gnuify: Added GNU General Public License.
 //

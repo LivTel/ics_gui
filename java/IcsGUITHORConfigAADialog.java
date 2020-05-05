@@ -1,5 +1,5 @@
 // IcsGUITHORConfigAADialog.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUITHORConfigAADialog.java,v 1.2 2011-12-02 11:05:33 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUITHORConfigAADialog.java,v 1.3 2020-05-05 10:20:39 cjm Exp $
 import java.lang.*;
 import java.util.*;
 import java.awt.*;
@@ -13,14 +13,14 @@ import ngat.swing.*;
 /**
  * This class provides an Add and Amend facility for THOR Configurations.
  * @author Chris Mottram
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class IcsGUITHORConfigAADialog extends JDialog implements ActionListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUITHORConfigAADialog.java,v 1.2 2011-12-02 11:05:33 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUITHORConfigAADialog.java,v 1.3 2020-05-05 10:20:39 cjm Exp $");
 	/**
 	 * Button height.
 	 */
@@ -52,7 +52,7 @@ public class IcsGUITHORConfigAADialog extends JDialog implements ActionListener
 	/**
 	 * The listener for this dialog.
 	 */
-	CcsConfigAADialogListener listener = null;
+	IcsConfigAADialogListener listener = null;
 
 	JTextField nameTextField = null;
 	JCheckBox calibrateBeforeCheckBox = null;
@@ -249,7 +249,7 @@ public class IcsGUITHORConfigAADialog extends JDialog implements ActionListener
 	 * the listener is informed. Only one listener can be added to this dialog.
 	 * @param l The listener to set for this dialog.
 	 */
-	public void addCcsConfigAADialogListener(CcsConfigAADialogListener l)
+	public void addIcsConfigAADialogListener(IcsConfigAADialogListener l)
 	{
 		listener = l;
 	}
@@ -356,6 +356,9 @@ public class IcsGUITHORConfigAADialog extends JDialog implements ActionListener
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2011/12/02 11:05:33  cjm
+// Removed filter field as it is no longer in the phaseII.
+//
 // Revision 1.1  2010/10/07 13:24:06  cjm
 // Initial revision
 //
