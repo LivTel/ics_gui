@@ -1,0 +1,93 @@
+# $Header: /home/cjm/cvs/ics_gui/latex/Makefile.icsgui_basic_user_guide,v 1.1 2020-05-05 14:58:01 cjm Exp $
+
+include ../../Makefile.common
+include ../Makefile.common
+
+# Put into ../../Makefile.common
+CONVERT = convert
+
+DOCSDIR = $(CCS_GUI_DOC_HOME)/latex
+
+TEXSRCS = icsgui_basic_user_guide.tex
+FIGSRCS = 
+JPGSRCS = pci_card_low_res_annotated.jpg
+TIFFSRCS = icsgui_bias_dialog.tiff icsgui_config_aa_dialog.tiff icsgui_config_dialog.tiff \
+	icsgui_config_list_dialog.tiff icsgui_dark_dialog.tiff icsgui_expose_menu.tiff icsgui_interrupt_menu.tiff \
+	icsgui_iss_menu.tiff icsgui_main_screen.tiff icsgui_multrun_dialog.tiff icsgui_reboot_dialog.tiff \
+	icsgui_send_menu.tiff icsgui_setup_menu.tiff terminal_low_res.tiff
+
+DVIOBJS	= $(TEXSRCS:%.tex=%.dvi)
+PSOBJS	= $(TEXSRCS:%.tex=$(DOCSDIR)/%.ps)
+
+EPSOBJS	= $(FIGSRCS:%.fig=%.eps) $(JPGSRCS:%.jpg=%.eps) $(TIFFSRCS:%.tiff=%.eps)
+
+DIRS = 
+#design
+
+top: $(PSOBJS) 
+#	@for i in $(DIRS); \
+#	do \
+#		(echo making in $$i...; cd $$i; $(MAKE) ); \
+#	done;
+
+$(DOCSDIR)/%.ps: %.dvi
+	$(DVIPS) $< -o
+	$(MV) $*.ps $(DOCSDIR)
+
+$(DVIOBJS): $(EPSOBJS)
+
+%.dvi: %.tex
+	$(LATEX) $<
+	$(LATEX) $<
+	$(LATEX) $<
+
+%.eps: %.jpg
+	$(CONVERT) $< $@
+
+%.eps: %.tiff
+	$(CONVERT) $< $@
+
+%.eps: %.fig
+	$(FIG2DEV) $(FIG2DEV_OPTIONS) $< $@
+
+depend:
+	echo "NO depend rule for latex files."
+
+clean:
+	$(RM) $(RM_OPTIONS) $(DVIOBJS) $(PSOBJS) $(EPSOBJS) $(LATEX_TIDY_OPTIONS) $(TIDY_OPTIONS)
+	@for i in $(DIRS); \
+	do \
+		(echo cleaning in $$i...; cd $$i; $(MAKE) clean); \
+	done;
+
+tidy:
+	-$(RM) $(RM_OPTIONS) $(LATEX_TIDY_OPTIONS) $(TIDY_OPTIONS)
+	@for i in $(DIRS); \
+	do \
+		(echo tidying in $$i...; cd $$i; $(MAKE) tidy); \
+	done;
+
+backup: tidy
+	-$(RM) $(RM_OPTIONS) $(DVIOBJS) $(EPSOBJS)
+	@for i in $(DIRS); \
+	do \
+		(echo backup in $$i...; cd $$i; $(MAKE) backup); \
+	done;
+
+checkin:
+	-$(CI) $(CI_OPTIONS) $(TEXSRCS) $(FIGSRCS) $(JPGSRCS) $(TIFFSRCS)
+#	@for i in $(DIRS); \
+#	do \
+#		(echo checking in in $$i...; cd $$i; $(MAKE) checkin); \
+#	done;
+
+checkout:
+	-$(CO) $(CO_OPTIONS) $(TEXSRCS) $(FIGSRCS) $(JPGSRCS) $(TIFFSRCS)
+#	@for i in $(DIRS); \
+#	do \
+#		(echo checking out in $$i...; cd $$i; $(MAKE) checkout); \
+#	done;
+
+#
+# $Log: not supported by cvs2svn $
+#
