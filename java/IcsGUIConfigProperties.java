@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUIConfigProperties.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.26 2015-06-09 13:13:23 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIConfigProperties.java,v 0.27 2020-05-05 10:20:39 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.util.*;
@@ -30,14 +30,14 @@ import ngat.phase2.*;
  * in a Java properties file and this class extends java.util.Properties
  * @see java.util.Properties
  * @author Chris Mottram
- * @version $Revision: 0.26 $
+ * @version $Revision: 0.27 $
  */
 public class IcsGUIConfigProperties extends Properties
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.26 2015-06-09 13:13:23 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIConfigProperties.java,v 0.27 2020-05-05 10:20:39 cjm Exp $");
 	/**
 	 * Configuration type specifier:CCD (RATCam).
 	 */
@@ -219,6 +219,7 @@ public class IcsGUIConfigProperties extends Properties
 	/**
 	 * Method to get a new Id to insert a new configuration with. This is done by
 	 * getting config names with ids until one fails.
+	 * @return An integer to use as a config Id for a new config.
 	 * @see #getConfigName
 	 */
 	public int getNewConfigId()
@@ -2909,6 +2910,9 @@ public class IcsGUIConfigProperties extends Properties
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.26  2015/06/09 13:13:23  cjm
+// Added LOTUS configs.
+//
 // Revision 0.25  2014/04/04 11:17:00  cjm
 // Added Sprat configs.
 //

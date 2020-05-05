@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUIBSSServer.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIBSSServer.java,v 1.1 2011-10-31 13:52:34 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIBSSServer.java,v 1.2 2020-05-05 10:20:39 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -30,14 +30,14 @@ import ngat.net.*;
  * commands to an instrument. Some instrument commands involve sending commands back to the BSS, and
  * this class is designed to catch these requests and to spawn a IcsGUIBSSServerConnectionThread to deal with them.
  * @author Chris Mottram
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class IcsGUIBSSServer extends TCPServer
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIBSSServer.java,v 1.1 2011-10-31 13:52:34 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIBSSServer.java,v 1.2 2020-05-05 10:20:39 cjm Exp $");
 	/**
 	 * Field holding the instance of the IcsGUI currently executing, 
 	 * so we can pass this to spawned threads.
@@ -46,6 +46,8 @@ public class IcsGUIBSSServer extends TCPServer
 
 	/**
 	 * The constructor. Call the inherited constrctor.
+	 * @param name The name of the server.
+	 * @param portNumber The port number the server is wairing for connections on.
 	 */
 	public IcsGUIBSSServer(String name,int portNumber)
 	{
@@ -105,4 +107,7 @@ public class IcsGUIBSSServer extends TCPServer
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2011/10/31 13:52:34  cjm
+// Initial revision
+//
 //

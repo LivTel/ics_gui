@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUIISSServer.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIISSServer.java,v 1.1 2011-11-07 17:07:34 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIISSServer.java,v 1.2 2020-05-05 10:20:39 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -30,14 +30,14 @@ import ngat.net.*;
  * commands to the Ccs. Some Ccs commands involve sending commands back to the ISS, and
  * this class is designed to catch these requests and to spawn a IcsGUIISSServerConnectionThread to deal with them.
  * @author Chris Mottram
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class IcsGUIISSServer extends TCPServer
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIISSServer.java,v 1.1 2011-11-07 17:07:34 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIISSServer.java,v 1.2 2020-05-05 10:20:39 cjm Exp $");
 	/**
 	 * Field holding the instance of the IcsGUI currently executing, 
 	 * so we can pass this to spawned threads.
@@ -46,6 +46,8 @@ public class IcsGUIISSServer extends TCPServer
 
 	/**
 	 * The constructor. Call the inherited constrctor.
+	 * @param name The name of this server.
+	 * @param portNumber The port number to use for this server.
 	 */
 	public IcsGUIISSServer(String name,int portNumber)
 	{
@@ -105,6 +107,9 @@ public class IcsGUIISSServer extends TCPServer
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2011/11/07 17:07:34  cjm
+// Initial revision
+//
 // Revision 0.5  2006/05/16 17:12:16  cjm
 // gnuify: Added GNU General Public License.
 //
