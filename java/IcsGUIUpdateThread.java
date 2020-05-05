@@ -1,40 +1,40 @@
 /*   
     Copyright 2006, Astrophysics Research Institute, Liverpool John Moores University.
 
-    This file is part of CcsGUI.
+    This file is part of IcsGUI.
 
-    CcsGUI is free software; you can redistribute it and/or modify
+    IcsGUI is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    CcsGUI is distributed in the hope that it will be useful,
+    IcsGUI is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with CcsGUI; if not, write to the Free Software
+    along with IcsGUI; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-// CcsGUIUpdateThread.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIUpdateThread.java,v 0.8 2006-05-16 17:12:19 cjm Exp $
+// IcsGUIUpdateThread.java
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUIUpdateThread.java,v 0.9 2020-05-05 10:20:39 cjm Exp $
 
 import java.lang.*;
 /**
- * The CcsGUIUpdateThread extends Thread.
+ * The IcsGUIUpdateThread extends Thread.
  * The thread sleeps for a length determined by the auto update time.
  * It then calls parent.sendCommand(GET_STATUS) to update the GUI's status.
  * This continues until the thread is quit.
  * @author Chris Mottram
- * @version $Revision: 0.8 $
+ * @version $Revision: 0.9 $
  */
-public class CcsGUIUpdateThread extends Thread
+public class IcsGUIUpdateThread extends Thread
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIUpdateThread.java,v 0.8 2006-05-16 17:12:19 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIUpdateThread.java,v 0.9 2020-05-05 10:20:39 cjm Exp $");
 	/**
 	 * The IcsGUI object.
 	 */
@@ -54,7 +54,7 @@ public class CcsGUIUpdateThread extends Thread
 	 * @param p The parent object.
 	 * @param time The time to wait between calls to GET_STATUS.
 	 */
-	public CcsGUIUpdateThread(IcsGUI p,long time)
+	public IcsGUIUpdateThread(IcsGUI p,long time)
 	{
 		super();
 		parent = p;
@@ -74,14 +74,14 @@ public class CcsGUIUpdateThread extends Thread
 	public void run()
 	{
 		ngat.message.ISS_INST.GET_STATUS command = null;
-		CcsGUIClientConnectionThread thread = null;
+		IcsGUIClientConnectionThread thread = null;
 		String idString = null;
 		int id,level;
 
 		id = 0;
 		try
 		{
-			level = parent.getStatus().getPropertyInteger("ccs_gui.auto_update.get_status.level");
+			level = parent.getStatus().getPropertyInteger("ics_gui.auto_update.get_status.level");
 		}
 		catch(NumberFormatException e)
 		{
@@ -131,6 +131,9 @@ public class CcsGUIUpdateThread extends Thread
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 0.8  2006/05/16 17:12:19  cjm
+// gnuify: Added GNU General Public License.
+//
 // Revision 0.7  2003/09/19 14:08:45  cjm
 // Changed CcsGUI to IcsGUI.
 //
