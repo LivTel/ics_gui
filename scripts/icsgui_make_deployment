@@ -1,6 +1,6 @@
 #!/bin/csh
-# $Header: /home/cjm/cvs/ics_gui/scripts/icsgui_make_deployment,v 1.11 2014-10-02 15:24:40 cjm Exp $
-# Version: $Revision: 1.11 $
+# $Header: /home/cjm/cvs/ics_gui/scripts/icsgui_make_deployment,v 1.12 2020-05-05 13:48:19 cjm Exp $
+# Version: $Revision: 1.12 $
 # By $Author: cjm $
 # Make a deployment tar file.
 # This contains:
@@ -61,7 +61,7 @@ set deployment_tmc_dir 	= "/tmp/icsgui_deployment/tmc"
 # temporary directory containing root bin directory.
 set deployment_bin_dir 	= "/tmp/icsgui_deployment/tmc/bin"
 # directory location of tar
-set deployment_tar_dir 	= "${dev_dir}/public_html/ccs_gui/deployment"
+set deployment_tar_dir 	= "${dev_dir}/public_html/ics_gui/deployment"
 # name of tar file
 set deployment_tar 	= "icsgui_deployment_${machine_name}.tar"
 
@@ -74,7 +74,7 @@ endif
 #
 echo "Creating directory structure..."
 set dir_count = 0
-set dir_list = "${deployment_dir} ${deployment_bin_dir} ${deployment_dir}/tmc/tmp ${deployment_dir}/tmc/log ${deployment_dir}/tmc/tmp/ccs_gui ${deployment_tmc_dir}/config ${deployment_bin_dir}/ccs/test ${deployment_bin_dir}/javalib ${deployment_bin_dir}/lib/${HOSTTYPE} ${deployment_bin_dir}/dprt/test ${deployment_bin_dir}/ccd/misc/${HOSTTYPE} ${deployment_bin_dir}/libdprt/test/${HOSTTYPE} ${deployment_bin_dir}/ccs_gui/java ${deployment_bin_dir}/ccs_gui/java/wav ${deployment_bin_dir}/scripts"
+set dir_list = "${deployment_dir} ${deployment_bin_dir} ${deployment_dir}/tmc/tmp ${deployment_dir}/tmc/log ${deployment_dir}/tmc/tmp/ics_gui ${deployment_tmc_dir}/config ${deployment_bin_dir}/ccs/test ${deployment_bin_dir}/javalib ${deployment_bin_dir}/lib/${HOSTTYPE} ${deployment_bin_dir}/dprt/test ${deployment_bin_dir}/ccd/misc/${HOSTTYPE} ${deployment_bin_dir}/libdprt/test/${HOSTTYPE} ${deployment_bin_dir}/ics_gui/java ${deployment_bin_dir}/ics_gui/java/wav ${deployment_bin_dir}/scripts"
 foreach dir ( ${dir_list} )
 	mkdir -p ${dir}
 	if ($status != 0) then
@@ -124,7 +124,7 @@ echo "${jar_count} jars copied."
 # Java classes
 #
 echo "Copying Java class directories..."
-set java_class_dir_list = "ccs/test dprt/test ccs_gui/java"
+set java_class_dir_list = "ccs/test dprt/test ics_gui/java"
 set java_class_dir_count = 0
 foreach java_class_dir ( ${java_class_dir_list} )
 	echo "Java class directory : ${java_class_dir}"
@@ -222,7 +222,7 @@ echo "${dir_count} C test program directories copied."
 # Scripts
 #
 echo "Copying scripts..."
-set file_list = "bin/scripts/ccs_reboot.csh bin/scripts/xv_wrapper.csh bin/scripts/killhup.csh bin/scripts/fuser_check bin/scripts/kappa_make_mean_frame bin/ccs/test/test_config.csh bin/ccs/test/sendisscommands.csh bin/ccs/test/calibrate_ccd_dark.csh bin/ccs/test/calibrate_ccd_light.csh bin/ccs/test/test_ccd_stop.csh bin/ccs_gui/java/xv_wrapper.csh bin/ccs_gui/java/icsgui"
+set file_list = "bin/scripts/ccs_reboot.csh bin/scripts/xv_wrapper.csh bin/scripts/killhup.csh bin/scripts/fuser_check bin/scripts/kappa_make_mean_frame bin/ccs/test/test_config.csh bin/ccs/test/sendisscommands.csh bin/ccs/test/calibrate_ccd_dark.csh bin/ccs/test/calibrate_ccd_light.csh bin/ccs/test/test_ccd_stop.csh bin/ics_gui/java/xv_wrapper.csh bin/ics_gui/java/icsgui"
 set file_count = 0
 cd ${dev_dir}
 foreach file ( ${file_list} )
@@ -240,7 +240,7 @@ echo "${file_count} scripts copied."
 #
 # in bin sub-directories
 echo "Copying machine configuration files..."
-set file_list = "ccs_gui/java/${machine_name}.ccs_gui.properties ccs_gui/java/${machine_name}.ccs_gui_config.properties ccs_gui/java/${machine_name}.ccs_gui.fits.properties ccs_gui/java/${machine_name}.ics_gui.fits.bss.properties"
+set file_list = "ics_gui/java/${machine_name}.ics_gui.properties ics_gui/java/${machine_name}.ics_gui_config.properties ics_gui/java/${machine_name}.ics_gui.fits.properties ics_gui/java/${machine_name}.ics_gui.fits.bss.properties"
 set file_count = 0
 cd ${dev_dir}
 foreach file ( ${file_list} )
@@ -289,7 +289,7 @@ echo "${file_count} serialized Java message files copied."
 # gif files
 #
 echo "Copying gif/wav files..."
-set file_list = "ccs_gui/java/lt.gif ccs_gui/java/lt_icon.gif ccs_gui/java/ratcam.gif ccs_gui/java/wav/command_completed.wav ccs_gui/java/wav/command_failed.wav ccs_gui/java/wav/filename.wav ccs_gui/java/wav/iss_message.wav ccs_gui/java/wav/welcome.wav"
+set file_list = "ics_gui/java/lt.gif ics_gui/java/lt_icon.gif ics_gui/java/ratcam.gif ics_gui/java/wav/command_completed.wav ics_gui/java/wav/command_failed.wav ics_gui/java/wav/filename.wav ics_gui/java/wav/iss_message.wav ics_gui/java/wav/welcome.wav"
 set file_count = 0
 cd ${dev_dir}
 foreach file ( ${file_list} )
@@ -321,6 +321,6 @@ gzip ${deployment_tar}
 echo "Deployment tar : ${deployment_tar_dir}/${deployment_tar}.gz"
 echo "Installation script : ${current_dir}/icsgui_tar_install"
 rm -rf ${deployment_dir}
-echo "Download from http://ltdevsrv.livjm.ac.uk/~dev/ccs_gui/deployment/index.html."
+echo "Download from http://ltdevsrv.livjm.ac.uk/~dev/ics_gui/deployment/index.html."
 echo "Download: ${deployment_tar}.gz icsgui_tar_install tmc_cshrc tmc_cshrc_edit.awk README.DEPLOYMENT."
 echo "Deployment ready."
