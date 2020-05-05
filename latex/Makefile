@@ -1,11 +1,11 @@
-# $Header: /home/cjm/cvs/ics_gui/latex/Makefile,v 0.5 2004-08-06 12:59:26 cjm Exp $
+# $Header: /home/cjm/cvs/ics_gui/latex/Makefile,v 0.6 2020-05-05 10:37:39 cjm Exp $
 
 include ../../Makefile.common
 include ../Makefile.common
 
 PDFLATEX	= pdflatex
 
-DOCSDIR 	= $(CCS_GUI_DOC_HOME)/latex
+DOCSDIR 	= $(ICS_GUI_DOC_HOME)/latex
 
 TEXSRCS 	= ccs_gui_design.tex icsgui_basic_user_guide.tex
 FIGSRCS 	= rcs_ccs_interaction.fig
@@ -84,6 +84,9 @@ checkout:
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 0.5  2004/08/06 12:59:26  cjm
+# Added pdf rules.
+#
 # Revision 0.4  2003/11/14 15:30:29  cjm
 # Added icsgui_basic_user_guide.
 #
