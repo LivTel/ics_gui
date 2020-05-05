@@ -178,6 +178,9 @@ $(BINDIR)/lotusgui: lotusgui
 $(BINDIR)/xv_wrapper.csh: xv_wrapper.csh
 	$(CP) xv_wrapper.csh $@
 
+$(BINDIR)/keyevents: keyevents
+	$(CP) keyevents $@
+
 #
 # gifs
 #
