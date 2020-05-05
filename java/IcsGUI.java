@@ -1,24 +1,24 @@
 /*   
     Copyright 2006, Astrophysics Research Institute, Liverpool John Moores University.
 
-    This file is part of CcsGUI.
+    This file is part of IcsGUI.
 
-    CcsGUI is free software; you can redistribute it and/or modify
+    IcsGUI is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    CcsGUI is distributed in the hope that it will be useful,
+    IcsGUI is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with CcsGUI; if not, write to the Free Software
+    along with IcsGUI; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // IcsGUI.java
-// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.29 2020-04-29 13:52:26 cjm Exp $
+// $Header: /home/cjm/cvs/ics_gui/java/IcsGUI.java,v 1.30 2020-05-05 10:20:39 cjm Exp $
 import java.lang.*;
 import java.io.*;
 import java.net.*;
@@ -40,14 +40,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 1.29 $
+ * @version $Revision: 1.30 $
  */
 public class IcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.29 2020-04-29 13:52:26 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUI.java,v 1.30 2020-05-05 10:20:39 cjm Exp $");
 	/**
 	 * Internal constant used when converting temperatures in centigrade (from the CCD controller) to Kelvin.
 	 */
@@ -142,7 +142,7 @@ public class IcsGUI
 	/**
 	 * IcsGUI status information.
 	 */
-	private CcsGUIStatus status = null;
+	private IcsGUIStatus status = null;
 	/**
 	 * The port number to send ccs commands to.
 	 */
@@ -228,6 +228,7 @@ public class IcsGUI
 	 * <li>Calls initGUI, to create the screens.
 	 * <li>Calls run.
 	 * </ul>
+	 * @param args The command line argument list.
 	 * @see #parsePropertyFilenameArgument
 	 * @see #initStatus
 	 * @see #parseArguments
@@ -293,8 +294,8 @@ public class IcsGUI
 	 * @see #propertyFilename
 	 * @see #instrumentConfigPropertyFilename
 	 * @see #status
-	 * @see CcsGUIStatus#load
-	 * @see CcsGUIStatus#loadInstrumentConfig
+	 * @see IcsGUIStatus#load
+	 * @see IcsGUIStatus#loadInstrumentConfig
 	 * @see #errorStream
 	 * @see #logStream
 	 */
@@ -303,7 +304,7 @@ public class IcsGUI
 		String filename = null;
 		FileOutputStream fos = null;
 
-		status = new CcsGUIStatus();
+		status = new IcsGUIStatus();
 		if(propertyFilename != null)
 			status.load(propertyFilename);
 		else
@@ -313,7 +314,7 @@ public class IcsGUI
 		else
 			status.loadInstrumentConfig();
 	// change errorStream to files defined in loaded properties
-		filename = status.getProperty("ccs_gui.file.error");
+		filename = status.getProperty("ics_gui.file.error");
 		if((filename != null)&&(filename.length()>0))
 		{
 			try
@@ -334,7 +335,7 @@ public class IcsGUI
 			}
 		}
 	// change logStream to files defined in loaded properties
-		filename = status.getProperty("ccs_gui.file.log");
+		filename = status.getProperty("ics_gui.file.log");
 		if((filename != null)&&(filename.length()>0))
 		{
 			try
@@ -377,16 +378,16 @@ public class IcsGUI
 	// Create the top-level container.
 		if(ccsAddress != null)
 		{
-			titleString = new String("Ics:"+status.getProperty("ccs_gui.title")+
+			titleString = new String("Ics:"+status.getProperty("ics_gui.title")+
 						 ":"+ccsAddress.getHostName());
 		}
 		else
 		{
-			titleString = new String("Ics:"+status.getProperty("ccs_gui.title")+"None");
+			titleString = new String("Ics:"+status.getProperty("ics_gui.title")+"None");
 		}
 		frame = new MinimumSizeFrame(titleString,new Dimension(400,300));
 	// set icon image
-		image = Toolkit.getDefaultToolkit().getImage(status.getProperty("ccs_gui.icon.filename"));
+		image = Toolkit.getDefaultToolkit().getImage(status.getProperty("ics_gui.icon.filename"));
 		frame.setIconImage(image);
 
 		frame.getContentPane().setLayout(gridBagLayout);
@@ -412,12 +413,13 @@ public class IcsGUI
 		frame.getContentPane().add(mainPanel);
 
 	//Finish setting up the frame, and show it.
-		frame.addWindowListener(new CcsGUIWindowListener(this));
+		frame.addWindowListener(new IcsGUIWindowListener(this));
 	}
 
 	/**
 	 * Initialise the main panel. This consists of setting the panel layout, and then 
 	 * adding the status panel and the log panel.
+	 * @param panel The panel to create the main window into.
 	 * @see #initStatusPanel
 	 * @see #initLogPanel
 	 */
@@ -497,7 +499,7 @@ public class IcsGUI
 		lastStatusPanel.add(filenameLabel);
 	// auto update
 		JCheckBox autoUpdateCheckbox = new JCheckBox("Auto-Update",false);
-		autoUpdateCheckbox.addActionListener(new CcsGUIUpdateListener(this));
+		autoUpdateCheckbox.addActionListener(new IcsGUIUpdateListener(this));
 		lastStatusPanel.add(autoUpdateCheckbox);
 		autoUpdateTextField = new JTextField();
 		try
@@ -569,7 +571,7 @@ public class IcsGUI
 	// initialise logTextArea line limit from property file
 		try
 		{
-			logTextAreaLineLimit = status.getPropertyInteger("ccs_gui.log_text.max_length");
+			logTextAreaLineLimit = status.getPropertyInteger("ics_gui.log_text.max_length");
 		}
 		catch(NumberFormatException e)
 		{ // non-fatal error...
@@ -578,7 +580,7 @@ public class IcsGUI
 	// initialise logTextArea delete length from property file
 		try
 		{
-			logTextAreaDeleteLength = status.getPropertyInteger("ccs_gui.log_text.delete_length");
+			logTextAreaDeleteLength = status.getPropertyInteger("ics_gui.log_text.delete_length");
 		}
 		catch(NumberFormatException e)
 		{ // non-fatal error...
@@ -594,7 +596,7 @@ public class IcsGUI
 		JMenuBar menuBar;
 		JMenu menu, submenu;
 		JMenuItem menuItem;
-		CcsGUIMenuItemListener menuItemListener = new CcsGUIMenuItemListener(this);
+		IcsGUIMenuItemListener menuItemListener = new IcsGUIMenuItemListener(this);
 
 	// Create the mapping from Menu item names to dialog classes.
 	// This needs updating when the menu items names change.
@@ -940,10 +942,10 @@ public class IcsGUI
 	 * Main program exit routine. Waits for command to complete before exiting, if n is zero,
 	 * otherwise just terminates.
 	 * @param n The return exit value to return to the calling shell/program.
-	 * @see CcsGUIStatus#clientThreadList
-	 * @see CcsGUIStatus#clientThreadAt
-	 * @see CcsGUIStatus#removeClientThread
-	 * @see CcsGUIStatus#saveInstrumentConfig
+	 * @see IcsGUIStatus#clientThreadList
+	 * @see IcsGUIStatus#clientThreadAt
+	 * @see IcsGUIStatus#removeClientThread
+	 * @see IcsGUIStatus#saveInstrumentConfig
 	 * @see #stopISSServer
 	 * @see #stopBSSServer
 	 * @see #log
@@ -965,7 +967,7 @@ public class IcsGUI
 						" commands still processing.");
 					for(i=0;i<status.clientThreadListCount();i++)
 					{
-						CcsGUIClientConnectionThread thread = null;
+						IcsGUIClientConnectionThread thread = null;
 
 						thread = status.clientThreadAt(i);
 						if(thread.isAlive() == false)
@@ -1093,6 +1095,7 @@ public class IcsGUI
 
 	/**
 	 * Return the GUI's parent frame.
+	 * @return The GUI's parent frame.
 	 */
 	public JFrame getFrame()
 	{
@@ -1104,7 +1107,7 @@ public class IcsGUI
 	 * @return The GUI's status object.
 	 * @see #status
 	 */
-	public CcsGUIStatus getStatus()
+	public IcsGUIStatus getStatus()
 	{
 		return status;
 	}
@@ -1181,15 +1184,15 @@ public class IcsGUI
 	}
 
 	/**
-	 * Method to send a command to the ICS. A CcsGUIClientConnectionThread is constructed with
+	 * Method to send a command to the ICS. A IcsGUIClientConnectionThread is constructed with
 	 * the passed in command, and the Ics Address and port number from the configuration file.
 	 * The thread is started, and added to the status's client thread list.
 	 * @param command The command to send.
 	 * @return The started client thread is returned.
 	 */	
-	public CcsGUIClientConnectionThread sendCommand(COMMAND command)
+	public IcsGUIClientConnectionThread sendCommand(COMMAND command)
 	{
-		CcsGUIClientConnectionThread thread = null;
+		IcsGUIClientConnectionThread thread = null;
 
 		log("About to send "+command.getClass().getName()+" to "+ccsAddress.getHostName()+":"+ccsPortNumber);
 		// special extra debug for startTime's 
@@ -1207,7 +1210,7 @@ public class IcsGUI
 			startTime = ((RUNAT)command).getStartTime();
 			log("RUNAT has start time:"+startTime);
 		}
-		thread = new CcsGUIClientConnectionThread(ccsAddress,ccsPortNumber,command);
+		thread = new IcsGUIClientConnectionThread(ccsAddress,ccsPortNumber,command);
 		thread.setParent(this);
 		thread.start();
 		status.addClientThread(thread);
@@ -1761,6 +1764,8 @@ public class IcsGUI
 	 * config, which is needed before the status is inited, and therfore needs a special parseArguments
 	 * method (as other arguments affect the status).
 	 * @param args The list of arguments to parse.
+	 * @throws UnknownHostException Thrown if a host parameter is not known.
+	 * @throws NumberFormatException Thrown if a numeric parameter is not a valid number.
 	 * @see #propertyFilename
 	 * @see #instrumentConfigPropertyFilename
 	 * @see #parseArguments
@@ -1801,6 +1806,8 @@ public class IcsGUI
 	 * if a `-help' is one of the arguments. It ignores the property filename argument, as this is parsed in
 	 * parsePropertyFilenameArgument.
 	 * @param args The list of arguments to parse.
+	 * @throws UnknownHostException Thrown if a host parameter is not known.
+	 * @throws NumberFormatException Thrown if a numeric parameter is not a valid number.
 	 * @see #ccsAddress
 	 * @see #ccsPortNumber
 	 * @see #initiallyStartBSSServer
@@ -1959,6 +1966,9 @@ public class IcsGUI
 }
 //
 // $Log: not supported by cvs2svn $
+// Revision 1.29  2020/04/29 13:52:26  cjm
+// Fixed comment.
+//
 // Revision 1.28  2014/09/02 10:01:39  cjm
 // Added an empty -instrument_config to parseArguments, so
 // parseArguments does not give an error. The argument is actually handled in parsePropertyFilenameArgument.
