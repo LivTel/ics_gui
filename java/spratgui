@@ -1,3 +1,3 @@
 #!/bin/csh
-cd ${LT_BIN_HOME}/ccs_gui/java
-java IcsGUI -config sprat.ccs_gui.properties -instrument_config sprat.ccs_gui_config.properties -issspoof $* &
+cd ${LT_BIN_HOME}/ics_gui/java
+java IcsGUI -config sprat.ics_gui.properties -instrument_config sprat.ics_gui_config.properties -issspoof $* &

@@ -37,14 +37,14 @@ import ngat.util.*;
  * to transfer the image to the IcsGUI's machine if necessary.
  * It calls a command specified in the config file to display the FITS image.
  * @author Chris Mottram
- * @version $Revision: 1.7 $
+ * @version $Revision$
  */
 public class IcsGUIFilenameShowListener implements ActionListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIFilenameShowListener.java,v 1.7 2020-05-05 10:20:39 cjm Exp $");
+	public final static String RCSID = new String("$Id$");
 	/**
 	 * The instance of the main program.
 	 */
@@ -221,7 +221,7 @@ public class IcsGUIFilenameShowListener implements ActionListener
 		 * the IcsGUI is running on. It assumes the Ics is running a TitServer.
 		 * The following processing occurs:
 		 * <ul>
-		 * <li>The TIT port number is retrieved from the <b>ccs_gui.net.default_TIT_port_number</b> property.
+		 * <li>The TIT port number is retrieved from the <b>ics_gui.net.default_TIT_port_number</b> property.
 		 * <li>A temporary directory is retrieved from the <b>ics_gui.fits.show.temp_dir</b> property.
 		 * 	This exists on the IcsGUI machine and must be terminated by a path seperator.
 		 * <li>A destination filename is constructed using the temporary directory and the source filename's

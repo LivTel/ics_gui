@@ -54,7 +54,7 @@ public class IcsGUIISSServerConnectionThread extends TCPServerConnectionThread
 	/**
 	 * File name containing FITS defaults properties for Ccs GUI.
 	 */
-	private final static String FITS_DEFAULTS_FILE_NAME = "./ccs_gui.fits.properties";
+	private final static String FITS_DEFAULTS_FILE_NAME = "./ics_gui.fits.properties";
 	/**
 	 * The IcsGUI object.
 	 */

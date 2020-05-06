@@ -1,4 +1,4 @@
 #!/bin/csh
-cd ${LT_BIN_HOME}/ccs_gui/java
+cd ${LT_BIN_HOME}/ics_gui/java
 #java IcsGUI -issspoof -bssspoof $* &
-java IcsGUI -config frodospec.ccs_gui.properties -instrument_config frodospec.ccs_gui_config.properties -issspoof $* &
+java IcsGUI -config frodospec.ics_gui.properties -instrument_config frodospec.ics_gui_config.properties -issspoof $* &

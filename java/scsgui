@@ -1,3 +1,3 @@
 #!/bin/csh
-cd ${LT_BIN_HOME}/ccs_gui/java
+cd ${LT_BIN_HOME}/ics_gui/java
 java IcsGUI -issspoof -icsip spectrograph -icsport 8367 $* &
