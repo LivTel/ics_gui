@@ -22,7 +22,8 @@ SERVER_SRCS	= IcsGUIISSServer.java IcsGUIISSServerConnectionThread.java \
 CONFIG_SRCS	= IcsGUIConfigProperties.java IcsGUIConfigListDialog.java IcsGUIConfigButtonListener.java \
 		IcsGUICCDConfigAADialog.java IcsGUILowResSpecConfigAADialog.java IcsGUIIRCamConfigAADialog.java \
 		IcsGUIFixedFormatSpecConfigAADialog.java IcsGUIPolarimeterConfigAADialog.java \
-		IcsGUIFrodoSpecConfigAADialog.java IcsGUILOTUSConfigAADialog.java IcsGUIRISEConfigAADialog.java \
+		IcsGUIFrodoSpecConfigAADialog.java IcsGUILOTUSConfigAADialog.java \
+		IcsGUIMoptopPolarimeterConfigAADialog.java IcsGUIRISEConfigAADialog.java \
 		IcsGUIRingo2PolarimeterConfigAADialog.java IcsGUIRingo3PolarimeterConfigAADialog.java \
 		IcsGUISpratConfigAADialog.java IcsGUITHORConfigAADialog.java \
 		IcsGUIOConfigAADialog.java IcsConfigAADialogListener.java 
