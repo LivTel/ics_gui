@@ -119,7 +119,7 @@ public class IcsGUIConfigProperties extends Properties
 	/**
 	 * Default filename for properties file.
 	 */
-	public final static String DEFAULT_PROPERTIES_FILENAME = "./ccs_gui_config.properties";
+	public final static String DEFAULT_PROPERTIES_FILENAME = "./ics_gui_config.properties";
 	/**
 	 * Filename for properties file. Defaults to DEFAULT_PROPERTIES_FILENAME.
 	 * @see #DEFAULT_PROPERTIES_FILENAME
@@ -762,7 +762,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * @param id The id of the configuration.
 	 * @return The configuration type.
 	 * @exception NumberFormatException Thrown if the relevant property 
-	 * 	"ccs_gui_config."id".type" does not contain a numeric value.
+	 * 	"ics_gui_config."id".type" does not contain a numeric value.
 	 * @exception IllegalArgumentException Thrown if checkConfigType thinks the the type number is illegal.
 	 * @see #checkConfigType
 	 */
@@ -904,7 +904,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * @param id The id of the configuration.
 	 * @return The configuration X binning number.
 	 * @exception NumberFormatException Thrown if the relevant property 
-	 * 	"ccs_gui_config."id".xBin" does not contain a numeric value.
+	 * 	"ics_gui_config."id".xBin" does not contain a numeric value.
 	 */
 	public int getConfigXBin(int id) throws NumberFormatException
 	{
@@ -939,7 +939,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * @param id The id of the configuration.
 	 * @return The configuration Y binning number.
 	 * @exception NumberFormatException Thrown if the relevant property 
-	 * 	"ccs_gui_config."id".yBin" does not contain a numeric value.
+	 * 	"ics_gui_config."id".yBin" does not contain a numeric value.
 	 */
 	public int getConfigYBin(int id) throws NumberFormatException
 	{
@@ -1000,7 +1000,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * @param id The id of the configuration.
 	 * @return The configuration wavelength.
 	 * @exception NumberFormatException Thrown if the relevant property 
-	 * 	"ccs_gui_config."id".wavelength" does not contain a numeric value.
+	 * 	"ics_gui_config."id".wavelength" does not contain a numeric value.
 	 */
 	public double getConfigWavelength(int id) throws NumberFormatException
 	{
@@ -1123,7 +1123,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * @param id The id of the configuration.
 	 * @return The configuration window flags number.
 	 * @exception NumberFormatException Thrown if the relevant property 
-	 * 	"ccs_gui_config."id".windowFlags" does not contain a numeric value.
+	 * 	"ics_gui_config."id".windowFlags" does not contain a numeric value.
 	 */
 	public int getConfigWindowFlags(int id) throws NumberFormatException
 	{
@@ -1160,7 +1160,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * 	between 1 and 4 inclusive.
 	 * @return The X start offset.
 	 * @exception NumberFormatException Thrown if the relevant property 
-	 * 	"ccs_gui_config."id".window"windowNumber".xStart" does not contain a numeric value.
+	 * 	"ics_gui_config."id".window"windowNumber".xStart" does not contain a numeric value.
 	 */
 	public int getConfigXStart(int id,int windowNumber) throws NumberFormatException
 	{
@@ -1201,7 +1201,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * 	between 1 and 4 inclusive.
 	 * @return The Y start offset.
 	 * @exception NumberFormatException Thrown if the relevant property 
-	 * 	"ccs_gui_config."id".window"windowNumber".yStart" does not contain a numeric value.
+	 * 	"ics_gui_config."id".window"windowNumber".yStart" does not contain a numeric value.
 	 */
 	public int getConfigYStart(int id,int windowNumber) throws NumberFormatException
 	{
@@ -1242,7 +1242,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * 	between 1 and 4 inclusive.
 	 * @return The X end offset.
 	 * @exception NumberFormatException Thrown if the relevant property 
-	 * 	"ccs_gui_config."id".window"windowNumber".xEnd" does not contain a numeric value.
+	 * 	"ics_gui_config."id".window"windowNumber".xEnd" does not contain a numeric value.
 	 */
 	public int getConfigXEnd(int id,int windowNumber) throws NumberFormatException
 	{
@@ -1283,7 +1283,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * 	between 1 and 4 inclusive.
 	 * @return The Y end offset.
 	 * @exception NumberFormatException Thrown if the relevant property 
-	 * 	"ccs_gui_config."id".window"windowNumber".yEnd" does not contain a numeric value.
+	 * 	"ics_gui_config."id".window"windowNumber".yEnd" does not contain a numeric value.
 	 */
 	public int getConfigYEnd(int id,int windowNumber) throws NumberFormatException
 	{
@@ -1323,7 +1323,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * @param id The id of the configuration.
 	 * @return The configuration arm.
 	 * @exception IllegalArgumentException Thrown if the relevant property 
-	 * 	"ccs_gui_config."id".arm" does not contain either "red", "blue", or "unknown".
+	 * 	"ics_gui_config."id".arm" does not contain either "red", "blue", or "unknown".
 	 * @see ngat.phase2.FrodoSpecConfig#RED_ARM
 	 * @see ngat.phase2.FrodoSpecConfig#BLUE_ARM
 	 * @see ngat.phase2.FrodoSpecConfig#NO_ARM
@@ -1385,7 +1385,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * @param id The id of the configuration.
 	 * @return The configuration resolution.
 	 * @exception IllegalArgumentException Thrown if the relevant property 
-	 * 	"ccs_gui_config."id".resolution" does not contain either "low", "high", or "unknown".
+	 * 	"ics_gui_config."id".resolution" does not contain either "low", "high", or "unknown".
 	 * @see ngat.phase2.FrodoSpecConfig#RESOLUTION_LOW
 	 * @see ngat.phase2.FrodoSpecConfig#RESOLUTION_HIGH 
 	 * @see ngat.phase2.FrodoSpecConfig#RESOLUTION_UNKNOWN
@@ -1448,7 +1448,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * @param id The id of the configuration.
 	 * @return The configuration EM Gain number.
 	 * @exception NumberFormatException Thrown if the relevant property 
-	 * 	"ccs_gui_config."id".emGain" does not contain a numeric value.
+	 * 	"ics_gui_config."id".emGain" does not contain a numeric value.
 	 */
 	public int getConfigEMGain(int id) throws NumberFormatException
 	{
@@ -1484,7 +1484,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * @param id The id of the configuration.
 	 * @return The configuration arm.
 	 * @exception IllegalArgumentException Thrown if the relevant property 
-	 * 	"ccs_gui_config."id".triggerType" does not contain either "external", or "internal".
+	 * 	"ics_gui_config."id".triggerType" does not contain either "external", or "internal".
 	 * @see ngat.phase2.Ringo2PolarimeterConfig#TRIGGER_TYPE_EXTERNAL
 	 * @see ngat.phase2.Ringo2PolarimeterConfig#TRIGGER_TYPE_INTERNAL
 	 * @see ngat.phase2.Ringo3PolarimeterConfig#TRIGGER_TYPE_EXTERNAL
@@ -1554,7 +1554,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * @param id The id of the configuration.
 	 * @return The configuration slit position.
 	 * @exception IllegalArgumentException Thrown if the relevant property 
-	 * 	"ccs_gui_config."id".slit.position" does not contain either "in" or "out".
+	 * 	"ics_gui_config."id".slit.position" does not contain either "in" or "out".
 	 * @see ngat.phase2.SpratConfig#POSITION_IN
 	 * @see ngat.phase2.SpratConfig#POSITION_OUT
 	 */
@@ -1612,7 +1612,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * @param id The id of the configuration.
 	 * @return The configuration grism position.
 	 * @exception IllegalArgumentException Thrown if the relevant property 
-	 * 	"ccs_gui_config."id".grism.position" does not contain either "in" or "out".
+	 * 	"ics_gui_config."id".grism.position" does not contain either "in" or "out".
 	 * @see ngat.phase2.SpratConfig#POSITION_IN
 	 * @see ngat.phase2.SpratConfig#POSITION_OUT
 	 */
@@ -1670,7 +1670,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * @param id The id of the configuration.
 	 * @return The configuration grism rotation.
 	 * @exception IllegalArgumentException Thrown if the relevant property 
-	 * 	"ccs_gui_config."id".grism.rotation" does not contain either "0" or "1".
+	 * 	"ics_gui_config."id".grism.rotation" does not contain either "0" or "1".
 	 */
 	public int getConfigGrismRotation(int id) throws IllegalArgumentException
 	{
@@ -1724,7 +1724,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * @param id The id of the configuration.
 	 * @return The configuration slit position.
 	 * @exception IllegalArgumentException Thrown if the relevant property 
-	 * 	"ccs_gui_config."id".slit.width" does not contain either "narrow" or "wide".
+	 * 	"ics_gui_config."id".slit.width" does not contain either "narrow" or "wide".
 	 * @see ngat.phase2.LOTUSConfig#SLIT_WIDTH_NARROW
 	 * @see ngat.phase2.LOTUSConfig#SLIT_WIDTH_WIDE
 	 */
@@ -2835,11 +2835,11 @@ public class IcsGUIConfigProperties extends Properties
 	 * Method to return a partial key string for a configuration of a particular id.
 	 * @param id The Id of the required configuration.
 	 * @return A string suitable for use as a partial key in the hashtable.
-	 * 	e.g. "ccs_gui_config.0."
+	 * 	e.g. "ics_gui_config.0."
 	 */
 	private String configIdString(int id)
 	{
-		return new String("ccs_gui_config."+id+".");
+		return new String("ics_gui_config."+id+".");
 	}
 
 	/**
@@ -2847,7 +2847,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * @param id The Id of the required configuration.
 	 * @param windowNumber The number of the window.
 	 * @return A string suitable for use as a partial key in the hashtable.
-	 * 	e.g. "ccs_gui_config.0.window1."
+	 * 	e.g. "ics_gui_config.0.window1."
 	 */
 	private String configIdWindowString(int id,int windowNumber)
 	{
