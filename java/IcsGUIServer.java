@@ -1,23 +1,23 @@
 /*   
     Copyright 2006, Astrophysics Research Institute, Liverpool John Moores University.
 
-    This file is part of CcsGUI.
+    This file is part of IcsGUI.
 
-    CcsGUI is free software; you can redistribute it and/or modify
+    IcsGUI is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    CcsGUI is distributed in the hope that it will be useful,
+    IcsGUI is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with CcsGUI; if not, write to the Free Software
+    along with IcsGUI; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-// CcsGUIServer.java
+// IcsGUIServer.java
 // $Header: /home/cjm/cvs/ics_gui/java/IcsGUIServer.java,v 0.5 2006-05-16 17:12:16 cjm Exp $
 import java.lang.*;
 import java.io.*;
@@ -28,16 +28,16 @@ import ngat.net.*;
 /**
  * This class extends the TCPServer class for the IcsGUI application. The IcsGUI sends
  * commands to the Ccs. Some Ccs commands involve sending commands back to the ISS, and
- * this class is designed to catch these requests and to spawn a CcsGUIServerConnectionThread to deal with them.
+ * this class is designed to catch these requests and to spawn a IcsGUIServerConnectionThread to deal with them.
  * @author Chris Mottram
- * @version $Revision: 0.5 $
+ * @version $Revision$
  */
-public class CcsGUIServer extends TCPServer
+public class IcsGUIServer extends TCPServer
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIServer.java,v 0.5 2006-05-16 17:12:16 cjm Exp $");
+	public final static String RCSID = new String("$Id$");
 	/**
 	 * Field holding the instance of the IcsGUI currently executing, 
 	 * so we can pass this to spawned threads.
@@ -47,7 +47,7 @@ public class CcsGUIServer extends TCPServer
 	/**
 	 * The constructor. Call the inherited constrctor.
 	 */
-	public CcsGUIServer(String name,int portNumber)
+	public IcsGUIServer(String name,int portNumber)
 	{
 		super(name,portNumber);
 	}
@@ -64,14 +64,14 @@ public class CcsGUIServer extends TCPServer
 
 	/**
 	 * This routine spawns threads to handle connection to the server. This routine
-	 * spawns <a href="CcsGUIServerConnectionThread.html">CcsGUIServerConnectionThread</a> thread.
-	 * @see CcsGUIServerConnectionThread
+	 * spawns <a href="IcsGUIServerConnectionThread.html">IcsGUIServerConnectionThread</a> thread.
+	 * @see IcsGUIServerConnectionThread
 	 */
 	public void startConnectionThread(Socket connectionSocket)
 	{
-		CcsGUIServerConnectionThread thread = null;
+		IcsGUIServerConnectionThread thread = null;
 
-		thread = new CcsGUIServerConnectionThread(connectionSocket);
+		thread = new IcsGUIServerConnectionThread(connectionSocket);
 		thread.setParent(parent);
 		thread.start();
 	}
