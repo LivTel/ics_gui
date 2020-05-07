@@ -2598,7 +2598,8 @@ public class IcsGUIConfigProperties extends Properties
 	 * 	file as a legal number.
 	 * @exception IllegalArgumentException Thrown if the config id specified does not have a legal type.
 	 */
-	private MOPTOPPolarimeterConfig getMoptopConfigById(int id) throws NumberFormatException, IllegalArgumentException
+	private MOPTOPPolarimeterConfig getMoptopConfigById(int id) throws NumberFormatException,
+									   IllegalArgumentException
 	{
 		MOPTOPPolarimeterConfig c = null;
 		MOPTOPPolarimeterDetector detector;
