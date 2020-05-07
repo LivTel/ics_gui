@@ -74,10 +74,10 @@ public class IcsGUIMoptopPolarimeterConfigAADialog extends JDialog implements Ac
 		super(owner,"Add/Amend Moptop Configuration");
 //		setResizable(false);
 		configProperties = c;
-	// there are 10 fields arranged vertically.
-	// there are 2 titled border height from 2 sets of titled border
+	// there are 6 fields arranged vertically.
+	// there are 1 titled border height from 1 sets of titled border
 	// there is one set of buttons vertically 
-		int height = (10*FIELD_HEIGHT)+(2*TITLED_BORDER_HEIGHT)+BUTTON_HEIGHT;
+		int height = (6*FIELD_HEIGHT)+TITLED_BORDER_HEIGHT+BUTTON_HEIGHT;
 
 		getContentPane().setLayout(new SizedBoxLayout(getContentPane(),BoxLayout.Y_AXIS,
 			new Dimension(DIALOG_WIDTH,height)));
