@@ -1,5 +1,6 @@
 //  IcsGUIMoptopPolarimeterConfigAADialog.java
 // $Header$
+import java.io.*;
 import java.lang.*;
 import java.util.*;
 import java.awt.*;
@@ -10,6 +11,7 @@ import javax.swing.event.*;
 
 import ngat.swing.*;
 import ngat.phase2.MOPTOPPolarimeterConfig;
+import ngat.util.*;
 
 /**
  * This class provides an Add and Amend facility for Moptop polarimeter Configurations.
@@ -54,11 +56,18 @@ public class IcsGUIMoptopPolarimeterConfigAADialog extends JDialog implements Ac
 	 * The listener for this dialog.
 	 */
 	IcsConfigAADialogListener listener = null;
-
+	/**
+	 * A reference to the IcsGUI instance, used for logging calls.
+	 */
+	protected IcsGUI icsGUI = null;
+	/**
+	 * A copy of the reference to the instance of IcsGUIStatus.
+	 */
+	protected IcsGUIStatus icsGUIStatus = null;
 	JTextField nameTextField = null;
 	JCheckBox calibrateBeforeCheckBox = null;
 	JCheckBox calibrateAfterCheckBox = null;
-	JTextField filterNameTextField = null;
+	JComboBox filterComboBox = null;
 	JComboBox rotorSpeedComboBox = null;
 	// one per detector?
 	JTextField xBinTextField = null;
@@ -111,8 +120,8 @@ public class IcsGUIMoptopPolarimeterConfigAADialog extends JDialog implements Ac
 	// filter position
 		label = new JLabel("Filter");
 		subPanel.add(label);
-		filterNameTextField = new JTextField();
-		subPanel.add(filterNameTextField);
+		filterComboBox = new JComboBox();
+		subPanel.add(filterComboBox);
 	// sub panel
 		subPanel = new JPanel();
 		getContentPane().add(subPanel);
@@ -159,7 +168,28 @@ public class IcsGUIMoptopPolarimeterConfigAADialog extends JDialog implements Ac
 	}
 	
 	/**
+	 * Set the IcsGUI reference. Used for logging.
+	 * @param o The instance of IcsGUI to use.
+	 * @see #icsGUI
+	 */
+	public void setIcsGUI(IcsGUI o)
+	{
+		icsGUI = o;
+	}
+
+	/**
+	 * Set the IcsGUIStatus reference. Used to get a list of valid filters for the combo boxs.
+	 * @param s The instance of IcsGUIStatus to use.
+	 * @see #icsGUIStatus
+	 */
+	public void setIcsGUIStatus(IcsGUIStatus s)
+	{
+		icsGUIStatus = s;
+	}
+
+	/**
 	 * Method to manage the config Add/Amend dialog in add mode.
+	 * @see #setFilterComboBox
 	 */
 	public void add()
 	{
@@ -170,7 +200,16 @@ public class IcsGUIMoptopPolarimeterConfigAADialog extends JDialog implements Ac
 		nameTextField.setText("Configuration "+configId);
 		calibrateBeforeCheckBox.setSelected(false);
 		calibrateAfterCheckBox.setSelected(false);
-		filterNameTextField.setText("Baader R");
+		try
+		{
+			setFilterComboBox();
+		}
+		catch(Exception e)
+		{
+			System.err.println(this.getClass().getName()+":add:"+e);
+			e.printStackTrace(System.err);
+		}
+		filterComboBox.setSelectedItem("Baader R");
 		rotorSpeedComboBox.setSelectedItem("fast");
 		xBinTextField.setText("1");
 		yBinTextField.setText("1");
@@ -189,7 +228,17 @@ public class IcsGUIMoptopPolarimeterConfigAADialog extends JDialog implements Ac
 		nameTextField.setText(configProperties.getConfigName(id));
 		calibrateBeforeCheckBox.setSelected(configProperties.getConfigCalibrateBefore(id));
 		calibrateAfterCheckBox.setSelected(configProperties.getConfigCalibrateAfter(id));
-		filterNameTextField.setText(configProperties.getConfigFilterWheel(id));
+		try
+		{
+			setFilterComboBox();
+		}
+		catch(Exception e)
+		{
+			icsGUI.error(this.getClass().getName()+":amend:"+e);
+			System.err.println(this.getClass().getName()+":amend:"+e);
+			e.printStackTrace(System.err);
+		}
+		filterComboBox.setSelectedItem(configProperties.getConfigFilterWheel(id));
 		rotorSpeedComboBox.setSelectedItem(configProperties.getConfigRotorSpeedString(id));
 		xBinTextField.setText(configProperties.getConfigXBinString(id));
 		yBinTextField.setText(configProperties.getConfigYBinString(id));
@@ -245,7 +294,7 @@ public class IcsGUIMoptopPolarimeterConfigAADialog extends JDialog implements Ac
 					" Illegal name ",JOptionPane.ERROR_MESSAGE);
 				return;
 			}
-			filterName = filterNameTextField.getText();
+			filterName = (String)(filterComboBox.getSelectedItem());
 		// get and test numeric data from text fields
 			try
 			{
@@ -290,5 +339,73 @@ public class IcsGUIMoptopPolarimeterConfigAADialog extends JDialog implements Ac
 		}
 	//unmanage dialog
 		this.setVisible(false);
+	}
+	
+	/**
+	 * Method to populate the filter wheel combo box with filters loaded from a property file specified
+	 * in the main set of properties.
+	 * @see #filterComboBox
+	 * @see #icsGUIStatus
+	 * @exception FileNotFoundException Thrown if the current filter properties cannot be found.
+	 * @exception IOException Thrown if an IO error occurs whilst loading the filter properties.
+	 * @exception NGATPropertyException Thrown if a property has an illegal value.
+	 * @exception IllegalArgumentException Thrown if the filter index is an unexpected value.
+	 * @see #filterComboBox
+	 */
+	protected void setFilterComboBox() throws FileNotFoundException,IOException,NGATPropertyException,
+						       IllegalArgumentException
+	{
+		NGATProperties filterProperties = null;
+		FileInputStream fileInputStream = null;
+		String filterPropertiesFilename = null;
+		String filterName = null;
+		int filterWheelCount,filterCount;
+
+		icsGUI.log(this.getClass().getName()+":setFilterComboBoxs:Started.");
+		if(icsGUIStatus == null)
+		{
+			icsGUI.log(this.getClass().getName()+":setFilterComboBoxs:icsGUIStatus is null.");
+			return;
+		}
+		// get filter property filename
+		filterPropertiesFilename = icsGUIStatus.getProperty("ics_gui.filter.property.filename.moptop");
+		if((filterPropertiesFilename == null)||(filterPropertiesFilename.equals("")))
+		{
+			icsGUI.log(this.getClass().getName()+
+					   ":setFilterComboBox:filterPropertiesFilename is null.");
+			return;
+		}
+		icsGUI.log(this.getClass().getName()+":setFilterComboBox:filterPropertiesFilename is "+
+				   filterPropertiesFilename+".");
+		// load filterProperties
+		filterProperties = new NGATProperties();
+		fileInputStream = new FileInputStream(filterPropertiesFilename);
+		filterProperties.load(fileInputStream);
+		fileInputStream.close();
+		filterWheelCount = filterProperties.getInt("filterwheel.count");
+		icsGUI.log(this.getClass().getName()+":setFilterComboBoxs:filterWheelCount is "+
+			   filterWheelCount+".");
+		// clear current combo box list, ready for latest one.
+		// Note must check items are in list first, as old JVMs(1.2.1) throw IndexOutOfBoundsException
+		if(filterComboBox.getItemCount() > 0)
+			filterComboBox.removeAllItems();
+		for(int filterWheelIndex = 1; filterWheelIndex <= filterWheelCount; filterWheelIndex++)
+		{
+			// loop over number of filters in wheel
+			filterCount = filterProperties.getInt("filterwheel."+filterWheelIndex+".count");
+			icsGUI.log(this.getClass().getName()+":setFilterComboBoxs:filterWheelIndex: "+
+				   filterWheelIndex+":filterCount is "+filterCount+".");
+			for(int i  = 1; i <= filterCount; i++)
+			{
+				// get filter type name
+				filterName = filterProperties.getProperty("filterwheel."+filterWheelIndex+"."+
+									  i+".type");
+				icsGUI.log(this.getClass().getName()+":setFilterComboBox:filterWheelIndex: "+
+					   filterWheelIndex+":filter "+i+" is "+filterName+".");
+				// add to relevant combobox
+				filterComboBox.addItem(filterName);
+			}
+		}
+		icsGUI.log(this.getClass().getName()+":setFilterComboBox:Finished.");
 	}
 }

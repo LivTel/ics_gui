@@ -476,6 +476,8 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, I
 						break;
 					case IcsGUIConfigProperties.CONFIG_TYPE_POLARIMETER_MOPTOP:
 						addAmendMoptopPolarimeterDialog.setLocation(getX()+getWidth(),getY());
+						addAmendMoptopPolarimeterDialog.setIcsGUI(icsGUI);
+						addAmendMoptopPolarimeterDialog.setIcsGUIStatus(icsGUIStatus);
 						addAmendMoptopPolarimeterDialog.pack();
 						addAmendMoptopPolarimeterDialog.add();
 						break;
@@ -566,6 +568,8 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, I
 						break;
 					case IcsGUIConfigProperties.CONFIG_TYPE_POLARIMETER_MOPTOP:
 						addAmendMoptopPolarimeterDialog.setLocation(getX()+getWidth(),getY());
+						addAmendMoptopPolarimeterDialog.setIcsGUI(icsGUI);
+						addAmendMoptopPolarimeterDialog.setIcsGUIStatus(icsGUIStatus);
 						addAmendMoptopPolarimeterDialog.pack();
 						addAmendMoptopPolarimeterDialog.amend(id);
 						break;
