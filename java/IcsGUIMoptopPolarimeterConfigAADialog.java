@@ -209,7 +209,7 @@ public class IcsGUIMoptopPolarimeterConfigAADialog extends JDialog implements Ac
 			System.err.println(this.getClass().getName()+":add:"+e);
 			e.printStackTrace(System.err);
 		}
-		filterComboBox.setSelectedItem("Baader R");
+		filterComboBox.setSelectedIndex(0);
 		rotorSpeedComboBox.setSelectedItem("fast");
 		xBinTextField.setText("1");
 		yBinTextField.setText("1");
