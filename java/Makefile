@@ -140,7 +140,7 @@ top: $(OBJS) properties gifs jpgs pngs scripts sounds docs
 # java sources
 #
 $(BINDIR)/%.class:%.java
-	$(JAVAC) $(JAVAC_OPTIONS) -d $(BINDIR) $<
+	$(JAVAC) $(JAVAC_OPTIONS) $(ICS_GUI_JAVAC_OPTIONS) -d $(BINDIR) $<
 
 #
 # configuration files
