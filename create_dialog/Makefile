@@ -37,7 +37,7 @@ DIALOG_OBJS 	= $(DIALOG_SRCS:ngat.message.ISS_INST.%=$(ICS_GUI_SRC_HOME)/java/%D
 top: $(OBJS) docs dialogs
 
 $(BINDIR)/%.class:%.java
-	$(JAVAC) $(JAVAC_OPTIONS) -d $(BINDIR) $<
+	$(JAVAC) $(JAVAC_OPTIONS) $(ICS_GUI_JAVAC_OPTIONS) -d $(BINDIR) $<
 
 docs: $(DOCS)
 

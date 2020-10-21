@@ -5,6 +5,9 @@ ICS_GUI_SRC_HOME	= 	$(LT_SRC_HOME)/$(ICS_GUI_HOME)
 ICS_GUI_BIN_HOME	= 	$(LT_BIN_HOME)/$(ICS_GUI_HOME)
 ICS_GUI_DOC_HOME	= 	$(LT_DOC_HOME)/$(ICS_GUI_HOME)
 
+# We need no later than Java 1.6 for Sprat
+ICS_GUI_JAVAC_OPTIONS	=	-source 1.6 -target 1.6	
+
 #
 # $Log: not supported by cvs2svn $
 # Revision 1.1  2003/11/14 15:27:19  cjm
