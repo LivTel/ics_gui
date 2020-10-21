@@ -95,6 +95,10 @@ public class IcsGUIConfigProperties extends Properties
 	 */
 	public final static int CONFIG_TYPE_SPECTROGRAPH_LOTUS        = 13;
 	/**
+	 * Configuration type specifier:Polarimeter (Moptop).
+	 */
+	public final static int CONFIG_TYPE_POLARIMETER_MOPTOP        = 14;
+	/**
 	 * List of legal values that can be held in the config type field.
 	 * @see #CONFIG_TYPE_CCD_RATCAM
 	 * @see #CONFIG_TYPE_SPECTROGRAPH_MES
@@ -110,12 +114,13 @@ public class IcsGUIConfigProperties extends Properties
 	 * @see #CONFIG_TYPE_POLARIMETER_RINGO3
 	 * @see #CONFIG_TYPE_SPECTROGRAPH_SPRAT
 	 * @see #CONFIG_TYPE_SPECTROGRAPH_LOTUS
+	 * @see #CONFIG_TYPE_POLARIMETER_MOPTOP
 	 */
 	public final static int CONFIG_TYPE_LIST[] = {CONFIG_TYPE_CCD_RATCAM,CONFIG_TYPE_SPECTROGRAPH_MES,
 		CONFIG_TYPE_SPECTROGRAPH_NUVIEW,CONFIG_TYPE_INFRA_RED_SUPIRCAM,CONFIG_TYPE_SPECTROGRAPH_FTSPEC,
 		CONFIG_TYPE_POLARIMETER_RINGOSTAR,CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC,CONFIG_TYPE_CCD_RISE,
 		CONFIG_TYPE_POLARIMETER_RINGO2,CONFIG_TYPE_CCD_THOR,CONFIG_TYPE_CCD_O,CONFIG_TYPE_POLARIMETER_RINGO3,
-						      CONFIG_TYPE_SPECTROGRAPH_SPRAT,CONFIG_TYPE_SPECTROGRAPH_LOTUS};
+		CONFIG_TYPE_SPECTROGRAPH_SPRAT,CONFIG_TYPE_SPECTROGRAPH_LOTUS,CONFIG_TYPE_POLARIMETER_MOPTOP};
 	/**
 	 * Default filename for properties file.
 	 */
@@ -255,6 +260,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * @see #getRingo3PolarimeterConfigById
 	 * @see #getSpratConfigById
 	 * @see #getLOTUSConfigById
+	 * @see #getMoptopConfigById
 	 */
 	public InstrumentConfig getConfigById(int id) throws NumberFormatException, IllegalArgumentException
 	{
@@ -306,6 +312,9 @@ public class IcsGUIConfigProperties extends Properties
 				break;
 			case CONFIG_TYPE_SPECTROGRAPH_LOTUS:
 				c = getLOTUSConfigById(id);
+				break;
+			case CONFIG_TYPE_POLARIMETER_MOPTOP:
+				c = getMoptopConfigById(id);
 				break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":getConfigById:Id "
@@ -488,6 +497,12 @@ public class IcsGUIConfigProperties extends Properties
 					remove(configIdWindowStringXEnd(id,j));
 					remove(configIdWindowStringYEnd(id,j));
 				}
+				break;
+			case CONFIG_TYPE_POLARIMETER_MOPTOP:
+				remove(configIdStringXBin(id));
+				remove(configIdStringYBin(id));
+				remove(configIdStringFilterWheel(id));
+				remove(configIdStringRotorSpeed(id));
 				break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":deleteId:Id "
@@ -688,7 +703,6 @@ public class IcsGUIConfigProperties extends Properties
 					remove(configIdStringGrismPosition(i));
 					setConfigGrismRotation(i-1,getConfigGrismRotation(i));
 					remove(configIdStringGrismRotation(i));
-
 					setConfigWindowFlags(i-1,getConfigWindowFlags(i));
 					remove(configIdStringWindowFlags(i));
 					for(j=1;j<2;j++)
@@ -710,7 +724,6 @@ public class IcsGUIConfigProperties extends Properties
 					remove(configIdStringYBin(i));
 					setConfigSlitWidth(i-1,getConfigSlitWidth(i));
 					remove(configIdStringSlitWidth(i));
-
 					setConfigWindowFlags(i-1,getConfigWindowFlags(i));
 					remove(configIdStringWindowFlags(i));
 					for(j=1;j<2;j++)
@@ -724,6 +737,16 @@ public class IcsGUIConfigProperties extends Properties
 						setConfigYEnd(i-1,j,getConfigYEnd(i,j));
 						remove(configIdWindowStringYEnd(i,j));
 					}
+					break;
+				case CONFIG_TYPE_POLARIMETER_MOPTOP:
+					setConfigXBin(i-1,getConfigXBin(i));
+					remove(configIdStringXBin(i));
+					setConfigYBin(i-1,getConfigYBin(i));
+					remove(configIdStringYBin(i));
+					setConfigFilterWheel(i-1,getConfigFilterWheel(i));
+					remove(configIdStringFilterWheel(i));
+					setConfigRotorSpeed(i-1,getConfigRotorSpeed(i));
+					remove(configIdStringRotorSpeed(i));
 					break;
 				default:
 					throw new IllegalArgumentException(this.getClass().getName()+":deleteId:Id "
@@ -1032,7 +1055,7 @@ public class IcsGUIConfigProperties extends Properties
 	}
 
 	/**
-	 * Method to get the filter wheel string of configuration id id (INFRA_RED_SUPIRCAM).
+	 * Method to get the filter wheel string of configuration id id (INFRA_RED_SUPIRCAM/MOPTOP).
 	 * @param id The id of the configuration.
 	 * @return The configuration filter wheel string.
 	 */
@@ -1042,7 +1065,7 @@ public class IcsGUIConfigProperties extends Properties
 	}
 
 	/**
-	 * Method to set the upper filter wheel string of configuration id id (INFRA_RED_SUPIRCAM).
+	 * Method to set the upper filter wheel string of configuration id id (INFRA_RED_SUPIRCAM/MOPTOP).
 	 * @param id The id of the configuration.
 	 * @param s The configuration filter wheel string.
 	 */
@@ -1774,6 +1797,64 @@ public class IcsGUIConfigProperties extends Properties
 							   ":setConfigSlitWidth:Illegal slit width:"+width);
 		}
 		setProperty(configIdStringSlitWidth(id),slitWidthString);
+	}
+
+	/**
+	 * Method to get the rotor speed of configuration id id as a string.
+	 * This is a Moptop only configuration value.
+	 * @param id The id of the configuration.
+	 * @return The configuration slit position.
+	 * @exception IllegalArgumentException Thrown if the relevant property 
+	 * 	"ics_gui_config."id".rotor.speed" does not contain either "slow" or "fast".
+	 * @see ngat.phase2.MOPTOPPolarimeterConfig#ROTOR_SPEED_SLOW
+	 * @see ngat.phase2.MOPTOPPolarimeterConfig#ROTOR_SPEED_FAST
+	 */
+	public int getConfigRotorSpeed(int id) throws IllegalArgumentException
+	{
+		String s = null;
+
+		s = getProperty(configIdStringRotorSpeed(id));
+		if(s.equals("slow"))
+			return MOPTOPPolarimeterConfig.ROTOR_SPEED_SLOW;
+		else if (s.equals("fast"))
+			return MOPTOPPolarimeterConfig.ROTOR_SPEED_FAST;
+		throw new IllegalArgumentException(this.getClass().getName()+
+						   ":getConfigRotorSpeed:Illegal rotor speed string:"+s);
+	}
+
+	/**
+	 * Method to get the rotor speed of configuration id id as a string.
+	 * @param id The id of the configuration.
+	 * @return The configuration rotor speed as a string.
+	 */
+	public String getConfigRotorSpeedString(int id)
+	{
+		return getProperty(configIdStringRotorSpeed(id));
+	}
+
+	/**
+	 * Method to set the rotor speed of configuration id id.
+	 * This is a Moptop only configuration value.
+	 * @param id The id of the configuration.
+	 * @param rotorSpeed The configuration rotor speed.
+	 * @exception IllegalArgumentException Thrown if the rotor speed can't be mapped to a string.
+	 * @see ngat.phase2.MOPTOPPolarimeterConfig#ROTOR_SPEED_SLOW
+	 * @see ngat.phase2.MOPTOPPolarimeterConfig#ROTOR_SPEED_FAST
+	 */
+	public void setConfigRotorSpeed(int id,int rotorSpeed) throws IllegalArgumentException
+	{
+		String rotorSpeedString = null;
+
+		if(rotorSpeed == MOPTOPPolarimeterConfig.ROTOR_SPEED_SLOW)
+			rotorSpeedString = "slow";
+		else if(rotorSpeed == MOPTOPPolarimeterConfig.ROTOR_SPEED_FAST)
+			rotorSpeedString = "fast";
+		else
+		{
+			throw new IllegalArgumentException(this.getClass().getName()+
+							   ":setConfigRotorSpeed:Illegal rotor speed:"+rotorSpeed);
+		}
+		setProperty(configIdStringRotorSpeed(id),rotorSpeedString);
 	}
 
 // methods to create an instance of an instrument config
@@ -2509,6 +2590,50 @@ public class IcsGUIConfigProperties extends Properties
 		return c;
 	}
 
+	/**
+	 * Method to return a MOPTOPPolarimeterConfig, constructed from the information against id id.
+	 * @param id The Id number.
+	 * @return The constructed MOPTOPPolarimeterConfig.
+	 * @exception NumberFormatException Thrown if a numeric parameter is not returned from the properties
+	 * 	file as a legal number.
+	 * @exception IllegalArgumentException Thrown if the config id specified does not have a legal type.
+	 */
+	private MOPTOPPolarimeterConfig getMoptopConfigById(int id) throws NumberFormatException,
+									   IllegalArgumentException
+	{
+		MOPTOPPolarimeterConfig c = null;
+		MOPTOPPolarimeterDetector detector;
+		Window windowArray[];
+
+	// check type
+		if(getConfigType(id) != CONFIG_TYPE_POLARIMETER_MOPTOP)
+		{
+			throw new IllegalArgumentException(this.getClass().getName()+":getMoptopConfigById:Id "
+				+id+" not a configuration of type MOPTOP.");
+		}
+	// construct MOPTOPPolarimeterConfig
+		c = new MOPTOPPolarimeterConfig(getConfigName(id));
+		c.setCalibrateBefore(getConfigCalibrateBefore(id));
+		c.setCalibrateAfter(getConfigCalibrateAfter(id));
+		c.setFilterName(getConfigFilterWheel(id));
+		c.setRotorSpeed(getConfigRotorSpeed(id));
+	// setup detector list
+		for(int i = 0; i < c.getMaxDetectorCount(); i++)
+		{
+			detector = new MOPTOPPolarimeterDetector();
+			detector.setXBin(getConfigXBin(id));
+			detector.setYBin(getConfigYBin(id));
+	// set windows into detector
+		//detector.setWindows(windowArray);
+	// Note flags are held IN the window list, so must setWindowFlags AFTER detector windows set
+		//detector.setWindowFlags(0);
+	// set detector into config
+			c.setDetector(i,detector);
+		}// end for on detectors
+	// return config
+		return c;
+	}
+
 // method to check values in the property file.
 	/**
 	 * Method to check whether a number is a legal configuration type number.
@@ -2829,6 +2954,17 @@ public class IcsGUIConfigProperties extends Properties
 	private String configIdStringSlitWidth(int id)
 	{
 		return new String(configIdString(id)+"slit.width");
+	}
+
+	/**
+	 * Method to return a key for the rotor speed for a particular config id.
+	 * @param id The config id.
+	 * @return The key string.
+	 * @see #configIdString
+	 */
+	private String configIdStringRotorSpeed(int id)
+	{
+		return new String(configIdString(id)+"rotor.speed");
 	}
 
 	/**

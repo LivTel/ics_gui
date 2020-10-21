@@ -37,7 +37,7 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, I
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public static String RCSID = new String("$Id: IcsGUIConfigListDialog.java,v 0.21 2020-05-05 10:20:39 cjm Exp $");
+	public static String RCSID = new String("$Id$");
 	/**
 	 * String to go on buttons.
 	 */
@@ -95,6 +95,10 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, I
 	 */
 	protected final static String SPECTROGRAPH_LOTUS_BUTTON_STRING = "Spectrograph (LOTUS)";
 	/**
+	 * String to go on buttons.
+	 */
+	protected final static String POLARIMETER_MOPTOP_BUTTON_STRING = "Polarimeter (Moptop)";
+	/**
 	 * List of strings that describe instruments. Note, make sure in the same order as 
 	 * IcsGUIConfigProperties.CONFIG_TYPE_LIST.
 	 * @see IcsGUIConfigProperties#CONFIG_TYPE_LIST
@@ -112,13 +116,15 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, I
 	 * @see #POLARIMETER_RINGO3_BUTTON_STRING
 	 * @see #SPECTROGRAPH_SPRAT_BUTTON_STRING
 	 * @see #SPECTROGRAPH_LOTUS_BUTTON_STRING
+	 * @see #POLARIMETER_MOPTOP_BUTTON_STRING
 	 */
 	protected final static String INSTRUMENT_STRING_ARRAY[] = {CCD_RATCAM_BUTTON_STRING,
 		SPECTROGRAPH_MES_BUTTON_STRING,SPECTROGRAPH_NUVIEW_BUTTON_STRING,
 	        INFRA_RED_SUPIRCAM_BUTTON_STRING,SPECTROGRAPH_FTSPEC_BUTTON_STRING,
 		POLARIMETER_RINGOSTAR_BUTTON_STRING,SPECTROGRAPH_FRODOSPEC_BUTTON_STRING,CCD_RISE_BUTTON_STRING,
 		POLARIMETER_RINGO2_BUTTON_STRING,CCD_THOR_BUTTON_STRING,CCD_O_BUTTON_STRING,
-		POLARIMETER_RINGO3_BUTTON_STRING,SPECTROGRAPH_SPRAT_BUTTON_STRING,SPECTROGRAPH_LOTUS_BUTTON_STRING};
+		POLARIMETER_RINGO3_BUTTON_STRING,SPECTROGRAPH_SPRAT_BUTTON_STRING,SPECTROGRAPH_LOTUS_BUTTON_STRING,
+								   POLARIMETER_MOPTOP_BUTTON_STRING};
 	/**
 	 * String to pre-pend to add menu instrument entries.
 	 */
@@ -191,6 +197,10 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, I
 	 * The Add/Amend dialog to use when Add or Amend is selected for a LOTUS configuration.
 	 */
 	private IcsGUILOTUSConfigAADialog addAmendLOTUSDialog = null;
+	/**
+	 * The Add/Amend dialog to use when Add or Amend is selected for a Polarimeter (Moptop) configuration.
+	 */
+	private IcsGUIMoptopPolarimeterConfigAADialog addAmendMoptopPolarimeterDialog = null;
 	/**
 	 * The config dialog that caused this dialog to be managed.
 	 */
@@ -307,6 +317,9 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, I
 	// create a LOTUS add/amend dialog
 		addAmendLOTUSDialog = new IcsGUILOTUSConfigAADialog(owner,c);
 		addAmendLOTUSDialog.addIcsConfigAADialogListener(this);
+	// create a Moptop Polarimater add/amend dialog
+		addAmendMoptopPolarimeterDialog = new IcsGUIMoptopPolarimeterConfigAADialog(owner,c);
+		addAmendMoptopPolarimeterDialog.addIcsConfigAADialogListener(this);
 	}
 
 	/**
@@ -461,6 +474,13 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, I
 						addAmendLOTUSDialog.pack();
 						addAmendLOTUSDialog.add();
 						break;
+					case IcsGUIConfigProperties.CONFIG_TYPE_POLARIMETER_MOPTOP:
+						addAmendMoptopPolarimeterDialog.setLocation(getX()+getWidth(),getY());
+						addAmendMoptopPolarimeterDialog.setIcsGUI(icsGUI);
+						addAmendMoptopPolarimeterDialog.setIcsGUIStatus(icsGUIStatus);
+						addAmendMoptopPolarimeterDialog.pack();
+						addAmendMoptopPolarimeterDialog.add();
+						break;
 					case IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_MES:
 					default:
 						JOptionPane.showMessageDialog((Component)null,
@@ -545,6 +565,13 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, I
 						addAmendLOTUSDialog.setLocation(getX()+getWidth(),getY());
 						addAmendLOTUSDialog.pack();
 						addAmendLOTUSDialog.amend(id);
+						break;
+					case IcsGUIConfigProperties.CONFIG_TYPE_POLARIMETER_MOPTOP:
+						addAmendMoptopPolarimeterDialog.setLocation(getX()+getWidth(),getY());
+						addAmendMoptopPolarimeterDialog.setIcsGUI(icsGUI);
+						addAmendMoptopPolarimeterDialog.setIcsGUIStatus(icsGUIStatus);
+						addAmendMoptopPolarimeterDialog.pack();
+						addAmendMoptopPolarimeterDialog.amend(id);
 						break;
 					case IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_MES:
 					default:

@@ -22,7 +22,8 @@ SERVER_SRCS	= IcsGUIISSServer.java IcsGUIISSServerConnectionThread.java \
 CONFIG_SRCS	= IcsGUIConfigProperties.java IcsGUIConfigListDialog.java IcsGUIConfigButtonListener.java \
 		IcsGUICCDConfigAADialog.java IcsGUILowResSpecConfigAADialog.java IcsGUIIRCamConfigAADialog.java \
 		IcsGUIFixedFormatSpecConfigAADialog.java IcsGUIPolarimeterConfigAADialog.java \
-		IcsGUIFrodoSpecConfigAADialog.java IcsGUILOTUSConfigAADialog.java IcsGUIRISEConfigAADialog.java \
+		IcsGUIFrodoSpecConfigAADialog.java IcsGUILOTUSConfigAADialog.java \
+		IcsGUIMoptopPolarimeterConfigAADialog.java IcsGUIRISEConfigAADialog.java \
 		IcsGUIRingo2PolarimeterConfigAADialog.java IcsGUIRingo3PolarimeterConfigAADialog.java \
 		IcsGUISpratConfigAADialog.java IcsGUITHORConfigAADialog.java \
 		IcsGUIOConfigAADialog.java IcsConfigAADialogListener.java 
@@ -61,7 +62,7 @@ ICS_GUI_PROPERTY_SRCS	= ltccd2.ics_gui.properties ltccd4.ics_gui.properties \
 	frodospec1.frodospec.ics_gui.properties frodospec1.sprat.ics_gui.properties sprat1.sprat.ics_gui.properties \
 	ioi1.ioi.ics_gui.properties ioi1.sprat.ics_gui.properties observer1.ics_gui.properties \
 	lotus1.lotus.ics_gui.properties lotus2.lotus.ics_gui.properties ltobs9.lotus.ics_gui.properties \
-	ltoperator.ics_gui.properties moptop1.ics_gui.properties 
+	ltoperator.ics_gui.properties moptop1.ics_gui.properties zen.moptop1.ics_gui.properties 
 # No longer used
 #ltccd1.ics_gui.properties ltccd3.ics_gui.properties ftccd1.ics_gui.properties ftccd2.ics_gui.properties 
 # spectrograph.scs_gui.properties ltobs9.fartcam.ics_gui.properties ltobs9.dillcamsouth.ics_gui.properties 

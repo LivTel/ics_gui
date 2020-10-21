@@ -37,14 +37,14 @@ import ngat.util.StringUtilities;
  * It implements the generic ISS instrument command protocol.
  * It is used to send commands from the IcsGUI to the Ccs.
  * @author Chris Mottram
- * @version $Revision: 0.36 $
+ * @version $Revision$
  */
 public class IcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIClientConnectionThread.java,v 0.36 2020-05-05 10:20:39 cjm Exp $");
+	public final static String RCSID = new String("$Id$");
 	/**
 	 * The IcsGUI object.
 	 */
@@ -312,6 +312,7 @@ public class IcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 	 * @see #processDone
 	 * @see #printGetStatusDoneTwoArms
 	 * @see #printGetStatusDoneRingoIII
+	 * @see #printGetStatusDoneMoptop
 	 * @see IcsGUI#setCCDTemperatureLabelForeground
 	 * @see IcsGUI#setStatusBackground
 	 * @see ngat.message.ISS_INST.GET_STATUS_DONE#KEYWORD_INSTRUMENT_STATUS
@@ -427,12 +428,16 @@ public class IcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 			// special RingoIII case
 			printGetStatusDoneRingoIII(displayInfo,getStatusDone);
 		}
+		else if(instrumentString.equals("Moptop"))
+		{
+			// special Moptop case
+			printGetStatusDoneMoptop(displayInfo,getStatusDone);
+		}
 		else if(filterTypeString.equals("TWO_ARMS"))
 		{
 			// special FrodoSpec case.
 			printGetStatusDoneTwoArms(displayInfo,getStatusDone);
 		}
-		// diddly new rule for Ringo3, see printGetStatusDoneTwoArms for examples of how to do this
 		else
 		{
 	// set remaining exposures status
@@ -680,12 +685,12 @@ public class IcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 		int exposureCount,exposureNumber,cameraCount,cLayerIndex,cameraAndorIndex;
 
 		// set remaining exposures status
-		integerObject = (Integer)(displayInfo.get("Exposure Count"));// diddly OK
+		integerObject = (Integer)(displayInfo.get("Exposure Count"));
 		if(integerObject != null)
 			exposureCount = integerObject.intValue();
 		else
 			exposureCount = 0;
-		integerObject = (Integer)(displayInfo.get("Exposure Number"));// diddly "."+cLayerIndex+"."+andorCameraIndex
+		integerObject = (Integer)(displayInfo.get("Exposure Number"));
 		if(integerObject != null)
 			exposureNumber = integerObject.intValue();
 		else
@@ -697,13 +702,13 @@ public class IcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 		// set remaining exposure time label
 		if(getStatusDone.getCurrentMode() == GET_STATUS_DONE.MODE_EXPOSING)
 		{
-			integerObject = (Integer)(displayInfo.get("Exposure Length"));// diddly OK
+			integerObject = (Integer)(displayInfo.get("Exposure Length"));
 			if(integerObject != null)
 				exposureLength = integerObject.longValue();
 			else
 				exposureLength = 0;
 			// If Elapsed Exposure Time was included, use this to calculate remaining exposure time
-			if(displayInfo.containsKey("Elapsed Exposure Time"))// diddly not created by RingoIII
+			if(displayInfo.containsKey("Elapsed Exposure Time"))// This is not created by RingoIII
 			{
 				integerObject = (Integer)(displayInfo.get("Elapsed Exposure Time"));
 				elapsedExposureTime = integerObject.longValue();
@@ -713,7 +718,7 @@ public class IcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 			// calculate remaining exposure time
 			else
 			{
-				longObject = (Long)(displayInfo.get("Exposure Start Time"));// diddly OK
+				longObject = (Long)(displayInfo.get("Exposure Start Time"));
 				if(longObject != null)
 				{
 					parent.log("Elapsed Exposure Time not received, "+
@@ -763,6 +768,109 @@ public class IcsGUIClientConnectionThread extends TCPClientConnectionThreadMA
 				labelString = new String(""+cLayerIndex+"."+cameraAndorIndex);
 			// get the temperature for this camera
 			doubleObject = (Double)(displayInfo.get("Temperature."+cLayerIndex+"."+cameraAndorIndex));
+			if(doubleObject != null)
+			{
+				labelList.add(labelString);
+				temperatureList.add(doubleObject);
+			}
+		}// end for on cameraIndex
+		if(temperatureList.size() > 0)
+		{
+			parent.setCCDTemperatureLabel(labelList,temperatureList);
+		}
+		else
+		{
+			parent.log("Temperature not updated.");
+		}
+	}
+
+	/**
+	 * Update status based on hashtable contents, for Moptop. This is complicated as it has
+	 * more than one C layer controlling exposures (which may have different exposure statii at any one time),
+	 * and each C layer can has one camera, making CCD temperatures an issue.
+	 * @param displayInfo A Hashtable containing the keyword value pairs returned by RingoIII.
+	 * @param getStatusDone The GET_STATUS_DONE object. Used for extracting current exposure status.
+	 */
+	private void printGetStatusDoneMoptop(Hashtable displayInfo,GET_STATUS_DONE getStatusDone)
+	{
+		Vector temperatureList = null;
+		Vector labelList = null;
+		Integer integerObject = null;
+		Double doubleObject = null;
+		Long longObject = null;
+		String labelString = null;
+		long exposureLength,elapsedExposureTime,currentTime;
+		int exposureCount,exposureNumber,cLayerCount;
+
+		// set remaining exposures status
+		integerObject = (Integer)(displayInfo.get("Exposure Count"));
+		if(integerObject != null)
+			exposureCount = integerObject.intValue();
+		else
+			exposureCount = 0;
+		integerObject = (Integer)(displayInfo.get("Exposure Number"));
+		if(integerObject != null)
+			exposureNumber = integerObject.intValue();
+		else
+			exposureNumber = 0;
+		if(exposureCount <= 0)// special case MOVIE - or not exposing
+			parent.setRemainingExposuresLabel(0);
+		else
+			parent.setRemainingExposuresLabel(exposureCount-exposureNumber);
+		// set remaining exposure time label
+		if(getStatusDone.getCurrentMode() == GET_STATUS_DONE.MODE_EXPOSING)
+		{
+			integerObject = (Integer)(displayInfo.get("Exposure Length"));
+			if(integerObject != null)
+				exposureLength = integerObject.longValue();
+			else
+				exposureLength = 0;
+			// If Elapsed Exposure Time was included, use this to calculate remaining exposure time
+			if(displayInfo.containsKey("Elapsed Exposure Time"))
+			{
+				integerObject = (Integer)(displayInfo.get("Elapsed Exposure Time"));
+				elapsedExposureTime = integerObject.longValue();
+				parent.setRemainingExposureTimeLabel(exposureLength-elapsedExposureTime);
+			}
+			// otherwise, use current time - exposure start time to 
+			// calculate remaining exposure time
+			else
+			{
+				longObject = (Long)(displayInfo.get("Exposure Start Time"));
+				if(longObject != null)
+				{
+					parent.log("Elapsed Exposure Time not received, "+
+						   "using Exposure Start Time"+
+						   " to calculate remaining exposure time.");
+					currentTime = System.currentTimeMillis();
+					elapsedExposureTime = currentTime-longObject.longValue();
+					parent.log("Current Time:"+currentTime+" minus Exposure Start Time: "+
+						   longObject.longValue()+" equals Elapsed Exposure Time:"+
+						   elapsedExposureTime+".");
+					parent.setRemainingExposureTimeLabel(exposureLength-
+									     elapsedExposureTime);
+					parent.log("Remaining Exposure Time:"+
+						   (exposureLength-elapsedExposureTime)+
+						   " equals Exposure Length:"+exposureLength+
+						   " minus elapsed Exposure Time:"+elapsedExposureTime+".");
+				}
+			}
+		}
+		else
+			parent.setRemainingExposureTimeLabel(0L);
+		// extract temperatures
+		integerObject = (Integer)(displayInfo.get("C.Layer.Count"));
+		if(integerObject != null)
+			cLayerCount = integerObject.intValue();
+		else
+			cLayerCount = 0;
+		temperatureList = new Vector();
+		labelList = new Vector();
+		for(int cLayerIndex = 0; cLayerIndex < cLayerCount; cLayerIndex++)
+		{
+			labelString = new String(""+cLayerIndex);
+			// get the temperature for this camera
+			doubleObject = (Double)(displayInfo.get("Temperature."+cLayerIndex));
 			if(doubleObject != null)
 			{
 				labelList.add(labelString);
