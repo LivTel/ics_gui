@@ -9,6 +9,7 @@ DOCSDIR 	= $(ICS_GUI_DOC_HOME)/latex
 
 TEXSRCS 	= ccs_gui_design.tex icsgui_basic_user_guide.tex
 FIGSRCS 	= rcs_ccs_interaction.fig
+GIFSRCS		= ccs_gui_ui_error.gif ccs_gui_ui_main.gif ccs_gui_ui_menu.gif ccs_gui_ui_runat.gif
 JPGSRCS = pci_card_low_res_annotated.jpg sdsu_psu_low_res_annotated.jpg sun_ultra5_back_low_res_annotated.jpg \
 	sdsu_dewar_electronics_back_low_res_annotated.jpg
 TIFFSRCS = icsgui_bias_dialog.tiff icsgui_config_aa_dialog.tiff icsgui_config_dialog.tiff \
@@ -54,6 +55,9 @@ icsgui_basic_user_guide.dvi: rcs_ccs_interaction.eps pci_card_low_res_annotated.
 	$(LATEX) $<
 	$(LATEX) $<
 	$(LATEX) $<
+
+%.ps: %.gif
+	$(CONVERT) $< $@
 
 %.eps: %.jpg
 	$(CONVERT) $< $@
