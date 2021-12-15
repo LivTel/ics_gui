@@ -19,14 +19,14 @@ import ngat.util.*;
 /**
  * This class tests AttributedTextArea.
  * @author Chris Mottram
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 public class TestAttributedTextArea
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: TestAttributedTextArea.java,v 1.1 2020-04-30 08:39:52 cjm Exp $");
+	public final static String RCSID = new String("$Id$");
 	/**
 	 * Text area for logging.
 	 */

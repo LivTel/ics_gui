@@ -1,7 +1,7 @@
 #!/bin/csh
 # $Header: /home/cjm/cvs/ics_gui/scripts/icsgui_tar_install,v 1.3 2013-07-24 11:24:13 cjm Exp $
-# Version: $Revision: 1.3 $
-# By $Author: cjm $
+# Version: $Revision$
+# By $Author$
 # install a deployment tar created by icsgui_make_deployment
 # Usage:
 #	icsgui_tar_install <machine>
