@@ -99,6 +99,10 @@ public class IcsGUIConfigProperties extends Properties
 	 */
 	public final static int CONFIG_TYPE_POLARIMETER_MOPTOP        = 14;
 	/**
+	 * Configuration type specifier:Infra-Red camera (Raptor).
+	 */
+	public final static int CONFIG_TYPE_INFRA_RED_RAPTOR          = 15;
+	/**
 	 * List of legal values that can be held in the config type field.
 	 * @see #CONFIG_TYPE_CCD_RATCAM
 	 * @see #CONFIG_TYPE_SPECTROGRAPH_MES
@@ -115,12 +119,14 @@ public class IcsGUIConfigProperties extends Properties
 	 * @see #CONFIG_TYPE_SPECTROGRAPH_SPRAT
 	 * @see #CONFIG_TYPE_SPECTROGRAPH_LOTUS
 	 * @see #CONFIG_TYPE_POLARIMETER_MOPTOP
+	 * @see #CONFIG_TYPE_INFRA_RED_RAPTOR
 	 */
 	public final static int CONFIG_TYPE_LIST[] = {CONFIG_TYPE_CCD_RATCAM,CONFIG_TYPE_SPECTROGRAPH_MES,
 		CONFIG_TYPE_SPECTROGRAPH_NUVIEW,CONFIG_TYPE_INFRA_RED_SUPIRCAM,CONFIG_TYPE_SPECTROGRAPH_FTSPEC,
 		CONFIG_TYPE_POLARIMETER_RINGOSTAR,CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC,CONFIG_TYPE_CCD_RISE,
 		CONFIG_TYPE_POLARIMETER_RINGO2,CONFIG_TYPE_CCD_THOR,CONFIG_TYPE_CCD_O,CONFIG_TYPE_POLARIMETER_RINGO3,
-		CONFIG_TYPE_SPECTROGRAPH_SPRAT,CONFIG_TYPE_SPECTROGRAPH_LOTUS,CONFIG_TYPE_POLARIMETER_MOPTOP};
+		CONFIG_TYPE_SPECTROGRAPH_SPRAT,CONFIG_TYPE_SPECTROGRAPH_LOTUS,CONFIG_TYPE_POLARIMETER_MOPTOP,
+		CONFIG_TYPE_INFRA_RED_RAPTOR};
 	/**
 	 * Default filename for properties file.
 	 */
@@ -261,6 +267,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * @see #getSpratConfigById
 	 * @see #getLOTUSConfigById
 	 * @see #getMoptopConfigById
+	 * @see #getRaptorConfigById
 	 */
 	public InstrumentConfig getConfigById(int id) throws NumberFormatException, IllegalArgumentException
 	{
@@ -316,6 +323,9 @@ public class IcsGUIConfigProperties extends Properties
 			case CONFIG_TYPE_POLARIMETER_MOPTOP:
 				c = getMoptopConfigById(id);
 				break;
+			case CONFIG_TYPE_INFRA_RED_RAPTOR:
+				c = getRaptorConfigById(id);
+				break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":getConfigById:Id "
 					+id+" type "+type+" not a supported type of configuration.");
@@ -352,6 +362,88 @@ public class IcsGUIConfigProperties extends Properties
 	 * @param id The id of the configuration to remove.
 	 * @see ngat.phase2.OConfig#O_FILTER_INDEX_FILTER_WHEEL
 	 * @see ngat.phase2.OConfig#O_FILTER_INDEX_FILTER_SLIDE_UPPER
+	 * @see #getConfigType
+	 * @see #configIdStringName
+	 * @see #configIdStringType
+	 * @see #configIdStringCalibrateBefore
+	 * @see #configIdStringCalibrateAfter
+	 * @see #configIdStringLowerFilterWheel
+	 * @see #configIdStringUpperFilterWheel
+	 * @see #configIdStringXBin
+	 * @see #configIdStringYBin
+	 * @see #configIdStringWindowFlags
+	 * @see #configIdWindowStringXStart
+	 * @see #configIdWindowStringYStart
+	 * @see #configIdWindowStringXEnd
+	 * @see #configIdWindowStringYEnd
+	 * @see #configIdStringFilterSlideName
+	 * @see #configIdStringWavelength
+	 * @see #configIdStringFilterWheel
+	 * @see #configIdStringArm
+	 * @see #configIdStringResolution
+	 * @see #configIdStringEMGain
+	 * @see #configIdStringTriggerType
+	 * @see #configIdStringSlitPosition
+	 * @see #configIdStringGrismPosition
+	 * @see #configIdStringGrismRotation
+	 * @see #configIdStringSlitWidth
+	 * @see #configIdStringRotorSpeed
+	 * @see #configIdStringNudgematicOffsetSize
+	 * @see #configIdStringCoaddExposureLength
+	 * @see #getConfigName
+	 * @see #getConfigType
+	 * @see #setConfigName
+	 * @see #setConfigType
+	 * @see #setConfigCalibrateBefore
+	 * @see #getConfigCalibrateBefore
+	 * @see #setConfigCalibrateAfter
+	 * @see #getConfigCalibrateAfter
+	 * @see #setConfigLowerFilterWheel
+	 * @see #getConfigLowerFilterWheel
+	 * @see #setConfigUpperFilterWheel
+	 * @see #getConfigUpperFilterWheel
+	 * @see #setConfigXBin
+	 * @see #getConfigXBin
+	 * @see #setConfigYBin
+	 * @see #getConfigYBin
+	 * @see #setConfigWindowFlags
+	 * @see #getConfigWindowFlags
+	 * @see #setConfigXStart
+	 * @see #getConfigXStart
+	 * @see #setConfigYStart
+	 * @see #getConfigYStart
+	 * @see #setConfigXEnd
+	 * @see #getConfigXEnd
+	 * @see #setConfigYEnd
+	 * @see #getConfigYEnd
+	 * @see #setConfigFilterSlideName
+	 * @see #getConfigFilterSlideName
+	 * @see #setConfigWavelength
+	 * @see #getConfigWavelength
+	 * @see #setConfigFilterWheel
+	 * @see #getConfigFilterWheel
+	 * @see #setConfigArm
+	 * @see #getConfigArm
+	 * @see #setConfigResolution
+	 * @see #getConfigResolution
+	 * @see #setConfigEMGain
+	 * @see #getConfigEMGain
+	 * @see #setConfigTriggerType
+	 * @see #getConfigTriggerType
+	 * @see #setConfigSlitPosition
+	 * @see #getConfigSlitPosition
+	 * @see #setConfigGrismPosition
+	 * @see #getConfigGrismPosition
+	 * @see #setConfigGrismRotation
+	 * @see #getConfigGrismRotation
+	 * @see #setConfigSlitWidth
+	 * @see #getConfigSlitWidth
+	 * @see #setConfigRotorSpeed
+	 * @see #getConfigRotorSpeed
+	 * @see #setConfigNudgematicOffsetSize
+	 * @see #getConfigNudgematicOffsetSize
+	 * @see #setConfigCoaddExposureLength
+	 * @see #getConfigCoaddExposureLength
 	 */
 	public void deleteId(int id)
 	{
@@ -504,6 +596,11 @@ public class IcsGUIConfigProperties extends Properties
 				remove(configIdStringFilterWheel(id));
 				remove(configIdStringRotorSpeed(id));
 				break;
+			case CONFIG_TYPE_INFRA_RED_RAPTOR:
+				remove(configIdStringFilterWheel(id));
+				remove(configIdStringNudgematicOffsetSize(id));
+				remove(configIdStringCoaddExposureLength(id));
+				break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":deleteId:Id "
 					+id+" type "+type+" not a supported type of configuration.");
@@ -556,7 +653,7 @@ public class IcsGUIConfigProperties extends Properties
 					remove(configIdStringYBin(i));
 					setConfigFilterSlideName(i-1,getConfigFilterSlideName(i));
 					remove(configIdStringFilterSlideName(i));
-					break;
+					break;						
 				case CONFIG_TYPE_SPECTROGRAPH_NUVIEW:
 					setConfigXBin(i-1,getConfigXBin(i));
 					remove(configIdStringXBin(i));
@@ -590,7 +687,7 @@ public class IcsGUIConfigProperties extends Properties
 					remove(configIdStringArm(i));
 					setConfigResolution(i-1,getConfigResolution(i));
 					remove(configIdStringResolution(i));
-					break;
+					break;						
 				case CONFIG_TYPE_CCD_RISE:
 					setConfigXBin(i-1,getConfigXBin(i));
 					remove(configIdStringXBin(i));
@@ -747,6 +844,14 @@ public class IcsGUIConfigProperties extends Properties
 					remove(configIdStringFilterWheel(i));
 					setConfigRotorSpeed(i-1,getConfigRotorSpeed(i));
 					remove(configIdStringRotorSpeed(i));
+					break;
+				case CONFIG_TYPE_INFRA_RED_RAPTOR:
+					setConfigFilterWheel(i-1,getConfigFilterWheel(i));
+					remove(configIdStringFilterWheel(i));
+					setConfigNudgematicOffsetSize(i-1,getConfigNudgematicOffsetSize(i));
+					remove(configIdStringNudgematicOffsetSize(i));
+					setConfigCoaddExposureLength(i-1,getConfigCoaddExposureLength(i));
+					remove(configIdStringCoaddExposureLength(id));
 					break;
 				default:
 					throw new IllegalArgumentException(this.getClass().getName()+":deleteId:Id "
@@ -1055,7 +1160,7 @@ public class IcsGUIConfigProperties extends Properties
 	}
 
 	/**
-	 * Method to get the filter wheel string of configuration id id (INFRA_RED_SUPIRCAM/MOPTOP).
+	 * Method to get the filter wheel string of configuration id id (INFRA_RED_SUPIRCAM/MOPTOP/RAPTOR).
 	 * @param id The id of the configuration.
 	 * @return The configuration filter wheel string.
 	 */
@@ -1065,7 +1170,7 @@ public class IcsGUIConfigProperties extends Properties
 	}
 
 	/**
-	 * Method to set the upper filter wheel string of configuration id id (INFRA_RED_SUPIRCAM/MOPTOP).
+	 * Method to set the upper filter wheel string of configuration id id (INFRA_RED_SUPIRCAM/MOPTOP/RAPTOR).
 	 * @param id The id of the configuration.
 	 * @param s The configuration filter wheel string.
 	 */
@@ -1857,6 +1962,106 @@ public class IcsGUIConfigProperties extends Properties
 		setProperty(configIdStringRotorSpeed(id),rotorSpeedString);
 	}
 
+	/**
+	 * Method to get the nudgematic offset size of configuration id id as an integer.
+	 * This is a Raptor only configuration value.
+	 * @param id The id of the configuration.
+	 * @return The configuration nudgematic offset size as an integer, one of 
+	 *         NUDGEMATIC_OFFSET_SIZE_SMALL/NUDGEMATIC_OFFSET_SIZE_LARGE.
+	 * @exception IllegalArgumentException Thrown if the relevant property 
+	 * 	"ics_gui_config."id".rotor.speed" does not contain either "slow" or "fast".
+	 * @see ngat.phase2.RaptorConfig#NUDGEMATIC_OFFSET_SIZE_SMALL
+	 * @see ngat.phase2.RaptorConfig#NUDGEMATIC_OFFSET_SIZE_LARGE
+	 * @see #configIdStringNudgematicOffsetSize
+	 */
+	public int getConfigNudgematicOffsetSize(int id) throws IllegalArgumentException
+	{
+		String s = null;
+
+		s = getProperty(configIdStringNudgematicOffsetSize(id));
+		if(s.equals("small"))
+			return RaptorConfig.NUDGEMATIC_OFFSET_SIZE_SMALL;
+		else if (s.equals("large"))
+			return RaptorConfig.NUDGEMATIC_OFFSET_SIZE_LARGE;
+		throw new IllegalArgumentException(this.getClass().getName()+
+						   ":getConfigNudgematicOffsetSize:Illegal offset size string:"+s);
+	}
+
+	/**
+	 * Method to get the nudgematic offset size of configuration id id as a string.
+	 * @param id The id of the configuration.
+	 * @return The configuration nudgematic offset size as a string.
+	 * @see #configIdStringNudgematicOffsetSize
+	 */
+	public String getConfigNudgematicOffsetSizeString(int id)
+	{
+		return getProperty(configIdStringNudgematicOffsetSize(id));
+	}
+	
+	/**
+	 * Method to set the nudgematic offset size of configuration id id.
+	 * This is a Raptor only configuration value.
+	 * @param id The id of the configuration.
+	 * @param offsetSize The configuration nudgematic offset size.
+	 * @exception IllegalArgumentException Thrown if the offset size can't be mapped to a string.
+	 * @see ngat.phase2.RaptorConfig#NUDGEMATIC_OFFSET_SIZE_SMALL
+	 * @see ngat.phase2.RaptorConfig#NUDGEMATIC_OFFSET_SIZE_LARGE
+	 * @see #configIdStringNudgematicOffsetSize
+	 */
+	public void setConfigNudgematicOffsetSize(int id,int offsetSize) throws IllegalArgumentException
+	{
+		String offsetSizeString = null;
+
+		if(offsetSize == RaptorConfig.NUDGEMATIC_OFFSET_SIZE_SMALL)
+			offsetSizeString = "small";
+		else if(offsetSize == RaptorConfig.NUDGEMATIC_OFFSET_SIZE_LARGE)
+			offsetSizeString = "large";
+		else
+		{
+			throw new IllegalArgumentException(this.getClass().getName()+
+							   ":setNudgematicOffsetSize:Illegal offset size:"+offsetSize);
+		}
+		setProperty(configIdStringNudgematicOffsetSize(id),offsetSizeString);
+	}
+
+	/**
+	 * Method to get the Coadd exposure length of configuration id id.
+	 * This is a Raptor only configuration value.
+	 * @param id The id of the configuration.
+	 * @return The configuration coadd exposure length, as an integer in milliseconds.
+	 * @exception NumberFormatException Thrown if the relevant property 
+	 * 	"ics_gui_config."id".coaddExposureLength" does not contain a numeric value.
+	 * @see #configIdStringCoaddExposureLength
+	 */
+	public int getConfigCoaddExposureLength(int id) throws NumberFormatException
+	{
+		return getPropertyInteger(configIdStringCoaddExposureLength(id));
+	}
+
+	/**
+	 * Method to get the Coadd exposure length of configuration id id as a string.
+	 * This is a Raptor only configuration value.
+	 * @param id The id of the configuration.
+	 * @return The configuration Coadd exposure length as a string, in millisconds.
+	 * @see #configIdStringCoaddExposureLength
+	 */
+	public String getConfigCoaddExposureLengthString(int id)
+	{
+		return getProperty(configIdStringCoaddExposureLength(id));
+	}
+
+	/**
+	 * Method to set the Coadd exposure length of configuration id id.
+	 * This is a Raptor only configuration value.
+	 * @param id The id of the configuration.
+	 * @param coaddExposureLength The configuration Coadd exposure length, as an integer in milliseconds.
+	 */
+	public void setConfigCoaddExposureLength(int id,int coaddExposureLength)
+	{
+	// jdk 1.2.x
+		setProperty(configIdStringCoaddExposureLength(id),Integer.toString(coaddExposureLength));
+	}
+
 // methods to create an instance of an instrument config
 	/**
 	 * Method to return a CCDConfig, constructed from the information against id id.
@@ -2634,6 +2839,46 @@ public class IcsGUIConfigProperties extends Properties
 		return c;
 	}
 
+	/**
+	 * Method to return a RaptorConfig, constructed from the information against id id.
+	 * @param id The Id number.
+	 * @return The constructed RaptorConfig.
+	 * @exception NumberFormatException Thrown if a numeric parameter is not returned from the properties
+	 * 	file as a legal number.
+	 * @exception IllegalArgumentException Thrown if the config id specified does not have a legal type.
+	 */
+	private RaptorConfig getRaptorConfigById(int id) throws NumberFormatException, IllegalArgumentException
+	{
+		RaptorConfig c = null;
+		RaptorDetector detector = null;
+
+	// check type
+		if(getConfigType(id) != CONFIG_TYPE_INFRA_RED_RAPTOR)
+		{
+			throw new IllegalArgumentException(this.getClass().getName()+":getRaptorConfigById:Id "
+				+id+" not a configuration of type Infra Red (Raptor).");
+		}
+	// construct RaptorConfig
+		c = new RaptorConfig(getConfigName(id));
+		c.setFilterName(getConfigFilterWheel(id));
+		c.setNudgematicOffsetSize(getConfigNudgematicOffsetSize(id));
+		c.setCoaddExposureLength(getConfigCoaddExposureLength(id));
+		c.setCalibrateBefore(getConfigCalibrateBefore(id));
+		c.setCalibrateAfter(getConfigCalibrateAfter(id));
+	// setup detector
+		detector = new RaptorDetector();
+		detector.setXBin(1);
+		detector.setYBin(1);
+		// note, other Detector fields not set, as they are not used by the instrument.
+	// don't set windows into detector, use default windows.
+	// Note flags are held IN the window list, so must setWindowFlags AFTER detector windows set
+		detector.setWindowFlags(0);
+	// set detector into config
+		c.setDetector(0,detector);
+	// return config
+		return c;
+	}
+
 // method to check values in the property file.
 	/**
 	 * Method to check whether a number is a legal configuration type number.
@@ -2965,6 +3210,28 @@ public class IcsGUIConfigProperties extends Properties
 	private String configIdStringRotorSpeed(int id)
 	{
 		return new String(configIdString(id)+"rotor.speed");
+	}
+
+	/**
+	 * Method to return a key for the nudgematic offset size for a particular config id.
+	 * @param id The config id.
+	 * @return The key string.
+	 * @see #configIdString
+	 */
+	private String configIdStringNudgematicOffsetSize(int id)
+	{
+		return new String(configIdString(id)+"nudgematic.offet.size");
+	}
+
+	/**
+	 * Method to return a key for the coadd exposure length for a particular config id.
+	 * @param id The config id.
+	 * @return The key string.
+	 * @see #configIdString
+	 */
+	private String configIdStringCoaddExposureLength(int id)
+	{
+		return new String(configIdString(id)+"coadd.exposure.length");
 	}
 
 	/**
