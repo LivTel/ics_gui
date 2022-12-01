@@ -35,11 +35,7 @@ public class IcsGUIRaptorConfigAADialog extends JDialog implements ActionListene
 	/**
 	 * Dialog width.
 	 */
-	public final static int DIALOG_WIDTH = 250;
-	/**
-	 * Number of windows in a configuration.
-	 */
-	public final static int WINDOW_COUNT = 4;
+	public final static int DIALOG_WIDTH = 300;
 	/**
 	 * Titled border height.
 	 */
