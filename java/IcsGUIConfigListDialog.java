@@ -99,6 +99,10 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, I
 	 */
 	protected final static String POLARIMETER_MOPTOP_BUTTON_STRING = "Polarimeter (Moptop)";
 	/**
+	 * String to go on buttons.
+	 */
+	protected final static String INFRA_RED_RAPTOR_BUTTON_STRING = "Infra Red Camera (Raptor)";
+	/**
 	 * List of strings that describe instruments. Note, make sure in the same order as 
 	 * IcsGUIConfigProperties.CONFIG_TYPE_LIST.
 	 * @see IcsGUIConfigProperties#CONFIG_TYPE_LIST
@@ -117,6 +121,7 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, I
 	 * @see #SPECTROGRAPH_SPRAT_BUTTON_STRING
 	 * @see #SPECTROGRAPH_LOTUS_BUTTON_STRING
 	 * @see #POLARIMETER_MOPTOP_BUTTON_STRING
+	 * @see #INFRA_RED_RAPTOR_BUTTON_STRING
 	 */
 	protected final static String INSTRUMENT_STRING_ARRAY[] = {CCD_RATCAM_BUTTON_STRING,
 		SPECTROGRAPH_MES_BUTTON_STRING,SPECTROGRAPH_NUVIEW_BUTTON_STRING,
@@ -124,7 +129,7 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, I
 		POLARIMETER_RINGOSTAR_BUTTON_STRING,SPECTROGRAPH_FRODOSPEC_BUTTON_STRING,CCD_RISE_BUTTON_STRING,
 		POLARIMETER_RINGO2_BUTTON_STRING,CCD_THOR_BUTTON_STRING,CCD_O_BUTTON_STRING,
 		POLARIMETER_RINGO3_BUTTON_STRING,SPECTROGRAPH_SPRAT_BUTTON_STRING,SPECTROGRAPH_LOTUS_BUTTON_STRING,
-								   POLARIMETER_MOPTOP_BUTTON_STRING};
+		POLARIMETER_MOPTOP_BUTTON_STRING,INFRA_RED_RAPTOR_BUTTON_STRING};
 	/**
 	 * String to pre-pend to add menu instrument entries.
 	 */
@@ -201,6 +206,10 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, I
 	 * The Add/Amend dialog to use when Add or Amend is selected for a Polarimeter (Moptop) configuration.
 	 */
 	private IcsGUIMoptopPolarimeterConfigAADialog addAmendMoptopPolarimeterDialog = null;
+	/**
+	 * The Add/Amend dialog to use when Add or Amend is selected for a Raptor configuration.
+	 */
+	private IcsGUIRaptorConfigAADialog addAmendRaptorDialog = null;
 	/**
 	 * The config dialog that caused this dialog to be managed.
 	 */
@@ -320,6 +329,9 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, I
 	// create a Moptop Polarimater add/amend dialog
 		addAmendMoptopPolarimeterDialog = new IcsGUIMoptopPolarimeterConfigAADialog(owner,c);
 		addAmendMoptopPolarimeterDialog.addIcsConfigAADialogListener(this);
+	// create a Raptor add/amend dialog
+		addAmendRaptorDialog = new IcsGUIRaptorConfigAADialog(owner,c);
+		addAmendRaptorDialog.addIcsConfigAADialogListener(this);
 	}
 
 	/**
@@ -481,6 +493,13 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, I
 						addAmendMoptopPolarimeterDialog.pack();
 						addAmendMoptopPolarimeterDialog.add();
 						break;
+					case IcsGUIConfigProperties.CONFIG_TYPE_INFRA_RED_RAPTOR:
+						addAmendRaptorDialog.setLocation(getX()+getWidth(),getY());
+						addAmendRaptorDialog.setIcsGUI(icsGUI);
+						addAmendRaptorDialog.setIcsGUIStatus(icsGUIStatus);
+						addAmendRaptorDialog.pack();
+						addAmendRaptorDialog.add();
+						break;
 					case IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_MES:
 					default:
 						JOptionPane.showMessageDialog((Component)null,
@@ -572,6 +591,13 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, I
 						addAmendMoptopPolarimeterDialog.setIcsGUIStatus(icsGUIStatus);
 						addAmendMoptopPolarimeterDialog.pack();
 						addAmendMoptopPolarimeterDialog.amend(id);
+						break;
+					case IcsGUIConfigProperties.CONFIG_TYPE_INFRA_RED_RAPTOR:
+						addAmendRaptorDialog.setLocation(getX()+getWidth(),getY());
+						addAmendRaptorDialog.setIcsGUI(icsGUI);
+						addAmendRaptorDialog.setIcsGUIStatus(icsGUIStatus);
+						addAmendRaptorDialog.pack();
+						addAmendRaptorDialog.amend(id);
 						break;
 					case IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_MES:
 					default:
