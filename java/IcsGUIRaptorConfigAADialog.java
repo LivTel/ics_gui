@@ -125,6 +125,7 @@ public class IcsGUIRaptorConfigAADialog extends JDialog implements ActionListene
 		subPanel.add(label);
 		nudgematicOffsetSizeComboBox = new JComboBox();
 		nudgematicOffsetSizeComboBox.setEditable(false);
+		nudgematicOffsetSizeComboBox.addItem("none");
 		nudgematicOffsetSizeComboBox.addItem("small");
 		nudgematicOffsetSizeComboBox.addItem("large");
 		subPanel.add(nudgematicOffsetSizeComboBox);
@@ -285,7 +286,9 @@ public class IcsGUIRaptorConfigAADialog extends JDialog implements ActionListene
 			try
 			{
 				nudgematicOffsetSizeString = (String)(nudgematicOffsetSizeComboBox.getSelectedItem());
-				if(nudgematicOffsetSizeString.equals("small"))
+				if(nudgematicOffsetSizeString.equals("none"))
+					nudgematicOffsetSize = RaptorConfig.NUDGEMATIC_OFFSET_SIZE_NONE;
+				else if(nudgematicOffsetSizeString.equals("small"))
 					nudgematicOffsetSize = RaptorConfig.NUDGEMATIC_OFFSET_SIZE_SMALL;
 				else if(nudgematicOffsetSizeString.equals("large"))
 					nudgematicOffsetSize = RaptorConfig.NUDGEMATIC_OFFSET_SIZE_LARGE;

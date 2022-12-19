@@ -1967,9 +1967,10 @@ public class IcsGUIConfigProperties extends Properties
 	 * This is a Raptor only configuration value.
 	 * @param id The id of the configuration.
 	 * @return The configuration nudgematic offset size as an integer, one of 
-	 *         NUDGEMATIC_OFFSET_SIZE_SMALL/NUDGEMATIC_OFFSET_SIZE_LARGE.
+	 *         NUDGEMATIC_OFFSET_SIZE_NONE / NUDGEMATIC_OFFSET_SIZE_SMALL / NUDGEMATIC_OFFSET_SIZE_LARGE.
 	 * @exception IllegalArgumentException Thrown if the relevant property 
 	 * 	"ics_gui_config."id".rotor.speed" does not contain either "slow" or "fast".
+	 * @see ngat.phase2.RaptorConfig#NUDGEMATIC_OFFSET_SIZE_NONE
 	 * @see ngat.phase2.RaptorConfig#NUDGEMATIC_OFFSET_SIZE_SMALL
 	 * @see ngat.phase2.RaptorConfig#NUDGEMATIC_OFFSET_SIZE_LARGE
 	 * @see #configIdStringNudgematicOffsetSize
@@ -1979,7 +1980,9 @@ public class IcsGUIConfigProperties extends Properties
 		String s = null;
 
 		s = getProperty(configIdStringNudgematicOffsetSize(id));
-		if(s.equals("small"))
+		if(s.equals("none"))
+			return RaptorConfig.NUDGEMATIC_OFFSET_SIZE_NONE;
+		else if(s.equals("small"))
 			return RaptorConfig.NUDGEMATIC_OFFSET_SIZE_SMALL;
 		else if (s.equals("large"))
 			return RaptorConfig.NUDGEMATIC_OFFSET_SIZE_LARGE;
@@ -2004,6 +2007,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * @param id The id of the configuration.
 	 * @param offsetSize The configuration nudgematic offset size.
 	 * @exception IllegalArgumentException Thrown if the offset size can't be mapped to a string.
+	 * @see ngat.phase2.RaptorConfig#NUDGEMATIC_OFFSET_SIZE_NONE
 	 * @see ngat.phase2.RaptorConfig#NUDGEMATIC_OFFSET_SIZE_SMALL
 	 * @see ngat.phase2.RaptorConfig#NUDGEMATIC_OFFSET_SIZE_LARGE
 	 * @see #configIdStringNudgematicOffsetSize
@@ -2012,7 +2016,9 @@ public class IcsGUIConfigProperties extends Properties
 	{
 		String offsetSizeString = null;
 
-		if(offsetSize == RaptorConfig.NUDGEMATIC_OFFSET_SIZE_SMALL)
+		if(offsetSize == RaptorConfig.NUDGEMATIC_OFFSET_SIZE_NONE)
+			offsetSizeString = "none";
+		else if(offsetSize == RaptorConfig.NUDGEMATIC_OFFSET_SIZE_SMALL)
 			offsetSizeString = "small";
 		else if(offsetSize == RaptorConfig.NUDGEMATIC_OFFSET_SIZE_LARGE)
 			offsetSizeString = "large";
