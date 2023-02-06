@@ -30,14 +30,14 @@ import ngat.net.*;
  * commands to the Ccs. Some Ccs commands involve sending commands back to the ISS, and
  * this class is designed to catch these requests and to spawn a IcsGUIISSServerConnectionThread to deal with them.
  * @author Chris Mottram
- * @version $Revision$
+ * @version $Revision: ca32e0e0085610698705427d6ae0b85d6c78333b $
  */
 public class IcsGUIISSServer extends TCPServer
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id$");
+	public final static String RCSID = new String("$Id: IcsGUIISSServer.java | Wed May 6 10:57:57 2020 +0100 | Chris Mottram  $");
 	/**
 	 * Field holding the instance of the IcsGUI currently executing, 
 	 * so we can pass this to spawned threads.

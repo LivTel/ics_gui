@@ -31,14 +31,14 @@ import javax.swing.*;
  * This class is an ActionListener for the IcsGUI CONFIGDialog config button. It should bring up a 
  * IcsGUIConfigListDialog, and any selected configs should go back to the CONFIGDialog.
  * @author Chris Mottram
- * @version $Revision: 0.6 $
+ * @version $Revision: 11749d7163e9a863d1e19d52699a0684487922d0 $
  */
 public class IcsGUIConfigButtonListener implements ActionListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIConfigButtonListener.java,v 0.6 2020-05-05 10:20:39 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIConfigButtonListener.java | Tue May 5 10:20:39 2020 +0000 | Chris Mottram  $");
 	/**
 	 * The instance of the main program.
 	 */

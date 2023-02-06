@@ -29,14 +29,14 @@ import java.awt.event.*;
  * terminates nicely.
  * @see IcsGUI#exit
  * @author Chris Mottram
- * @version $Revision: 0.4 $
+ * @version $Revision: 11749d7163e9a863d1e19d52699a0684487922d0 $
  */
 public class IcsGUIWindowListener extends WindowAdapter
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIWindowListener.java,v 0.4 2020-05-05 10:20:39 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIWindowListener.java | Tue May 5 10:20:39 2020 +0000 | Chris Mottram  $");
 	/**
 	 * The main program class instance. The instances exit method is called when a windowClosing 
 	 * event occurs.

@@ -39,14 +39,14 @@ import ngat.swing.GUIMessageDialogShower;
  * This class extends the TCPServerConnectionThread class for the IcsGUI application. This
  * allows IcsGUI to emulate the ISS's response to the instrument sending it commands.
  * @author Chris Mottram
- * @version $Revision$
+ * @version $Revision: 7854d814a91207072c84b628bb2512e80842b70a $
  */
 public class IcsGUIISSServerConnectionThread extends TCPServerConnectionThread
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id$");
+	public final static String RCSID = new String("$Id: IcsGUIISSServerConnectionThread.java | Wed May 6 11:16:35 2020 +0100 | Chris Mottram  $");
 	/**
 	 * Default time taken to respond to a command.
 	 */

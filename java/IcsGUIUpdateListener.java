@@ -32,14 +32,14 @@ import javax.swing.*;
  * to call the Ccs with a GET_STATUS command when the check-box is checked. It stops the thread
  * when the checkbox in un-checked.
  * @author Chris Mottram
- * @version $Revision: 0.4 $
+ * @version $Revision: f231dd9c240de86d28b3806ec501eb0afa20e696 $
  */
 public class IcsGUIUpdateListener implements ActionListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIUpdateListener.java,v 0.4 2020-05-05 10:20:39 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIUpdateListener.java | Tue May 5 10:20:44 2020 +0000 | Chris Mottram  $");
 	/**
 	 * The instance of the main program.
 	 */

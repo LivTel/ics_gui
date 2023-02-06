@@ -28,14 +28,14 @@ import ngat.sound.*;
 /**
  * This class holds status information for the IcsGUI program.
  * @author Chris Mottram
- * @version $Revision: 0.9 $
+ * @version $Revision: f231dd9c240de86d28b3806ec501eb0afa20e696 $
  */
 public class IcsGUIStatus
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIStatus.java,v 0.9 2020-05-05 10:20:39 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIStatus.java | Tue May 5 10:20:44 2020 +0000 | Chris Mottram  $");
 	/**
 	 * File name containing properties for ccs gui.
 	 */

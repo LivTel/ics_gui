@@ -30,14 +30,14 @@ import ngat.message.base.*;
 /**
  * This class is an GUIDialogListener for the IcsGUI Dialog boxs.
  * @author Chris Mottram
- * @version $Revision: 0.5 $
+ * @version $Revision: 11749d7163e9a863d1e19d52699a0684487922d0 $
  */
 public class IcsGUIDialogListener implements GUIDialogListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIDialogListener.java,v 0.5 2020-05-05 10:20:39 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIDialogListener.java | Tue May 5 10:20:39 2020 +0000 | Chris Mottram  $");
 	/**
 	 * The main class reference.
 	 */

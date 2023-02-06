@@ -35,14 +35,14 @@ import ngat.util.*;
 /**
  * This class provides an Add and Amend facility for 'O' optical camera Configurations.
  * @author Chris Mottram
- * @version $Revision: 1.5 $
+ * @version $Revision: 23cd147469aa7ade3a3dc6908c29a574efe3c4d9 $
  */
 public class IcsGUIOConfigAADialog extends JDialog implements ActionListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIOConfigAADialog.java,v 1.5 2020-05-05 10:20:39 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIOConfigAADialog.java | Tue May 5 10:20:45 2020 +0000 | Chris Mottram  $");
 	/**
 	 * Button height.
 	 */

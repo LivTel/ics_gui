@@ -39,14 +39,14 @@ import ngat.message.INST_BSS.*;
  * This class extends the TCPServerConnectionThread class for the IcsGUI application. This
  * allows IcsGUI to emulate the ISS's response to the instrument sending it commands.
  * @author Chris Mottram
- * @version $Revision: 1.1 $
+ * @version $Revision: f44807ce8017463d3931e3f19f402e0eddeb854d $
  */
 public class IcsGUIBSSServerConnectionThread extends TCPServerConnectionThread
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIBSSServerConnectionThread.java,v 1.1 2011-10-31 13:52:30 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIBSSServerConnectionThread.java | Mon Oct 31 13:52:34 2011 +0000 | Chris Mottram  $");
 	/**
 	 * Default time taken to respond to a command.
 	 */

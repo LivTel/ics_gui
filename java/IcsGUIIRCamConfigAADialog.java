@@ -32,14 +32,14 @@ import ngat.swing.*;
 /**
  * This class provides an Add and Amend facility for Infra Red Camera Configurations.
  * @author Chris Mottram
- * @version $Revision: 1.3 $
+ * @version $Revision: 98404f49e4c35a5c59ab3678f31a3b1d35ba5297 $
  */
 public class IcsGUIIRCamConfigAADialog extends JDialog implements ActionListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIIRCamConfigAADialog.java,v 1.3 2020-05-05 10:20:39 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIIRCamConfigAADialog.java | Tue May 5 10:20:41 2020 +0000 | Chris Mottram  $");
 	/**
 	 * Button height.
 	 */

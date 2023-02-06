@@ -38,7 +38,7 @@ public class IcsGUIMenuItemListener implements ActionListener
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIMenuItemListener.java,v 0.9 2020-05-05 10:20:39 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIMenuItemListener.java | Tue May 5 10:20:40 2020 +0000 | Chris Mottram  $");
 	/**
 	 * The parent to the menu item listener. The instance of the main program.
 	 */

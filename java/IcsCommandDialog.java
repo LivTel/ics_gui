@@ -33,7 +33,7 @@ public abstract class IcsCommandDialog extends JDialog
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsCommandDialog.java,v 0.3 2020-05-05 10:20:39 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsCommandDialog.java | Tue May 5 10:20:40 2020 +0000 | Chris Mottram  $");
 	/**
 	 * GUIDialogListener, holds a reference to callback when Ok/Cancel pressed.
 	 */

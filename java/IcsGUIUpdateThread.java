@@ -27,14 +27,14 @@ import java.lang.*;
  * It then calls parent.sendCommand(GET_STATUS) to update the GUI's status.
  * This continues until the thread is quit.
  * @author Chris Mottram
- * @version $Revision: 0.9 $
+ * @version $Revision: bb61f5eb6a1f7f939b3f6711be33a17b8efeb8a9 $
  */
 public class IcsGUIUpdateThread extends Thread
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIUpdateThread.java,v 0.9 2020-05-05 10:20:39 cjm Exp $");
+	public final static String RCSID = new String("$Id: IcsGUIUpdateThread.java | Tue May 5 10:20:46 2020 +0000 | Chris Mottram  $");
 	/**
 	 * The IcsGUI object.
 	 */
