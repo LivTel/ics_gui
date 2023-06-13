@@ -2020,7 +2020,7 @@ public class IcsGUIConfigProperties extends Properties
 			offsetSizeString = "none";
 		else if(offsetSize == LiricConfig.NUDGEMATIC_OFFSET_SIZE_SMALL)
 			offsetSizeString = "small";
-		else if(offsetSize == LircConfig.NUDGEMATIC_OFFSET_SIZE_LARGE)
+		else if(offsetSize == LiricConfig.NUDGEMATIC_OFFSET_SIZE_LARGE)
 			offsetSizeString = "large";
 		else
 		{
