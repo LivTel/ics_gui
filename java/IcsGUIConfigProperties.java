@@ -99,9 +99,9 @@ public class IcsGUIConfigProperties extends Properties
 	 */
 	public final static int CONFIG_TYPE_POLARIMETER_MOPTOP        = 14;
 	/**
-	 * Configuration type specifier:Infra-Red camera (Raptor).
+	 * Configuration type specifier:Infra-Red camera (Liric).
 	 */
-	public final static int CONFIG_TYPE_INFRA_RED_RAPTOR          = 15;
+	public final static int CONFIG_TYPE_INFRA_RED_LIRIC          = 15;
 	/**
 	 * List of legal values that can be held in the config type field.
 	 * @see #CONFIG_TYPE_CCD_RATCAM
@@ -119,14 +119,14 @@ public class IcsGUIConfigProperties extends Properties
 	 * @see #CONFIG_TYPE_SPECTROGRAPH_SPRAT
 	 * @see #CONFIG_TYPE_SPECTROGRAPH_LOTUS
 	 * @see #CONFIG_TYPE_POLARIMETER_MOPTOP
-	 * @see #CONFIG_TYPE_INFRA_RED_RAPTOR
+	 * @see #CONFIG_TYPE_INFRA_RED_LIRIC
 	 */
 	public final static int CONFIG_TYPE_LIST[] = {CONFIG_TYPE_CCD_RATCAM,CONFIG_TYPE_SPECTROGRAPH_MES,
 		CONFIG_TYPE_SPECTROGRAPH_NUVIEW,CONFIG_TYPE_INFRA_RED_SUPIRCAM,CONFIG_TYPE_SPECTROGRAPH_FTSPEC,
 		CONFIG_TYPE_POLARIMETER_RINGOSTAR,CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC,CONFIG_TYPE_CCD_RISE,
 		CONFIG_TYPE_POLARIMETER_RINGO2,CONFIG_TYPE_CCD_THOR,CONFIG_TYPE_CCD_O,CONFIG_TYPE_POLARIMETER_RINGO3,
 		CONFIG_TYPE_SPECTROGRAPH_SPRAT,CONFIG_TYPE_SPECTROGRAPH_LOTUS,CONFIG_TYPE_POLARIMETER_MOPTOP,
-		CONFIG_TYPE_INFRA_RED_RAPTOR};
+		CONFIG_TYPE_INFRA_RED_LIRIC};
 	/**
 	 * Default filename for properties file.
 	 */
@@ -267,7 +267,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * @see #getSpratConfigById
 	 * @see #getLOTUSConfigById
 	 * @see #getMoptopConfigById
-	 * @see #getRaptorConfigById
+	 * @see #getLiricConfigById
 	 */
 	public InstrumentConfig getConfigById(int id) throws NumberFormatException, IllegalArgumentException
 	{
@@ -323,8 +323,8 @@ public class IcsGUIConfigProperties extends Properties
 			case CONFIG_TYPE_POLARIMETER_MOPTOP:
 				c = getMoptopConfigById(id);
 				break;
-			case CONFIG_TYPE_INFRA_RED_RAPTOR:
-				c = getRaptorConfigById(id);
+			case CONFIG_TYPE_INFRA_RED_LIRIC:
+				c = getLiricConfigById(id);
 				break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":getConfigById:Id "
@@ -596,7 +596,7 @@ public class IcsGUIConfigProperties extends Properties
 				remove(configIdStringFilterWheel(id));
 				remove(configIdStringRotorSpeed(id));
 				break;
-			case CONFIG_TYPE_INFRA_RED_RAPTOR:
+			case CONFIG_TYPE_INFRA_RED_LIRIC:
 				remove(configIdStringFilterWheel(id));
 				remove(configIdStringNudgematicOffsetSize(id));
 				remove(configIdStringCoaddExposureLength(id));
@@ -845,7 +845,7 @@ public class IcsGUIConfigProperties extends Properties
 					setConfigRotorSpeed(i-1,getConfigRotorSpeed(i));
 					remove(configIdStringRotorSpeed(i));
 					break;
-				case CONFIG_TYPE_INFRA_RED_RAPTOR:
+				case CONFIG_TYPE_INFRA_RED_LIRIC:
 					setConfigFilterWheel(i-1,getConfigFilterWheel(i));
 					remove(configIdStringFilterWheel(i));
 					setConfigNudgematicOffsetSize(i-1,getConfigNudgematicOffsetSize(i));
@@ -1160,7 +1160,7 @@ public class IcsGUIConfigProperties extends Properties
 	}
 
 	/**
-	 * Method to get the filter wheel string of configuration id id (INFRA_RED_SUPIRCAM/MOPTOP/RAPTOR).
+	 * Method to get the filter wheel string of configuration id id (INFRA_RED_SUPIRCAM/MOPTOP/LIRIC).
 	 * @param id The id of the configuration.
 	 * @return The configuration filter wheel string.
 	 */
@@ -1170,7 +1170,7 @@ public class IcsGUIConfigProperties extends Properties
 	}
 
 	/**
-	 * Method to set the upper filter wheel string of configuration id id (INFRA_RED_SUPIRCAM/MOPTOP/RAPTOR).
+	 * Method to set the upper filter wheel string of configuration id id (INFRA_RED_SUPIRCAM/MOPTOP/LIRIC).
 	 * @param id The id of the configuration.
 	 * @param s The configuration filter wheel string.
 	 */
@@ -1964,15 +1964,15 @@ public class IcsGUIConfigProperties extends Properties
 
 	/**
 	 * Method to get the nudgematic offset size of configuration id id as an integer.
-	 * This is a Raptor only configuration value.
+	 * This is a Liric only configuration value.
 	 * @param id The id of the configuration.
 	 * @return The configuration nudgematic offset size as an integer, one of 
 	 *         NUDGEMATIC_OFFSET_SIZE_NONE / NUDGEMATIC_OFFSET_SIZE_SMALL / NUDGEMATIC_OFFSET_SIZE_LARGE.
 	 * @exception IllegalArgumentException Thrown if the relevant property 
 	 * 	"ics_gui_config."id".rotor.speed" does not contain either "slow" or "fast".
-	 * @see ngat.phase2.RaptorConfig#NUDGEMATIC_OFFSET_SIZE_NONE
-	 * @see ngat.phase2.RaptorConfig#NUDGEMATIC_OFFSET_SIZE_SMALL
-	 * @see ngat.phase2.RaptorConfig#NUDGEMATIC_OFFSET_SIZE_LARGE
+	 * @see ngat.phase2.LiricConfig#NUDGEMATIC_OFFSET_SIZE_NONE
+	 * @see ngat.phase2.LiricConfig#NUDGEMATIC_OFFSET_SIZE_SMALL
+	 * @see ngat.phase2.LiricConfig#NUDGEMATIC_OFFSET_SIZE_LARGE
 	 * @see #configIdStringNudgematicOffsetSize
 	 */
 	public int getConfigNudgematicOffsetSize(int id) throws IllegalArgumentException
@@ -1981,11 +1981,11 @@ public class IcsGUIConfigProperties extends Properties
 
 		s = getProperty(configIdStringNudgematicOffsetSize(id));
 		if(s.equals("none"))
-			return RaptorConfig.NUDGEMATIC_OFFSET_SIZE_NONE;
+			return LiricConfig.NUDGEMATIC_OFFSET_SIZE_NONE;
 		else if(s.equals("small"))
-			return RaptorConfig.NUDGEMATIC_OFFSET_SIZE_SMALL;
+			return LiricConfig.NUDGEMATIC_OFFSET_SIZE_SMALL;
 		else if (s.equals("large"))
-			return RaptorConfig.NUDGEMATIC_OFFSET_SIZE_LARGE;
+			return LiricConfig.NUDGEMATIC_OFFSET_SIZE_LARGE;
 		throw new IllegalArgumentException(this.getClass().getName()+
 						   ":getConfigNudgematicOffsetSize:Illegal offset size string:"+s);
 	}
@@ -2003,24 +2003,24 @@ public class IcsGUIConfigProperties extends Properties
 	
 	/**
 	 * Method to set the nudgematic offset size of configuration id id.
-	 * This is a Raptor only configuration value.
+	 * This is a Liric only configuration value.
 	 * @param id The id of the configuration.
 	 * @param offsetSize The configuration nudgematic offset size.
 	 * @exception IllegalArgumentException Thrown if the offset size can't be mapped to a string.
-	 * @see ngat.phase2.RaptorConfig#NUDGEMATIC_OFFSET_SIZE_NONE
-	 * @see ngat.phase2.RaptorConfig#NUDGEMATIC_OFFSET_SIZE_SMALL
-	 * @see ngat.phase2.RaptorConfig#NUDGEMATIC_OFFSET_SIZE_LARGE
+	 * @see ngat.phase2.LiricConfig#NUDGEMATIC_OFFSET_SIZE_NONE
+	 * @see ngat.phase2.LiricConfig#NUDGEMATIC_OFFSET_SIZE_SMALL
+	 * @see ngat.phase2.LiricConfig#NUDGEMATIC_OFFSET_SIZE_LARGE
 	 * @see #configIdStringNudgematicOffsetSize
 	 */
 	public void setConfigNudgematicOffsetSize(int id,int offsetSize) throws IllegalArgumentException
 	{
 		String offsetSizeString = null;
 
-		if(offsetSize == RaptorConfig.NUDGEMATIC_OFFSET_SIZE_NONE)
+		if(offsetSize == LiricConfig.NUDGEMATIC_OFFSET_SIZE_NONE)
 			offsetSizeString = "none";
-		else if(offsetSize == RaptorConfig.NUDGEMATIC_OFFSET_SIZE_SMALL)
+		else if(offsetSize == LiricConfig.NUDGEMATIC_OFFSET_SIZE_SMALL)
 			offsetSizeString = "small";
-		else if(offsetSize == RaptorConfig.NUDGEMATIC_OFFSET_SIZE_LARGE)
+		else if(offsetSize == LircConfig.NUDGEMATIC_OFFSET_SIZE_LARGE)
 			offsetSizeString = "large";
 		else
 		{
@@ -2032,7 +2032,7 @@ public class IcsGUIConfigProperties extends Properties
 
 	/**
 	 * Method to get the Coadd exposure length of configuration id id.
-	 * This is a Raptor only configuration value.
+	 * This is a Liric only configuration value.
 	 * @param id The id of the configuration.
 	 * @return The configuration coadd exposure length, as an integer in milliseconds.
 	 * @exception NumberFormatException Thrown if the relevant property 
@@ -2046,7 +2046,7 @@ public class IcsGUIConfigProperties extends Properties
 
 	/**
 	 * Method to get the Coadd exposure length of configuration id id as a string.
-	 * This is a Raptor only configuration value.
+	 * This is a Liric only configuration value.
 	 * @param id The id of the configuration.
 	 * @return The configuration Coadd exposure length as a string, in millisconds.
 	 * @see #configIdStringCoaddExposureLength
@@ -2058,7 +2058,7 @@ public class IcsGUIConfigProperties extends Properties
 
 	/**
 	 * Method to set the Coadd exposure length of configuration id id.
-	 * This is a Raptor only configuration value.
+	 * This is a Liric only configuration value.
 	 * @param id The id of the configuration.
 	 * @param coaddExposureLength The configuration Coadd exposure length, as an integer in milliseconds.
 	 */
@@ -2846,33 +2846,33 @@ public class IcsGUIConfigProperties extends Properties
 	}
 
 	/**
-	 * Method to return a RaptorConfig, constructed from the information against id id.
+	 * Method to return a LiricConfig, constructed from the information against id id.
 	 * @param id The Id number.
-	 * @return The constructed RaptorConfig.
+	 * @return The constructed LiricConfig.
 	 * @exception NumberFormatException Thrown if a numeric parameter is not returned from the properties
 	 * 	file as a legal number.
 	 * @exception IllegalArgumentException Thrown if the config id specified does not have a legal type.
 	 */
-	private RaptorConfig getRaptorConfigById(int id) throws NumberFormatException, IllegalArgumentException
+	private LiricConfig getLiricConfigById(int id) throws NumberFormatException, IllegalArgumentException
 	{
-		RaptorConfig c = null;
-		RaptorDetector detector = null;
+		LiricConfig c = null;
+	        LiricDetector detector = null;
 
 	// check type
-		if(getConfigType(id) != CONFIG_TYPE_INFRA_RED_RAPTOR)
+		if(getConfigType(id) != CONFIG_TYPE_INFRA_RED_LIRIC)
 		{
-			throw new IllegalArgumentException(this.getClass().getName()+":getRaptorConfigById:Id "
-				+id+" not a configuration of type Infra Red (Raptor).");
+			throw new IllegalArgumentException(this.getClass().getName()+":getLiricConfigById:Id "
+				+id+" not a configuration of type Infra Red (Liric).");
 		}
-	// construct RaptorConfig
-		c = new RaptorConfig(getConfigName(id));
+	// construct LiricConfig
+		c = new LiricConfig(getConfigName(id));
 		c.setFilterName(getConfigFilterWheel(id));
 		c.setNudgematicOffsetSize(getConfigNudgematicOffsetSize(id));
 		c.setCoaddExposureLength(getConfigCoaddExposureLength(id));
 		c.setCalibrateBefore(getConfigCalibrateBefore(id));
 		c.setCalibrateAfter(getConfigCalibrateAfter(id));
 	// setup detector
-		detector = new RaptorDetector();
+		detector = new LiricDetector();
 		detector.setXBin(1);
 		detector.setYBin(1);
 		// note, other Detector fields not set, as they are not used by the instrument.
