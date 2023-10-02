@@ -23,7 +23,7 @@ CONFIG_SRCS	= IcsGUIConfigProperties.java IcsGUIConfigListDialog.java IcsGUIConf
 		IcsGUICCDConfigAADialog.java IcsGUILowResSpecConfigAADialog.java IcsGUIIRCamConfigAADialog.java \
 		IcsGUIFixedFormatSpecConfigAADialog.java IcsGUIPolarimeterConfigAADialog.java \
 		IcsGUIFrodoSpecConfigAADialog.java IcsGUILOTUSConfigAADialog.java \
-		IcsGUIMoptopPolarimeterConfigAADialog.java IcsGUIRaptorConfigAADialog.java \
+		IcsGUIMoptopPolarimeterConfigAADialog.java IcsGUILiricConfigAADialog.java \
 		IcsGUIRISEConfigAADialog.java \
 		IcsGUIRingo2PolarimeterConfigAADialog.java IcsGUIRingo3PolarimeterConfigAADialog.java \
 		IcsGUISpratConfigAADialog.java IcsGUITHORConfigAADialog.java \
@@ -64,7 +64,7 @@ ICS_GUI_PROPERTY_SRCS	= ltccd2.ics_gui.properties ltccd4.ics_gui.properties \
 	ioi1.ioi.ics_gui.properties ioi1.sprat.ics_gui.properties observer1.ics_gui.properties \
 	lotus1.lotus.ics_gui.properties lotus2.lotus.ics_gui.properties ltobs9.lotus.ics_gui.properties \
 	ltoperator.ics_gui.properties moptop1.ics_gui.properties zen.moptop1.ics_gui.properties \
-	moptop3.ics_gui.properties raptor.ics_gui.properties zen.raptor.ics_gui.properties
+	moptop3.ics_gui.properties liric1.ics_gui.properties zen.liric.ics_gui.properties
 # No longer used
 #ltccd1.ics_gui.properties ltccd3.ics_gui.properties ftccd1.ics_gui.properties ftccd2.ics_gui.properties 
 # spectrograph.scs_gui.properties ltobs9.fartcam.ics_gui.properties ltobs9.dillcamsouth.ics_gui.properties 
@@ -85,7 +85,7 @@ ICS_GUI_CONFIG_PROPERTY_SRCS = ltccd2.ics_gui_config.properties ltccd4.ics_gui_c
 	ioi1.sprat.ics_gui_config.properties observer1.ics_gui_config.properties \
 	lotus1.lotus.ics_gui_config.properties lotus2.lotus.ics_gui_config.properties \
 	ltoperator.ics_gui_config.properties moptop1.ics_gui_config.properties moptop3.ics_gui_config.properties \
-	raptor.ics_gui_config.properties
+	liric1.ics_gui_config.properties
 # No longer used
 #ltccd1.ics_gui_config.properties ltccd3.ics_gui_config.properties ftccd1.ics_gui_config.properties 
 # ftccd2.ics_gui_config.properties supircam1.ics_gui_config.properties ftspec1.ics_gui_config.properties 
@@ -103,7 +103,7 @@ ICS_GUI_FITS_PROPERTY_SRCS = ltccd2.ics_gui.fits.properties ltccd4.ics_gui.fits.
 	frodospec1.ics_gui.fits.properties \
 	sprat1.ics_gui.fits.properties ioi1.ics_gui.fits.properties observer1.ics_gui.fits.properties \
 	lotus1.ics_gui.fits.properties lotus2.ics_gui.fits.properties ltoperator.ics_gui.fits.properties \
-	moptop1.ics_gui.fits.properties moptop3.ics_gui.fits.properties raptor.ics_gui.fits.properties
+	moptop1.ics_gui.fits.properties moptop3.ics_gui.fits.properties liric1.ics_gui.fits.properties
 # No longer used
 #ltccd1.ics_gui.fits.properties ltccd3.ics_gui.fits.properties ftccd1.ics_gui.fits.properties 
 # ftccd2.ics_gui.fits.properties ftspec1.ics_gui.fits.properties ftspec2.ics_gui.fits.properties 

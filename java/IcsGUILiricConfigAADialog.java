@@ -1,4 +1,4 @@
-// IcsGUIRaptorConfigAADialog.java
+// IcsGUILiricConfigAADialog.java
 // $Header$
 import java.io.*;
 import java.lang.*;
@@ -10,15 +10,15 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 import ngat.swing.*;
-import ngat.phase2.RaptorConfig;
+import ngat.phase2.LiricConfig;
 import ngat.util.*;
 
 /**
- * This class provides an Add and Amend facility for Raptor Infra Red Camera Configurations.
+ * This class provides an Add and Amend facility for Liric Infra Red Camera Configurations.
  * @author Chris Mottram
  * @version $Revision$
  */
-public class IcsGUIRaptorConfigAADialog extends JDialog implements ActionListener
+public class IcsGUILiricConfigAADialog extends JDialog implements ActionListener
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
@@ -72,9 +72,9 @@ public class IcsGUIRaptorConfigAADialog extends JDialog implements ActionListene
 	 * @param owner The parent frame of this dialog. Used in calling Dialog's constructor.
 	 * @param c The configuration properties.
 	 */
-	public IcsGUIRaptorConfigAADialog(Frame owner,IcsGUIConfigProperties c)
+	public IcsGUILiricConfigAADialog(Frame owner,IcsGUIConfigProperties c)
 	{
-		super(owner,"Add/Amend Raptor Infra Red Camera Configuration");
+		super(owner,"Add/Amend Liric Infra Red Camera Configuration");
 //		setResizable(false);
 		configProperties = c;
 	// there are 5 fields arranged vertically.
@@ -287,11 +287,11 @@ public class IcsGUIRaptorConfigAADialog extends JDialog implements ActionListene
 			{
 				nudgematicOffsetSizeString = (String)(nudgematicOffsetSizeComboBox.getSelectedItem());
 				if(nudgematicOffsetSizeString.equals("none"))
-					nudgematicOffsetSize = RaptorConfig.NUDGEMATIC_OFFSET_SIZE_NONE;
+					nudgematicOffsetSize = LiricConfig.NUDGEMATIC_OFFSET_SIZE_NONE;
 				else if(nudgematicOffsetSizeString.equals("small"))
-					nudgematicOffsetSize = RaptorConfig.NUDGEMATIC_OFFSET_SIZE_SMALL;
+					nudgematicOffsetSize = LiricConfig.NUDGEMATIC_OFFSET_SIZE_SMALL;
 				else if(nudgematicOffsetSizeString.equals("large"))
-					nudgematicOffsetSize = RaptorConfig.NUDGEMATIC_OFFSET_SIZE_LARGE;
+					nudgematicOffsetSize = LiricConfig.NUDGEMATIC_OFFSET_SIZE_LARGE;
 				else
 					nudgematicOffsetSize = 0;
 				coaddExposureLengthString = (String)(coaddExposureLengthComboBox.getSelectedItem());
@@ -311,7 +311,7 @@ public class IcsGUIRaptorConfigAADialog extends JDialog implements ActionListene
 			}
 		// set data
 			configProperties.setConfigName(configId,s);
-			configProperties.setConfigType(configId,IcsGUIConfigProperties.CONFIG_TYPE_INFRA_RED_RAPTOR);
+			configProperties.setConfigType(configId,IcsGUIConfigProperties.CONFIG_TYPE_INFRA_RED_LIRIC);
 			configProperties.setConfigCalibrateBefore(configId,calibrateBeforeCheckBox.isSelected());
 			configProperties.setConfigCalibrateAfter(configId,calibrateAfterCheckBox.isSelected());
 			configProperties.setConfigFilterWheel(configId,filterName);
@@ -356,7 +356,7 @@ public class IcsGUIRaptorConfigAADialog extends JDialog implements ActionListene
 			return;
 		}
 		// get filter property filename
-		filterPropertiesFilename = icsGUIStatus.getProperty("ics_gui.filter.property.filename.raptor");
+		filterPropertiesFilename = icsGUIStatus.getProperty("ics_gui.filter.property.filename.liric");
 		if((filterPropertiesFilename == null)||(filterPropertiesFilename.equals("")))
 		{
 			icsGUI.log(this.getClass().getName()+
