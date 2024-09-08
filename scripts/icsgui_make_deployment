@@ -40,12 +40,33 @@ switch ( ${machine_name} )
 	echo "Unknown machine ${machine_name}."
 	exit 1
 endsw
-# check this script has been run on a Linux box
-# It cannot be run on Solaris.
-if("${HOSTTYPE}" != "i386-linux") then
-    echo "Deployment script running on ${HOSTTYPE}, must run on i386-linux."
+#
+# Host specific configuration
+#
+if( "${HOSTTYPE}" == "sun4" ) then
+    setenv GREP "/usr/xpg4/bin/grep"
+    set bin_file_type = "ELF 32-bit MSB executable"
+    set init_d_dir = "/etc/init.d"
+else if ( "${HOSTTYPE}" == "i386-linux" ) then
+    setenv GREP "/bin/grep"
+    set bin_file_type = "ELF 32-bit LSB executable"
+    set init_d_dir = "/etc/rc.d/init.d"
+else if ( "${HOSTTYPE}" == "x86_64-linux" ) then
+    # 64-bit executables can be either ELF 64-bit LSB shared object or ELF 64-bit LSB executable
+    # On ltdevx64 binaries built under Centos are "ELF 64-bit LSB executable" and binaries built under Ubuntu 18.04 are "ELF 64-bit LSB shared object".
+    setenv GREP "/bin/egrep"
+    set bin_file_type = "ELF 64-bit LSB executable|shared object"
+    set init_d_dir = "/etc/init.d"
+else
+    echo "Illegal hosttype ${HOSTTYPE}."
     exit 1
 endif
+# check this script has been run on a Linux box
+# It cannot be run on Solaris.
+#if("${HOSTTYPE}" != "i386-linux") then
+#    echo "Deployment script running on ${HOSTTYPE}, must run on i386-linux."
+#    exit 1
+#endif
 # dev root directory
 set dev_dir 		= "/home/dev"
 # dev binary root directory
@@ -194,7 +215,8 @@ foreach dir ( ${dir_list} )
 # check file is an executable
 #diddly solaris		file ${file} | /bin/grep -q "ELF 32-bit MSB executable"
 # Note under Linux (only!), use -L to follow symbolic links, otherwise symbolic link is reported!
-		file -L ${file} | /bin/grep -q "ELF 32-bit LSB executable"
+#		file -L ${file} | /bin/grep -q "ELF 32-bit LSB executable"
+		file -L ${file} | ${GREP} -q "${bin_file_type}"
 		set grep_status = $status
 		if ( ${grep_status} == 0 ) then
 			echo "Deploying ${file}."
@@ -222,7 +244,8 @@ echo "${dir_count} C test program directories copied."
 # Scripts
 #
 echo "Copying scripts..."
-set file_list = "bin/scripts/ccs_reboot.csh bin/scripts/xv_wrapper.csh bin/scripts/killhup.csh bin/scripts/fuser_check bin/scripts/kappa_make_mean_frame bin/ccs/test/test_config.csh bin/ccs/test/sendisscommands.csh bin/ccs/test/calibrate_ccd_dark.csh bin/ccs/test/calibrate_ccd_light.csh bin/ccs/test/test_ccd_stop.csh bin/ics_gui/java/xv_wrapper.csh bin/ics_gui/java/icsgui"
+set file_list = "bin/scripts/killhup.csh bin/scripts/fuser_check bin/ics_gui/java/icsgui"
+# bin/scripts/ccs_reboot.csh bin/scripts/xv_wrapper.csh bin/scripts/kappa_make_mean_frame bin/ccs/test/test_config.csh bin/ccs/test/sendisscommands.csh bin/ccs/test/calibrate_ccd_dark.csh bin/ccs/test/calibrate_ccd_light.csh bin/ccs/test/test_ccd_stop.csh bin/ics_gui/java/xv_wrapper.csh 
 set file_count = 0
 cd ${dev_dir}
 foreach file ( ${file_list} )
@@ -271,20 +294,20 @@ echo "${file_count} camera configuration files copied."
 #
 # serialized Java message classes : .obj
 #
-echo "Copying serialized Java message files..."
-set dir = "ccs/test"
-set file_count = 0
-cd ${dev_bin_dir}/${dir}
-foreach file ( *.obj )
-    cp ${dev_bin_dir}/${dir}/${file} ${deployment_bin_dir}/${dir}/${file}
-    set cp_status = $status
-    if( ${cp_status} != 0 ) then
-	echo "Copy failed: ${dev_bin_dir}/${dir}/${file} to ${deployment_bin_dir}/${dir}/${file}"
-	exit 7
-    endif
-    @ file_count ++
-end
-echo "${file_count} serialized Java message files copied."
+#echo "Copying serialized Java message files..."
+#set dir = "ccs/test"
+#set file_count = 0
+#cd ${dev_bin_dir}/${dir}
+#foreach file ( *.obj )
+#    cp ${dev_bin_dir}/${dir}/${file} ${deployment_bin_dir}/${dir}/${file}
+#    set cp_status = $status
+#    if( ${cp_status} != 0 ) then
+#	echo "Copy failed: ${dev_bin_dir}/${dir}/${file} to ${deployment_bin_dir}/${dir}/${file}"
+#	exit 7
+#    endif
+#    @ file_count ++
+#end
+#echo "${file_count} serialized Java message files copied."
 #
 # gif files
 #
