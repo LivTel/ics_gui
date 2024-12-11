@@ -103,6 +103,10 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, I
 	 */
 	protected final static String INFRA_RED_LIRIC_BUTTON_STRING = "Infra Red Camera (Liric)";
 	/**
+	 * String to go on buttons.
+	 */
+	protected final static String CCD_LOCI_BUTTON_STRING = "CCD Camera (LOCI)";
+	/**
 	 * List of strings that describe instruments. Note, make sure in the same order as 
 	 * IcsGUIConfigProperties.CONFIG_TYPE_LIST.
 	 * @see IcsGUIConfigProperties#CONFIG_TYPE_LIST
@@ -122,6 +126,7 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, I
 	 * @see #SPECTROGRAPH_LOTUS_BUTTON_STRING
 	 * @see #POLARIMETER_MOPTOP_BUTTON_STRING
 	 * @see #INFRA_RED_LIRIC_BUTTON_STRING
+	 * @see #CCD_LOCI_BUTTON_STRING
 	 */
 	protected final static String INSTRUMENT_STRING_ARRAY[] = {CCD_RATCAM_BUTTON_STRING,
 		SPECTROGRAPH_MES_BUTTON_STRING,SPECTROGRAPH_NUVIEW_BUTTON_STRING,
@@ -129,7 +134,7 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, I
 		POLARIMETER_RINGOSTAR_BUTTON_STRING,SPECTROGRAPH_FRODOSPEC_BUTTON_STRING,CCD_RISE_BUTTON_STRING,
 		POLARIMETER_RINGO2_BUTTON_STRING,CCD_THOR_BUTTON_STRING,CCD_O_BUTTON_STRING,
 		POLARIMETER_RINGO3_BUTTON_STRING,SPECTROGRAPH_SPRAT_BUTTON_STRING,SPECTROGRAPH_LOTUS_BUTTON_STRING,
-		POLARIMETER_MOPTOP_BUTTON_STRING,INFRA_RED_LIRIC_BUTTON_STRING};
+		POLARIMETER_MOPTOP_BUTTON_STRING,INFRA_RED_LIRIC_BUTTON_STRING,CCD_LOCI_BUTTON_STRING};
 	/**
 	 * String to pre-pend to add menu instrument entries.
 	 */
@@ -210,6 +215,10 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, I
 	 * The Add/Amend dialog to use when Add or Amend is selected for a Liric configuration.
 	 */
 	private IcsGUILiricConfigAADialog addAmendLiricDialog = null;
+	/**
+	 * The Add/Amend dialog to use when Add or Amend is selected for a Loci configuration.
+	 */
+	private IcsGUILociConfigAADialog addAmendLociDialog = null;
 	/**
 	 * The config dialog that caused this dialog to be managed.
 	 */
@@ -332,6 +341,9 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, I
 	// create a Liric add/amend dialog
 		addAmendLiricDialog = new IcsGUILiricConfigAADialog(owner,c);
 		addAmendLiricDialog.addIcsConfigAADialogListener(this);
+	// create a Loci add/amend dialog
+		addAmendLociDialog = new IcsGUILociConfigAADialog(owner,c);
+		addAmendLociDialog.addIcsConfigAADialogListener(this);
 	}
 
 	/**
@@ -500,6 +512,13 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, I
 						addAmendLiricDialog.pack();
 						addAmendLiricDialog.add();
 						break;
+					case IcsGUIConfigProperties.CONFIG_TYPE_CCD_LOCI:
+						addAmendLociDialog.setLocation(getX()+getWidth(),getY());
+						addAmendLociDialog.setIcsGUI(icsGUI);
+						addAmendLociDialog.setIcsGUIStatus(icsGUIStatus);
+						addAmendLociDialog.pack();
+						addAmendLociDialog.add();
+						break;
 					case IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_MES:
 					default:
 						JOptionPane.showMessageDialog((Component)null,
@@ -598,6 +617,13 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, I
 						addAmendLiricDialog.setIcsGUIStatus(icsGUIStatus);
 						addAmendLiricDialog.pack();
 						addAmendLiricDialog.amend(id);
+						break;
+					case IcsGUIConfigProperties.CONFIG_TYPE_CCD_LOCI:
+						addAmendLociDialog.setLocation(getX()+getWidth(),getY());
+						addAmendLociDialog.setIcsGUI(icsGUI);
+						addAmendLociDialog.setIcsGUIStatus(icsGUIStatus);
+						addAmendLociDialog.pack();
+						addAmendLociDialog.amend(id);
 						break;
 					case IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_MES:
 					default:

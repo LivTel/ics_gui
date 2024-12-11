@@ -103,6 +103,10 @@ public class IcsGUIConfigProperties extends Properties
 	 */
 	public final static int CONFIG_TYPE_INFRA_RED_LIRIC          = 15;
 	/**
+	 * Configuration type specifier:CCD (LOCI).
+	 */
+	public final static int CONFIG_TYPE_CCD_LOCI 	              = 16;
+	/**
 	 * List of legal values that can be held in the config type field.
 	 * @see #CONFIG_TYPE_CCD_RATCAM
 	 * @see #CONFIG_TYPE_SPECTROGRAPH_MES
@@ -120,13 +124,14 @@ public class IcsGUIConfigProperties extends Properties
 	 * @see #CONFIG_TYPE_SPECTROGRAPH_LOTUS
 	 * @see #CONFIG_TYPE_POLARIMETER_MOPTOP
 	 * @see #CONFIG_TYPE_INFRA_RED_LIRIC
+	 * @see #CONFIG_TYPE_CCD_LOCI
 	 */
 	public final static int CONFIG_TYPE_LIST[] = {CONFIG_TYPE_CCD_RATCAM,CONFIG_TYPE_SPECTROGRAPH_MES,
 		CONFIG_TYPE_SPECTROGRAPH_NUVIEW,CONFIG_TYPE_INFRA_RED_SUPIRCAM,CONFIG_TYPE_SPECTROGRAPH_FTSPEC,
 		CONFIG_TYPE_POLARIMETER_RINGOSTAR,CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC,CONFIG_TYPE_CCD_RISE,
 		CONFIG_TYPE_POLARIMETER_RINGO2,CONFIG_TYPE_CCD_THOR,CONFIG_TYPE_CCD_O,CONFIG_TYPE_POLARIMETER_RINGO3,
 		CONFIG_TYPE_SPECTROGRAPH_SPRAT,CONFIG_TYPE_SPECTROGRAPH_LOTUS,CONFIG_TYPE_POLARIMETER_MOPTOP,
-		CONFIG_TYPE_INFRA_RED_LIRIC};
+						      CONFIG_TYPE_INFRA_RED_LIRIC,CONFIG_TYPE_CCD_LOCI};
 	/**
 	 * Default filename for properties file.
 	 */
@@ -268,6 +273,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * @see #getLOTUSConfigById
 	 * @see #getMoptopConfigById
 	 * @see #getLiricConfigById
+	 * @see #getLociConfigById
 	 */
 	public InstrumentConfig getConfigById(int id) throws NumberFormatException, IllegalArgumentException
 	{
@@ -325,6 +331,9 @@ public class IcsGUIConfigProperties extends Properties
 				break;
 			case CONFIG_TYPE_INFRA_RED_LIRIC:
 				c = getLiricConfigById(id);
+				break;
+			case CONFIG_TYPE_CCD_LOCI:
+				c = getLociConfigById(id);
 				break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":getConfigById:Id "
@@ -601,6 +610,19 @@ public class IcsGUIConfigProperties extends Properties
 				remove(configIdStringNudgematicOffsetSize(id));
 				remove(configIdStringCoaddExposureLength(id));
 				break;
+			case CONFIG_TYPE_CCD_LOCI:
+				remove(configIdStringFilterWheel(id));
+				remove(configIdStringXBin(id));
+				remove(configIdStringYBin(id));
+				remove(configIdStringWindowFlags(id));
+				for(j=1;j<2;j++)
+				{
+					remove(configIdWindowStringXStart(id,j));
+					remove(configIdWindowStringYStart(id,j));
+					remove(configIdWindowStringXEnd(id,j));
+					remove(configIdWindowStringYEnd(id,j));
+				}
+				break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":deleteId:Id "
 					+id+" type "+type+" not a supported type of configuration.");
@@ -852,6 +874,27 @@ public class IcsGUIConfigProperties extends Properties
 					remove(configIdStringNudgematicOffsetSize(i));
 					setConfigCoaddExposureLength(i-1,getConfigCoaddExposureLength(i));
 					remove(configIdStringCoaddExposureLength(id));
+					break;
+				case CONFIG_TYPE_CCD_LOCI:
+					setConfigXBin(i-1,getConfigXBin(i));
+					remove(configIdStringXBin(i));
+					setConfigYBin(i-1,getConfigYBin(i));
+					remove(configIdStringYBin(i));
+					setConfigFilterWheel(i-1,getConfigFilterWheel(i));
+					remove(configIdStringFilterWheel(i));
+					setConfigWindowFlags(i-1,getConfigWindowFlags(i));
+					remove(configIdStringWindowFlags(i));
+					for(j=1;j<2;j++)
+					{
+						setConfigXStart(i-1,j,getConfigXStart(i,j));
+						remove(configIdWindowStringXStart(i,j));
+						setConfigYStart(i-1,j,getConfigYStart(i,j));
+						remove(configIdWindowStringYStart(i,j));
+						setConfigXEnd(i-1,j,getConfigXEnd(i,j));
+						remove(configIdWindowStringXEnd(i,j));
+						setConfigYEnd(i-1,j,getConfigYEnd(i,j));
+						remove(configIdWindowStringYEnd(i,j));
+					}
 					break;
 				default:
 					throw new IllegalArgumentException(this.getClass().getName()+":deleteId:Id "
@@ -2879,6 +2922,65 @@ public class IcsGUIConfigProperties extends Properties
 	// don't set windows into detector, use default windows.
 	// Note flags are held IN the window list, so must setWindowFlags AFTER detector windows set
 		detector.setWindowFlags(0);
+	// set detector into config
+		c.setDetector(0,detector);
+	// return config
+		return c;
+	}
+	
+	/**
+	 * Method to return a LociConfig, constructed from the information against id id.
+	 * @param id The Id number.
+	 * @return The constructed LociConfig.
+	 * @exception NumberFormatException Thrown if a numeric parameter is not returned from the properties
+	 * 	file as a legal number.
+	 * @exception IllegalArgumentException Thrown if the config id specified does not have a legal type.
+	 */
+	private LociConfig getLociConfigById(int id) throws NumberFormatException, IllegalArgumentException
+	{
+		LociConfig c = null;
+		LociDetector detector = null;
+		Window windowArray[];
+
+	// check type
+		if(getConfigType(id) != CONFIG_TYPE_CCD_LOCI)
+		{
+			throw new IllegalArgumentException(this.getClass().getName()+":getLociConfigById:Id "
+				+id+" not a configuration of type Loci.");
+		}
+	// construct LociConfig
+		c = new LociConfig(getConfigName(id));
+		c.setCalibrateBefore(getConfigCalibrateBefore(id));
+		c.setCalibrateAfter(getConfigCalibrateAfter(id));
+		c.setFilterName(getConfigFilterWheel(id));
+	// setup detector
+		detector = new LociDetector();
+		detector.setXBin(getConfigXBin(id));
+		detector.setYBin(getConfigYBin(id));
+		// note, other Detector fields not set, as they are not used by the instrument.
+
+	// setup window list
+		windowArray = new Window[detector.getMaxWindowCount()];
+		for(int i = 0; i < detector.getMaxWindowCount(); i++)
+		{
+		// Note, windows are only non-null if they are active in RCS created configs
+		// Lets re-create that effect here, we can use the config window flags.
+			if((getConfigWindowFlags(id) & (1<<i))>0)
+			{
+				windowArray[i] = new Window();
+
+				windowArray[i].setXs(getConfigXStart(id,i+1));
+				windowArray[i].setYs(getConfigYStart(id,i+1));
+				windowArray[i].setXe(getConfigXEnd(id,i+1));
+				windowArray[i].setYe(getConfigYEnd(id,i+1));
+			}
+			else
+				windowArray[i] = null;
+		}// end for on windows
+	// set windows into detector
+		detector.setWindows(windowArray);
+	// Note flags are held IN the window list, so must setWindowFlags AFTER detector windows set
+		detector.setWindowFlags(getConfigWindowFlags(id));
 	// set detector into config
 		c.setDetector(0,detector);
 	// return config

@@ -24,7 +24,7 @@ CONFIG_SRCS	= IcsGUIConfigProperties.java IcsGUIConfigListDialog.java IcsGUIConf
 		IcsGUIFixedFormatSpecConfigAADialog.java IcsGUIPolarimeterConfigAADialog.java \
 		IcsGUIFrodoSpecConfigAADialog.java IcsGUILOTUSConfigAADialog.java \
 		IcsGUIMoptopPolarimeterConfigAADialog.java IcsGUILiricConfigAADialog.java \
-		IcsGUIRISEConfigAADialog.java \
+		IcsGUILociConfigAADialog.java IcsGUIRISEConfigAADialog.java \
 		IcsGUIRingo2PolarimeterConfigAADialog.java IcsGUIRingo3PolarimeterConfigAADialog.java \
 		IcsGUISpratConfigAADialog.java IcsGUITHORConfigAADialog.java \
 		IcsGUIOConfigAADialog.java IcsConfigAADialogListener.java 
