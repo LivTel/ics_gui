@@ -86,10 +86,10 @@ public class IcsGUILociConfigAADialog extends JDialog implements ActionListener
 		super(owner,"Add/Amend Loci CCD Camera Configuration");
 //		setResizable(false);
 		configProperties = c;
-	// there are 5 fields arranged vertically.
+	// there are 12 fields arranged vertically.
 	// there are 2 titled border height from 2 sets of titled border
 	// there is one set of buttons vertically 
-		int height = (5*FIELD_HEIGHT)+(2*TITLED_BORDER_HEIGHT)+BUTTON_HEIGHT;
+		int height = (12*FIELD_HEIGHT)+(2*TITLED_BORDER_HEIGHT)+BUTTON_HEIGHT;
 
 		getContentPane().setLayout(new SizedBoxLayout(getContentPane(),BoxLayout.Y_AXIS,
 			new Dimension(DIALOG_WIDTH,height)));
@@ -143,13 +143,9 @@ public class IcsGUILociConfigAADialog extends JDialog implements ActionListener
 		subPanel.add(label);
 		yBinTextField = new JTextField();
 		subPanel.add(yBinTextField);
-	// sub panel
-		subPanel = new JPanel();
-		getContentPane().add(subPanel);
-		subPanel.setLayout(new SizedGridLayout(0,2,new Dimension(DIALOG_WIDTH,FIELD_HEIGHT)));
 		// window panel
 		JPanel windowPanel = new JPanel();
-		subPanel.add(windowPanel);
+		getContentPane().add(windowPanel);
 		windowPanel.setBorder(new TitledSmallerBorder("Window"));
 		windowPanel.setLayout(new SizedGridLayout(0,2,
 			  new Dimension(DIALOG_WIDTH,TITLED_BORDER_HEIGHT+(5*FIELD_HEIGHT))));
@@ -268,6 +264,8 @@ public class IcsGUILociConfigAADialog extends JDialog implements ActionListener
 			e.printStackTrace(System.err);
 		}
 		filterComboBox.setSelectedItem(configProperties.getConfigFilterWheel(id));
+		xBinTextField.setText(configProperties.getConfigXBinString(id));
+		yBinTextField.setText(configProperties.getConfigYBinString(id));
 		// window
 		windowFlagCheckBox.setSelected((configProperties.getConfigWindowFlags(id)&(1<<0))>0);
 		windowXStartTextField.setText(configProperties.getConfigXStartString(id,1));
