@@ -40,14 +40,14 @@ import ngat.util.*;
 /**
  * This class is the start point for the Ics GUI.
  * @author Chris Mottram
- * @version $Revision: 69c52bda0b4d1e344aaab45638bee4cf8af35539 $
+ * @version $Revision$
  */
 public class IcsGUI
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUI.java | Tue May 5 10:20:42 2020 +0000 | Chris Mottram  $");
+	public final static String RCSID = new String("$Id$");
 	/**
 	 * Internal constant used when converting temperatures in centigrade (from the CCD controller) to Kelvin.
 	 */
@@ -1762,13 +1762,15 @@ public class IcsGUI
 	/**
 	 * This routine parses arguments passed into the GUI. It only looks for property filenames argument
 	 * config, which is needed before the status is inited, and therfore needs a special parseArguments
-	 * method (as other arguments affect the status).
+	 * method (as other arguments affect the status). It also checks for the help argument and displays that,
+	 * and then quits, so we can display help when we havn't set the property filename.
 	 * @param args The list of arguments to parse.
 	 * @throws UnknownHostException Thrown if a host parameter is not known.
 	 * @throws NumberFormatException Thrown if a numeric parameter is not a valid number.
 	 * @see #propertyFilename
 	 * @see #instrumentConfigPropertyFilename
 	 * @see #parseArguments
+	 * @see #help
 	 */
 	private void parsePropertyFilenameArgument(String[] args) throws NumberFormatException,UnknownHostException
 	{
@@ -1784,6 +1786,11 @@ public class IcsGUI
 				}
 				else
 					error("-config requires a filename");
+			}
+			else if(args[i].equals("-h")||args[i].equals("-help"))
+			{
+				help();
+				System.exit(0);
 			}
 			else if(args[i].equals("-instrument_config")||args[i].equals("-insco"))
 			{
