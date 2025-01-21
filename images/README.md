@@ -48,6 +48,10 @@ The IcsGUI can then be started as follows:
 
 * **sudo docker run -e DISPLAY=$DISPLAY -p 7383:7383 --mount type=bind,src=/icc,dst=/icc --name=ics-gui -it -d ics_gui_image**
 
+or
+
+* **sudo docker run --net=host -e DISPLAY=$DISPLAY --mount type=bind,src=/icc,dst=/icc --name=ics-gui -it -d ics_gui_image**
+
 For this to work the IcsGUI config files need to have been installed under **/icc** first. 
 
 An explanation of the command line:

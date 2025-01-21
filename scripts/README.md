@@ -37,5 +37,9 @@ The IcsGUI can also be deployed as a docker container.
 
 See the [images](../images) directory for details of how to create the docker container.
 
-The config files for the ics_gui have to be deployed from a tarball, created by the **diddly** script in this directory.
+The config files for the ics_gui have to be deployed from a tarball, created by the **ics_gui_create_config_tarball** script in this directory. i.e.
 
+* **cd ~dev/src/ics_gui/scripts/**
+* **./ics_gui_create_config_tarball &lt;instrument machine&gt;**
+
+See the images [README](../images/README.md) for details of how to use the script and deploy the resulting tarball.
