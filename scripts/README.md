@@ -13,7 +13,7 @@ also be lost as all properties file in the /tmc/bin tree are overwritten with th
 To preserve changes, copy the properties files (*.properties) somewhere safe before installation.
 Better yet, update the originals on the ARI development account.
 
-###To create an installation
+### To create an installation
 
 1. **cd ~dev/src/ics_gui/scripts**
 2. **./icsgui_make_deployment <machine name>**
@@ -22,10 +22,10 @@ Better yet, update the originals on the ARI development account.
 ### To deploy the deployment
 
 1. Put the following files in /home/eng/tmp/&lt;date&gt;:
-	http://ltdevsrv.livjm.ac.uk/~dev/ics_gui/deployment/icsgui_tar_install
-	http://ltdevsrv.livjm.ac.uk/~dev/ics_gui/deployment/tmc_cshrc
-	http://ltdevsrv.livjm.ac.uk/~dev/ics_gui/deployment/tmc_cshrc_edit.awk
-	http://ltdevsrv.livjm.ac.uk/~dev/ics_gui/deployment/icsgui_deployment_&lt;machine name&gt;.tar.gz
+  * http://ltdevsrv.livjm.ac.uk/~dev/ics_gui/deployment/icsgui_tar_install
+  * http://ltdevsrv.livjm.ac.uk/~dev/ics_gui/deployment/tmc_cshrc
+  * http://ltdevsrv.livjm.ac.uk/~dev/ics_gui/deployment/tmc_cshrc_edit.awk
+  * http://ltdevsrv.livjm.ac.uk/~dev/ics_gui/deployment/icsgui_deployment_&lt;machine name&gt;.tar.gz
 2. Ensure icsgui_tar_install is executable:
 	**chmod +x icsgui_tar_install**
 3. **su** (become root).
