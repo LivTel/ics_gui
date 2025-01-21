@@ -12,4 +12,14 @@ This GUI supports the generic instrument command set which is common across all 
 * **latex** LaTeX documentation. User guide and some design documentation.
 * **scripts** Some scripts used for creating a stand-alone distribution of the IcsGUI software. The GUI is usually bundled with each LT instrument, but stand-alone distributions can be generated for operations machines.
 * **test** Test java programs used for developing the software.
- 
+
+The **Makefile.common** file is included in Makefile's to provide common root directory information.
+
+## Dependencies / Prerequisites
+
+* The ngat repo/package must be installed: https://github.com/LivTel/ngat .
+* The software can only be built from within an LT development environment
+
+## Deployment
+
+IcsGUI is usually bundled as part of instrument distributions/installations. A standalone distribution can be generated for operations machines, see the scripts directory. We have also developed a docker distribution, initially for Loci. See the [images](images) directory for details.
