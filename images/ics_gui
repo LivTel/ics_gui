@@ -2,51 +2,57 @@ FROM openjdk:8
 #
 # Setup directory structure
 #
-RUN mkdir ~/javalib
-RUN mkdir ~/ics_gui
-RUN mkdir ~/ics_gui/java
-RUN mkdir ~/ics_gui/java/wav
+#RUN mkdir /docker
+#RUN mkdir /docker/bin
+RUN mkdir -p /docker/bin/javalib
+#RUN mkdir /docker/bin/ics_gui
+#RUN mkdir -p /docker/bin/ics_gui/java
+RUN mkdir -p /docker/bin/ics_gui/java/wav
 #
-# ADD Required jars to javalib
+# openjdk:8 gives the following errors when trying to start a swing GUI:
+# java.lang.UnsatisfiedLinkError: /usr/local/openjdk-8/jre/lib/amd64/libawt_xawt.so: libXext.so.6
+# java.lang.UnsatisfiedLinkError: /usr/local/openjdk-8/jre/lib/amd64/libawt_xawt.so: libXrender.so.1
+# UnsatisfiedLinkError: /usr/local/openjdk-8/jre/lib/amd64/libawt_xawt.so: libXtst.so.6
 #
-ADD /home/dev/bin/javalib/ngat_astrometry.jar ~/javalib/ngat_astrometry.jar
-ADD /home/dev/bin/javalib/ngat_fits.jar ~/javalib/ngat_fits.jar
-ADD /home/dev/bin/javalib/ngat_message_base.jar ~/javalib/ngat_message_base.jar
-ADD /home/dev/bin/javalib/ngat_message_inst_bss.jar ~/javalib/ngat_message_inst_bss.jar
-ADD /home/dev/bin/javalib/ngat_message_iss_inst.jar ~/javalib/ngat_message_iss_inst.jar
-ADD /home/dev/bin/javalib/ngat_net.jar ~/javalib/ngat_net.jar
-ADD /home/dev/bin/javalib/ngat_phase2.jar ~/javalib/ngat_phase2.jar
-ADD /home/dev/bin/javalib/ngat_swing.jar ~/javalib/ngat_swing.jar
-ADD /home/dev/bin/javalib/ngat_util_logging.jar ~/javalib/ngat_util_logging.jar
-ADD /home/dev/bin/javalib/ngat_util.jar ~/javalib/ngat_util.jar
+RUN apt-get update -y
+RUN apt-get install -y libxext6
+RUN apt-get install -y libxrender1
+RUN apt-get install -y libxtst6
 #
-# Copy IcsGUI application into ~/ics_gui/java
+# add required jars to javalib
 #
-ADD /home/dev/bin/ics_gui/java/*.class ~/ics_gui/java/
-ADD /home/dev/bin/ics_gui/java/wav/*.wav  ~/ics_gui/java/wav/
+ADD /home/dev/bin/javalib/ngat_astrometry.jar /docker/bin/javalib/ngat_astrometry.jar
+ADD /home/dev/bin/javalib/ngat_fits.jar /docker/bin/javalib/ngat_fits.jar
+ADD /home/dev/bin/javalib/ngat_message_base.jar /docker/bin/javalib/ngat_message_base.jar
+ADD /home/dev/bin/javalib/ngat_message_inst_bss.jar /docker/bin/javalib/ngat_message_inst_bss.jar
+ADD /home/dev/bin/javalib/ngat_message_iss_inst.jar /docker/bin/javalib/ngat_message_iss_inst.jar
+ADD /home/dev/bin/javalib/ngat_net.jar /docker/bin/javalib/ngat_net.jar
+ADD /home/dev/bin/javalib/ngat_phase2.jar /docker/bin/javalib/ngat_phase2.jar
+ADD /home/dev/bin/javalib/ngat_sound.jar /docker/bin/javalib/ngat_sound.jar
+ADD /home/dev/bin/javalib/ngat_swing.jar /docker/bin/javalib/ngat_swing.jar
+ADD /home/dev/bin/javalib/ngat_util_logging.jar /docker/bin/javalib/ngat_util_logging.jar
+ADD /home/dev/bin/javalib/ngat_util.jar /docker/bin/javalib/ngat_util.jar
+#
+# Copy IcsGUI application into /docker/bin/ics_gui/java
+#
+ADD /home/dev/bin/ics_gui/java/*.class /docker/bin/ics_gui/java/
+#
+# Copy IcsGUI wav files into /docker/bin/ics_gui/java/wav
+#
+ADD /home/dev/bin/ics_gui/java/wav/*.wav  /docker/bin/ics_gui/java/wav/
 #
 # Copy icons
 #
-ADD /home/dev/bin/ics_gui/java/*.gif ~/ics_gui/java/
-ADD /home/dev/bin/ics_gui/java/*.jpg ~/ics_gui/java/
-ADD /home/dev/bin/ics_gui/java/*.png ~/ics_gui/java/
-#
-# Copy properties files?
-#
-
+ADD /home/dev/bin/ics_gui/java/*.gif /docker/bin/ics_gui/java/
+ADD /home/dev/bin/ics_gui/java/*.jpg /docker/bin/ics_gui/java/
+ADD /home/dev/bin/ics_gui/java/*.png /docker/bin/ics_gui/java/
 #
 # EXPOSE ports
 #
 # ISS uses port 7383
 EXPOSE 7383
-#
-# directory structure
-#
-#RUN mkdir -p /icc/log/
-#RUN mkdir -p /icc/tmp/
-#RUN mkdir -p /icc/config/
 # Setup CLASSPATH
-ENV CLASSPATH="~/javalib/ngat_astrometry.jar:~/javalib/ngat_fits.jar:~/javalib/ngat_message_base.jar:~/javalib/ngat_message_inst_bss.jar:~/javalib/ngat_message_iss_inst.jar:~/javalib/ngat_net.jar:~/javalib/ngat_phase2.jar:~/javalib/ngat_swing.jar:~/javalib/ngat_util_logging.jar:~/javalib/ngat_util.jar:~/ics_gui/java/"
+ENV CLASSPATH="/docker/bin/javalib/ngat_astrometry.jar:/docker/bin/javalib/ngat_fits.jar:/docker/bin/javalib/ngat_message_base.jar:/docker/bin/javalib/ngat_message_inst_bss.jar:/docker/bin/javalib/ngat_message_iss_inst.jar:/docker/bin/javalib/ngat_net.jar:/docker/bin/javalib/ngat_phase2.jar:/docker/bin/javalib/ngat_sound.jar:/docker/bin/javalib/ngat_swing.jar:/docker/bin/javalib/ngat_util_logging.jar:/docker/bin/javalib/ngat_util.jar:/docker/bin/ics_gui/java/"
 # Config files in /icc tree (external to the docker)
 # This expects the following config files:
 # /icc/bin/ics_gui/java/ics_gui.properties
@@ -54,5 +60,5 @@ ENV CLASSPATH="~/javalib/ngat_astrometry.jar:~/javalib/ngat_fits.jar:~/javalib/n
 # ics_gui.fits.properties
 # Normally shared with the instrument itself:
 # /icc/config/current.filter.properties
-WORKDIR ~/ics_gui/java/
+WORKDIR /docker/bin/ics_gui/java/
 ENTRYPOINT java IcsGUI -issspoof -config /icc/bin/ics_gui/java/ics_gui.properties -instrument_config /icc/bin/ics_gui/java/ics_gui_config.properties

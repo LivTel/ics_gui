@@ -17,7 +17,19 @@ The **Makefile.common** file is included in Makefile's to provide common root di
 
 ## Dependencies / Prerequisites
 
-* The ngat repo/package must be installed: https://github.com/LivTel/ngat .
+* The ngat repo/package must be installed: https://github.com/LivTel/ngat . The specific sub-packages required can be derived from the [ics_gui](images/ics_gui) dockerfile, currently:
+  * ngat_astrometry.jar
+  * ngat_fits.jar
+  * ngat_message_base.jar
+  * ngat_message_inst_bss.jar
+  * ngat_message_iss_inst.jar
+  * ngat_net.jar
+  * ngat_phase2.jar
+  * ngat_sound.jar
+  * ngat_swing.jar
+  * ngat_util_logging.jar
+  * ngat_util.jar
+
 * The software can only be built from within an LT development environment
 
 ## Deployment
