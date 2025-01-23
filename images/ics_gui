@@ -19,6 +19,10 @@ RUN apt-get install -y libxext6
 RUN apt-get install -y libxrender1
 RUN apt-get install -y libxtst6
 #
+# ds9 for FITS viewer
+#
+RUN apt-get install -y saods9
+#
 # add required jars to javalib
 #
 ADD /home/dev/bin/javalib/ngat_astrometry.jar /docker/bin/javalib/ngat_astrometry.jar
