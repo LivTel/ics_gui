@@ -57,7 +57,7 @@ endif
 #
 echo "Creating directory structure..."
 set dir_count = 0
-set dir_list = "${deployment_dir} ${deployment_icc_dir} ${deployment_bin_dir} ${deployment_dir}/icc/log ${deployment_icc_dir}/config ${deployment_bin_dir}/ics_gui/java/ "
+set dir_list = "${deployment_dir} ${deployment_icc_dir} ${deployment_bin_dir} ${deployment_dir}/icc/log ${deployment_icc_dir}/config ${deployment_icc_dir}/tmp ${deployment_icc_dir}/tmp/ics_gui ${deployment_bin_dir}/ics_gui/java/ "
 foreach dir ( ${dir_list} )
 	mkdir -p ${dir}
 	if ($status != 0) then
