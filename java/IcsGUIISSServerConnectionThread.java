@@ -127,6 +127,7 @@ public class IcsGUIISSServerConnectionThread extends TCPServerConnectionThread
 	 * It is called from the inherited run method. It is responsible for performing the commands
 	 * sent to it by the IcsGUI. 
 	 * It should also construct the done object to describe the results of the command.
+	 * @see #getFitsDefaultsFilename
 	 * @see #fitsDefaultsFilename
 	 */
 	protected void processCommand()
@@ -241,6 +242,7 @@ public class IcsGUIISSServerConnectionThread extends TCPServerConnectionThread
 			parent.log(command.getClass().getName()+" received.");
 			try
 			{
+				getFitsDefaultsFilename();
 				parent.log(command.getClass().getName()+":Loading FITS headers from "+
 					   fitsDefaultsFilename+".");
 				getFitsDefaults = new FitsHeaderDefaults();
@@ -364,6 +366,29 @@ public class IcsGUIISSServerConnectionThread extends TCPServerConnectionThread
 	{
 		parent.error(errorString+exception);
 		exception.printStackTrace(parent.getErrorStream());
+	}
+
+	/**
+	 * Get the filename of a properties file that contains FITS header information for responding to a GET_FITS
+	 * ISS command. We get the parent's status object, and query the properties loaded in that for
+	 * the "ics_gui.iss.get_fits.fits_defaults_filename" key, which should contain the filename of the 
+	 * properties file containing a list of FITS headers (in ngat.fits property format) to use
+	 * to respond to an ISS GET_FITS request. If the "ics_gui.iss.get_fits.fits_defaults_filename" key
+	 * does not exist (or returns null) we use the default FITS_DEFAULTS_FILE_NAME value instead.
+	 * @see #FITS_DEFAULTS_FILE_NAME
+	 * @see #parent
+	 * @see #fitsDefaultsFilename
+	 */
+	protected void getFitsDefaultsFilename()
+	{
+		IcsGUIStatus status = null;
+
+		// get the status object (containing loaded configuration properties)
+		status = parent.getStatus();
+		// See if there is a property specifying the FITS default filename to use.
+		fitsDefaultsFilename = status.getProperty("ics_gui.iss.get_fits.fits_defaults_filename");
+		if(fitsDefaultsFilename == null)
+			fitsDefaultsFilename = FITS_DEFAULTS_FILE_NAME;
 	}
 }
 //
