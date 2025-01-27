@@ -1,0 +1,120 @@
+#!/bin/csh
+# Version: $Revision$
+# By $Author$
+# Make an IcsGUI docker image configuration deployment tar file.
+# This contains:
+#	Appropriate configuration for IcsGUI in the /icc directory structure
+# Usage:
+#	ics_gui_create_config_tarball <machine>
+if ( ${#argv} != 1 ) then
+	echo "Please specify a deployment machine."
+	echo "$0 <machine>"
+	exit 1
+endif
+set machine_name = "$1"
+if ( "${machine_name}" == "-help") then
+	echo "$0 <machine>"
+	exit 0
+endif
+switch ( ${machine_name} )
+    case "loci1":
+	set camera_name = "loci"
+	breaksw
+    case "ltdevx64.loci":
+	set camera_name = "loci"
+	breaksw
+    default:
+	echo "Machine ${machine_name} has no appropriate camera configured in this script."
+	exit 1
+endsw
+# dev root directory
+set dev_dir 		= "~dev"
+# dev binary root directory
+set dev_bin_dir 	= "${dev_dir}/bin"
+# directory script was run in
+set current_dir		= `pwd`
+# temporary directory containing root of deployment tree (which becomes root of tar).
+set deployment_dir 	= "/tmp/ics_gui_deployment"
+# temporary directory for deployment temporary files
+set deployment_tmp_dir 	= "/tmp/ics_gui_deployment/tmp"
+# temporary directory containing root icc directory.
+set deployment_icc_dir 	= "/tmp/ics_gui_deployment/icc"
+# temporary directory containing root bin directory.
+set deployment_bin_dir 	= "/tmp/ics_gui_deployment/icc/bin"
+# directory location of tar
+set deployment_tar_dir 	= "${dev_dir}/public_html/ics_gui/deployment"
+# name of tar file
+set deployment_tar 	= "ics_gui_${machine_name}_config_deployment.tar"
+#
+# Clear old deployment.
+#
+if (-d ${deployment_dir}) then
+	echo "Deployment directory ${deployment_dir} already exists:clearing..."
+	rm -rf ${deployment_dir}
+endif
+#
+# Create directory structure
+#
+echo "Creating directory structure..."
+set dir_count = 0
+set dir_list = "${deployment_dir} ${deployment_icc_dir} ${deployment_bin_dir} ${deployment_dir}/icc/log ${deployment_icc_dir}/config ${deployment_icc_dir}/tmp ${deployment_icc_dir}/tmp/ics_gui ${deployment_bin_dir}/ics_gui/java/ "
+foreach dir ( ${dir_list} )
+	mkdir -p ${dir}
+	if ($status != 0) then
+	   echo "Failed to make directory ${dir}"
+	   exit 2
+	endif
+	@ dir_count ++
+end
+echo "${dir_count} directories created."
+#
+# Configs
+#
+# in bin sub-directories
+echo "Copying machine configuration files..."
+set file_list = "ics_gui/java/${machine_name}.ics_gui.properties ics_gui/java/${machine_name}.ics_gui_config.properties ics_gui/java/${machine_name}.ics_gui.fits.properties "
+set file_count = 0
+cd ${dev_dir}
+foreach file ( ${file_list} )
+    set new_file = `echo ${file} | sed "s#${machine_name}.livjm.ac.uk.##" | sed "s#${machine_name}\.##"`
+    cp ${dev_bin_dir}/${file} ${deployment_bin_dir}/${new_file}
+    set cp_status = $status
+    if( ${cp_status} != 0 ) then
+	echo "Copy failed: ${dev_bin_dir}/${file} to ${deployment_bin_dir}/${new_file}"
+	exit 5
+    endif
+    @ file_count ++
+end
+echo "${file_count} configuration files copied."
+echo "Copying camera configuration files..."
+set file_list = "config/${camera_name}.current.filter.properties"
+set file_count = 0
+cd ${dev_dir}
+foreach file ( ${file_list} )
+    set new_file = `echo ${file} | sed "s#${camera_name}\.##"`
+    cp ${dev_bin_dir}/${file} ${deployment_icc_dir}/${new_file}
+    set cp_status = $status
+    if( ${cp_status} != 0 ) then
+	echo "Copy failed: ${dev_bin_dir}/${file} to ${deployment_icc_dir}/${new_file}"
+	exit 5
+    endif
+    @ file_count ++
+end
+echo "${file_count} camera configuration files copied."
+#
+# Create deployment tar
+#
+echo "--------------------------"
+echo "Creating deployment tar..."
+cd ${deployment_dir}
+tar cvf ${deployment_tar_dir}/${deployment_tar} .
+echo "GZipping deployment tar..."
+cd ${deployment_tar_dir}
+rm -f ${deployment_tar}.gz
+gzip ${deployment_tar}
+echo "Deployment tar : ${deployment_tar_dir}/${deployment_tar}.gz"
+#echo "Installation script : ${current_dir}/${install_script}"
+rm -rf ${deployment_dir}
+echo "Download from http://ltdevsrv.livjm.ac.uk/~dev/ics_gui/deployment/index.html."
+echo "Download ${deployment_tar}.gz "
+echo "Deployment ready."

@@ -39,14 +39,14 @@ import ngat.swing.GUIMessageDialogShower;
  * This class extends the TCPServerConnectionThread class for the IcsGUI application. This
  * allows IcsGUI to emulate the ISS's response to the instrument sending it commands.
  * @author Chris Mottram
- * @version $Revision: 7854d814a91207072c84b628bb2512e80842b70a $
+ * @version $Revision$
  */
 public class IcsGUIISSServerConnectionThread extends TCPServerConnectionThread
 {
 	/**
 	 * Revision Control System id string, showing the version of the Class.
 	 */
-	public final static String RCSID = new String("$Id: IcsGUIISSServerConnectionThread.java | Wed May 6 11:16:35 2020 +0100 | Chris Mottram  $");
+	public final static String RCSID = new String("$Id$");
 	/**
 	 * Default time taken to respond to a command.
 	 */
@@ -59,7 +59,13 @@ public class IcsGUIISSServerConnectionThread extends TCPServerConnectionThread
 	 * The IcsGUI object.
 	 */
 	private IcsGUI parent = null;
-
+	/**
+	 * Variable holding the filename of a properties file to load FITS header defaults from.
+	 * Defaults to FITS_DEFAULTS_FILE_NAME.
+	 * @see #FITS_DEFAULTS_FILE_NAME
+	 */
+	private String fitsDefaultsFilename = new String(FITS_DEFAULTS_FILE_NAME);
+	
 	/**
 	 * Constructor of the thread. This just calls the superclass constructors.
 	 * @param connectionSocket The socket the thread is to communicate with.
@@ -78,6 +84,18 @@ public class IcsGUIISSServerConnectionThread extends TCPServerConnectionThread
 		this.parent = c;
 	}
 
+	
+	/**
+	 * Routine to set the FITS header defaults filename FITS header defaults are laoded from when a 
+	 * GET_FITS ISS command is received by this thread.
+ 	 * @param s A string containing a valid Java properties filename containing valid FITS header defaults.
+	 * @see #fitsDefaultsFilename
+	 */
+	public void setFITSDefaultsFilename(String s)
+	{
+		fitsDefaultsFilename = s;
+	}
+	
 	/**
 	 * This method calculates the time it will take for the command to complete and is called
 	 * from the classes inherited run method.
@@ -109,6 +127,8 @@ public class IcsGUIISSServerConnectionThread extends TCPServerConnectionThread
 	 * It is called from the inherited run method. It is responsible for performing the commands
 	 * sent to it by the IcsGUI. 
 	 * It should also construct the done object to describe the results of the command.
+	 * @see #getFitsDefaultsFilename
+	 * @see #fitsDefaultsFilename
 	 */
 	protected void processCommand()
 	{
@@ -222,8 +242,11 @@ public class IcsGUIISSServerConnectionThread extends TCPServerConnectionThread
 			parent.log(command.getClass().getName()+" received.");
 			try
 			{
+				getFitsDefaultsFilename();
+				parent.log(command.getClass().getName()+":Loading FITS headers from "+
+					   fitsDefaultsFilename+".");
 				getFitsDefaults = new FitsHeaderDefaults();
-				getFitsDefaults.load(FITS_DEFAULTS_FILE_NAME);
+				getFitsDefaults.load(fitsDefaultsFilename);
 				fitsHeaderList = getFitsDefaults.getCardImageList();
 				getFitsDone.setFitsHeader(fitsHeaderList);
 				getFitsDone.setErrorNum(0);
@@ -343,6 +366,29 @@ public class IcsGUIISSServerConnectionThread extends TCPServerConnectionThread
 	{
 		parent.error(errorString+exception);
 		exception.printStackTrace(parent.getErrorStream());
+	}
+
+	/**
+	 * Get the filename of a properties file that contains FITS header information for responding to a GET_FITS
+	 * ISS command. We get the parent's status object, and query the properties loaded in that for
+	 * the "ics_gui.iss.get_fits.fits_defaults_filename" key, which should contain the filename of the 
+	 * properties file containing a list of FITS headers (in ngat.fits property format) to use
+	 * to respond to an ISS GET_FITS request. If the "ics_gui.iss.get_fits.fits_defaults_filename" key
+	 * does not exist (or returns null) we use the default FITS_DEFAULTS_FILE_NAME value instead.
+	 * @see #FITS_DEFAULTS_FILE_NAME
+	 * @see #parent
+	 * @see #fitsDefaultsFilename
+	 */
+	protected void getFitsDefaultsFilename()
+	{
+		IcsGUIStatus status = null;
+
+		// get the status object (containing loaded configuration properties)
+		status = parent.getStatus();
+		// See if there is a property specifying the FITS default filename to use.
+		fitsDefaultsFilename = status.getProperty("ics_gui.iss.get_fits.fits_defaults_filename");
+		if(fitsDefaultsFilename == null)
+			fitsDefaultsFilename = FITS_DEFAULTS_FILE_NAME;
 	}
 }
 //
