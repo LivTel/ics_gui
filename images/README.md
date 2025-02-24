@@ -46,7 +46,7 @@ Then install the config tarball as follows:
 
 The IcsGUI can then be started as follows:
 
-* **sudo docker run -e DISPLAY=$DISPLAY -p 7383:7383 --mount type=bind,src=/icc,dst=/icc -it -d ics_gui_image**
+* **sudo docker run -e DISPLAY=$DISPLAY -p 7383:7383 --mount type=bind,src=/icc,dst=/icc --mount type=bind,src=/tmp,dst=/tmp -it -d ics_gui_image**
 
 For this to work the IcsGUI config files need to have been installed under **/icc** first. 
 
@@ -54,6 +54,7 @@ An explanation of the command line:
 * **-e DISPLAY=$DISPLAY** : Set the DISPLAY environment variable to where you want the GUI to appear
 * **-p 7383:7383** : allow access to server port 7383 (fake ISS server port)
 * **--mount type=bind,src=/icc,dst=/icc** : allow docker to access /icc as /icc to load the IcsGUI config files, and write logs
+* **--mount type=bind,src=/tmp,dst=/tmp** : allow docker to access /tmp as /tmp.  The IcsGUI is a X Swing application, and needs to access the host machines X server to display it's windows. This allows us to access  **/tmp/.X11-unix/Xn**, where 'n' is the selected X display, which is where modern Linux's / Xorg's put there Unix sockets for contacting the X display. You don't need this part of the command line if using IcsGUI via a network port, or via a VNC server (which uses a network port).
 * **-d** : docker is a daemon (detach from terminal)
 * **-it** : -t allocate a pseodo-tty, -i interactive. Do we need these?
 
