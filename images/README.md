@@ -9,7 +9,7 @@ This directory contains a Dockerfile for building an IcsGUI docker container.
 To build a docker container do the following (on an LT development machine, where the ics_gui software repository is installed at /home/dev/src/ics_gui) :
 
 * **cd ~dev/src/ics_gui/images** (i.e. this directory)
-* **sudo docker build -f ics_gui -t ics_gui_image /** Build the docker container from the **ics_gui** file.
+* **docker build -f ics_gui -t ics_gui_image .** Build the docker container from the **ics_gui** file.
 * **docker save -o ics_gui_image.tar ics_gui_image** Save the constructed docker container into the **ics_gui_image.tar** tarball.
 
 This saved docker tarball can then be copied to the instrument control computer as follows:

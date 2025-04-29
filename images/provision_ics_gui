@@ -1,0 +1,26 @@
+#!/bin/tcsh
+set current_directory = `pwd`
+set oss_directory = `dirname ${current_directory}`
+mkdir -p docker/bin/javalib/
+mkdir -p docker/bin/lib/x86_64-linux
+mkdir -p docker/bin/ics_gui/java/wav
+# javalib
+cp /home/dev/bin/javalib/ngat_astrometry.jar docker/bin/javalib/
+cp /home/dev/bin/javalib/ngat_fits.jar docker/bin/javalib/
+cp /home/dev/bin/javalib/ngat_message_base.jar docker/bin/javalib/
+cp /home/dev/bin/javalib/ngat_message_inst_bss.jar docker/bin/javalib/
+cp /home/dev/bin/javalib/ngat_message_iss_inst.jar docker/bin/javalib/
+cp /home/dev/bin/javalib/ngat_net.jar docker/bin/javalib/
+cp /home/dev/bin/javalib/ngat_phase2.jar docker/bin/javalib/
+cp /home/dev/bin/javalib/ngat_sound.jar docker/bin/javalib/
+cp /home/dev/bin/javalib/ngat_swing.jar docker/bin/javalib/
+cp /home/dev/bin/javalib/ngat_util_logging.jar docker/bin/javalib/
+cp /home/dev/bin/javalib/ngat_util.jar docker/bin/javalib/
+# ics_gui classes
+cp /home/dev/bin/ics_gui/java/*.class docker/bin/ics_gui/java/
+# ics_gui wavs
+cp /home/dev/bin/ics_gui/java/wav/*.wav docker/bin/ics_gui/java/wav/
+# icons
+cp /home/dev/bin/ics_gui/java/*.gif docker/bin/ics_gui/java/
+cp /home/dev/bin/ics_gui/java/*.jpg docker/bin/ics_gui/java/
+cp /home/dev/bin/ics_gui/java/*.png docker/bin/ics_gui/java/
