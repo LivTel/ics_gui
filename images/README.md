@@ -9,6 +9,7 @@ This directory contains a Dockerfile for building an IcsGUI docker container.
 To build a docker container do the following (on an LT development machine, where the ics_gui software repository is installed at /home/dev/src/ics_gui) :
 
 * **cd ~dev/src/ics_gui/images** (i.e. this directory)
+* **./provision_ics_gui** Run the provisioning script, which copies the Java libraries from /home/dev/bin/javalib, the IcsGUI class files and wavs/icons from /home/dev/bin/ics_gui/java/ and sub-directories, into a created **docker** directory tree (created in the images directory). This allows us to use a local context for the docker build.
 * **docker build -f ics_gui -t ics_gui_image .** Build the docker container from the **ics_gui** file.
 * **docker save -o ics_gui_image.tar ics_gui_image** Save the constructed docker container into the **ics_gui_image.tar** tarball.
 
