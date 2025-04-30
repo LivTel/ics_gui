@@ -21,7 +21,7 @@ The docker can then be installed / loaded into the local system as follows:
 
 * **ssh admin@&lt;instrument machine&gt;**
 * **cd images**
-* **sudo docker load -i ics_gui_image.tar**
+* **docker load -i ics_gui_image.tar**
 
 You now need to install the IcsGUI config files before starting the docker.
 
@@ -47,12 +47,12 @@ Then install the config tarball as follows:
 
 The IcsGUI can then be started as follows:
 
-* **sudo docker run -e DISPLAY=$DISPLAY -p 7383:7383 --mount type=bind,src=/icc,dst=/icc --mount type=bind,src=/tmp,dst=/tmp -it -d ics_gui_image**
+* **docker run -e DISPLAY=$DISPLAY -p 7383:7383 --mount type=bind,src=/icc,dst=/icc --mount type=bind,src=/tmp,dst=/tmp -it -d ics_gui_image**
 
 For this to work the IcsGUI config files need to have been installed under **/icc** first. 
 
 An explanation of the command line:
-* **-e DISPLAY=$DISPLAY** : Set the DISPLAY environment variable to where you want the GUI to appear
+* **-e DISPLAY=$DISPLAY** : Set the DISPLAY environment variable to where you want the GUI to appear. Note you should specify DISPLAY as an IP address rather than a resolvable name, the DISPLAY is opened from inside the docker, which has no entries in /etc/hosts (i.e. use **export DISPLAY=192.168.1.30:1** , NOT **export DISPLAY=occ:1**)
 * **-p 7383:7383** : allow access to server port 7383 (fake ISS server port)
 * **--mount type=bind,src=/icc,dst=/icc** : allow docker to access /icc as /icc to load the IcsGUI config files, and write logs
 * **--mount type=bind,src=/tmp,dst=/tmp** : allow docker to access /tmp as /tmp.  The IcsGUI is a X Swing application, and needs to access the host machines X server to display it's windows. This allows us to access  **/tmp/.X11-unix/Xn**, where 'n' is the selected X display, which is where modern Linux's / Xorg's put there Unix sockets for contacting the X display. You don't need this part of the command line if using IcsGUI via a network port, or via a VNC server (which uses a network port).
@@ -65,10 +65,10 @@ Just quit the GUI (File-&gt;Exit).
 
 The IcsGUI can be stopped from the command line as follows:
 
-* **sudo docker ps**
+* **docker ps**
 Find the **ics-gui** container id and then do the following:
 
-* **sudo docker kill &lt;containerid&gt;**
-* **sudo docker remove &lt;containerid&gt;**
+* **docker kill &lt;containerid&gt;**
+* **docker remove &lt;containerid&gt;**
 
 You need to remove the container to re-use the ics-gui container name.
