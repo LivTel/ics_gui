@@ -23,6 +23,9 @@ switch ( ${machine_name} )
     case "ltdevx64.loci":
 	set camera_name = "loci"
 	breaksw
+    case "phoenix1":
+	set camera_name = "sophia"
+	breaksw
     default:
 	echo "Machine ${machine_name} has no appropriate camera configured in this script."
 	exit 1
