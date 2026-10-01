@@ -107,6 +107,10 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, I
 	 */
 	protected final static String CCD_LOCI_BUTTON_STRING = "CCD Camera (LOCI)";
 	/**
+	 * String to go on buttons.
+	 */
+	protected final static String CMOS_LUMEN_BUTTON_STRING = "CMOS Camera (LUMEN)";
+	/**
 	 * List of strings that describe instruments. Note, make sure in the same order as 
 	 * IcsGUIConfigProperties.CONFIG_TYPE_LIST.
 	 * @see IcsGUIConfigProperties#CONFIG_TYPE_LIST
@@ -127,6 +131,7 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, I
 	 * @see #POLARIMETER_MOPTOP_BUTTON_STRING
 	 * @see #INFRA_RED_LIRIC_BUTTON_STRING
 	 * @see #CCD_LOCI_BUTTON_STRING
+	 * @see #CMOS_LUMEN_BUTTON_STRING
 	 */
 	protected final static String INSTRUMENT_STRING_ARRAY[] = {CCD_RATCAM_BUTTON_STRING,
 		SPECTROGRAPH_MES_BUTTON_STRING,SPECTROGRAPH_NUVIEW_BUTTON_STRING,
@@ -134,7 +139,8 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, I
 		POLARIMETER_RINGOSTAR_BUTTON_STRING,SPECTROGRAPH_FRODOSPEC_BUTTON_STRING,CCD_RISE_BUTTON_STRING,
 		POLARIMETER_RINGO2_BUTTON_STRING,CCD_THOR_BUTTON_STRING,CCD_O_BUTTON_STRING,
 		POLARIMETER_RINGO3_BUTTON_STRING,SPECTROGRAPH_SPRAT_BUTTON_STRING,SPECTROGRAPH_LOTUS_BUTTON_STRING,
-		POLARIMETER_MOPTOP_BUTTON_STRING,INFRA_RED_LIRIC_BUTTON_STRING,CCD_LOCI_BUTTON_STRING};
+		POLARIMETER_MOPTOP_BUTTON_STRING,INFRA_RED_LIRIC_BUTTON_STRING,CCD_LOCI_BUTTON_STRING,
+		CMOS_LUMEN_BUTTON_STRING};
 	/**
 	 * String to pre-pend to add menu instrument entries.
 	 */
@@ -219,6 +225,10 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, I
 	 * The Add/Amend dialog to use when Add or Amend is selected for a Loci configuration.
 	 */
 	private IcsGUILociConfigAADialog addAmendLociDialog = null;
+	/**
+	 * The Add/Amend dialog to use when Add or Amend is selected for a LUMEN configuration.
+	 */
+	private IcsGUILUMENConfigAADialog addAmendLUMENDialog = null;
 	/**
 	 * The config dialog that caused this dialog to be managed.
 	 */
@@ -344,6 +354,9 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, I
 	// create a Loci add/amend dialog
 		addAmendLociDialog = new IcsGUILociConfigAADialog(owner,c);
 		addAmendLociDialog.addIcsConfigAADialogListener(this);
+	// create a LUMEN add/amend dialog
+		addAmendLUMENDialog = new IcsGUILUMENConfigAADialog(owner,c);
+		addAmendLUMENDialog.addIcsConfigAADialogListener(this);
 	}
 
 	/**
@@ -519,6 +532,13 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, I
 						addAmendLociDialog.pack();
 						addAmendLociDialog.add();
 						break;
+					case IcsGUIConfigProperties.CONFIG_TYPE_CMOS_LUMEN:
+						addAmendLUMENDialog.setLocation(getX()+getWidth(),getY());
+						addAmendLUMENDialog.setIcsGUI(icsGUI);
+						addAmendLUMENDialog.setIcsGUIStatus(icsGUIStatus);
+						addAmendLUMENDialog.pack();
+						addAmendLUMENDialog.add();
+						break;
 					case IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_MES:
 					default:
 						JOptionPane.showMessageDialog((Component)null,
@@ -624,6 +644,13 @@ public class IcsGUIConfigListDialog extends JDialog implements ActionListener, I
 						addAmendLociDialog.setIcsGUIStatus(icsGUIStatus);
 						addAmendLociDialog.pack();
 						addAmendLociDialog.amend(id);
+						break;
+					case IcsGUIConfigProperties.CONFIG_TYPE_CMOS_LUMEN:
+						addAmendLUMENDialog.setLocation(getX()+getWidth(),getY());
+						addAmendLUMENDialog.setIcsGUI(icsGUI);
+						addAmendLUMENDialog.setIcsGUIStatus(icsGUIStatus);
+						addAmendLUMENDialog.pack();
+						addAmendLUMENDialog.amend(id);
 						break;
 					case IcsGUIConfigProperties.CONFIG_TYPE_SPECTROGRAPH_MES:
 					default:
