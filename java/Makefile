@@ -65,7 +65,8 @@ ICS_GUI_PROPERTY_SRCS	= ltccd2.ics_gui.properties ltccd4.ics_gui.properties \
 	lotus1.lotus.ics_gui.properties lotus2.lotus.ics_gui.properties ltobs9.lotus.ics_gui.properties \
 	ltoperator.ics_gui.properties moptop1.ics_gui.properties zen.moptop1.ics_gui.properties \
 	moptop3.ics_gui.properties liric1.ics_gui.properties zen.liric.ics_gui.properties liric2.ics_gui.properties \
-	loci1.ics_gui.properties ltdevx64.loci.ics_gui.properties lumen1.ics_gui.properties 
+	loci1.ics_gui.properties ltdevx64.loci.ics_gui.properties \
+	lumen1.ics_gui.properties ltdevx64.lumen.ics_gui.properties
 # No longer used
 #ltccd1.ics_gui.properties ltccd3.ics_gui.properties ftccd1.ics_gui.properties ftccd2.ics_gui.properties 
 # spectrograph.scs_gui.properties ltobs9.fartcam.ics_gui.properties ltobs9.dillcamsouth.ics_gui.properties 
