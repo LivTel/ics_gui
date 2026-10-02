@@ -109,11 +109,8 @@ ICS_GUI_FITS_PROPERTY_SRCS = ltccd2.ics_gui.fits.properties ltccd4.ics_gui.fits.
 	lotus1.ics_gui.fits.properties lotus2.ics_gui.fits.properties ltoperator.ics_gui.fits.properties \
 	moptop1.ics_gui.fits.properties moptop3.ics_gui.fits.properties \
 	liric1.ics_gui.fits.properties liric2.ics_gui.fits.properties \
-<<<<<<< HEAD
-	loci1.ics_gui.fits.properties ltdevx64.loci.ics_gui.fits.properties phoenix1.ics_gui.fits.properties 
-=======
-	loci1.ics_gui.fits.properties ltdevx64.loci.ics_gui.fits.properties lumen1.ics_gui.fits.properties 
->>>>>>> lumen-development
+	loci1.ics_gui.fits.properties ltdevx64.loci.ics_gui.fits.properties phoenix1.ics_gui.fits.properties \
+	lumen1.ics_gui.fits.properties 
 # No longer used
 #ltccd1.ics_gui.fits.properties ltccd3.ics_gui.fits.properties ftccd1.ics_gui.fits.properties 
 # ftccd2.ics_gui.fits.properties ftspec1.ics_gui.fits.properties ftspec2.ics_gui.fits.properties 
