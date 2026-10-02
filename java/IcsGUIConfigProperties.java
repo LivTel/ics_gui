@@ -107,6 +107,10 @@ public class IcsGUIConfigProperties extends Properties
 	 */
 	public final static int CONFIG_TYPE_CCD_LOCI 	              = 16;
 	/**
+	 * Configuration type specifier:CMOS (LUMEN).
+	 */
+	public final static int CONFIG_TYPE_CMOS_LUMEN 	              = 17;
+	/**
 	 * List of legal values that can be held in the config type field.
 	 * @see #CONFIG_TYPE_CCD_RATCAM
 	 * @see #CONFIG_TYPE_SPECTROGRAPH_MES
@@ -125,13 +129,14 @@ public class IcsGUIConfigProperties extends Properties
 	 * @see #CONFIG_TYPE_POLARIMETER_MOPTOP
 	 * @see #CONFIG_TYPE_INFRA_RED_LIRIC
 	 * @see #CONFIG_TYPE_CCD_LOCI
+	 * @see #CONFIG_TYPE_CMOS_LUMEN
 	 */
 	public final static int CONFIG_TYPE_LIST[] = {CONFIG_TYPE_CCD_RATCAM,CONFIG_TYPE_SPECTROGRAPH_MES,
 		CONFIG_TYPE_SPECTROGRAPH_NUVIEW,CONFIG_TYPE_INFRA_RED_SUPIRCAM,CONFIG_TYPE_SPECTROGRAPH_FTSPEC,
 		CONFIG_TYPE_POLARIMETER_RINGOSTAR,CONFIG_TYPE_SPECTROGRAPH_FRODOSPEC,CONFIG_TYPE_CCD_RISE,
 		CONFIG_TYPE_POLARIMETER_RINGO2,CONFIG_TYPE_CCD_THOR,CONFIG_TYPE_CCD_O,CONFIG_TYPE_POLARIMETER_RINGO3,
 		CONFIG_TYPE_SPECTROGRAPH_SPRAT,CONFIG_TYPE_SPECTROGRAPH_LOTUS,CONFIG_TYPE_POLARIMETER_MOPTOP,
-						      CONFIG_TYPE_INFRA_RED_LIRIC,CONFIG_TYPE_CCD_LOCI};
+		CONFIG_TYPE_INFRA_RED_LIRIC,CONFIG_TYPE_CCD_LOCI,CONFIG_TYPE_CMOS_LUMEN};
 	/**
 	 * Default filename for properties file.
 	 */
@@ -274,6 +279,7 @@ public class IcsGUIConfigProperties extends Properties
 	 * @see #getMoptopConfigById
 	 * @see #getLiricConfigById
 	 * @see #getLociConfigById
+	 * @see #getLUMENConfigById
 	 */
 	public InstrumentConfig getConfigById(int id) throws NumberFormatException, IllegalArgumentException
 	{
@@ -335,6 +341,9 @@ public class IcsGUIConfigProperties extends Properties
 			case CONFIG_TYPE_CCD_LOCI:
 				c = getLociConfigById(id);
 				break;
+			case CONFIG_TYPE_CMOS_LUMEN:
+				c = getLUMENConfigById(id);
+				break;
 			default:
 				throw new IllegalArgumentException(this.getClass().getName()+":getConfigById:Id "
 					+id+" type "+type+" not a supported type of configuration.");
@@ -371,6 +380,8 @@ public class IcsGUIConfigProperties extends Properties
 	 * @param id The id of the configuration to remove.
 	 * @see ngat.phase2.OConfig#O_FILTER_INDEX_FILTER_WHEEL
 	 * @see ngat.phase2.OConfig#O_FILTER_INDEX_FILTER_SLIDE_UPPER
+	 * @see ngat.phase2.LUMENConfig#LUMEN_FILTER_INDEX_FILTER_WHEEL
+	 * @see ngat.phase2.LUMENConfig#LUMEN_FILTER_INDEX_FILTER_SLIDE_UPPER
 	 * @see #getConfigType
 	 * @see #configIdStringName
 	 * @see #configIdStringType
@@ -612,6 +623,23 @@ public class IcsGUIConfigProperties extends Properties
 				break;
 			case CONFIG_TYPE_CCD_LOCI:
 				remove(configIdStringFilterWheel(id));
+				remove(configIdStringXBin(id));
+				remove(configIdStringYBin(id));
+				remove(configIdStringWindowFlags(id));
+				for(j=1;j<2;j++)
+				{
+					remove(configIdWindowStringXStart(id,j));
+					remove(configIdWindowStringYStart(id,j));
+					remove(configIdWindowStringXEnd(id,j));
+					remove(configIdWindowStringYEnd(id,j));
+				}
+				break;
+			case CONFIG_TYPE_CMOS_LUMEN:
+				for(j = LUMENConfig.LUMEN_FILTER_INDEX_FILTER_WHEEL; 
+				    j <= LUMENConfig.LUMEN_FILTER_INDEX_FILTER_SLIDE_UPPER; j++)
+				{
+					remove(configIdStringFilterWheel(id,j));
+				}
 				remove(configIdStringXBin(id));
 				remove(configIdStringYBin(id));
 				remove(configIdStringWindowFlags(id));
@@ -884,6 +912,32 @@ public class IcsGUIConfigProperties extends Properties
 					remove(configIdStringFilterWheel(i));
 					setConfigWindowFlags(i-1,getConfigWindowFlags(i));
 					remove(configIdStringWindowFlags(i));
+					for(j=1;j<2;j++)
+					{
+						setConfigXStart(i-1,j,getConfigXStart(i,j));
+						remove(configIdWindowStringXStart(i,j));
+						setConfigYStart(i-1,j,getConfigYStart(i,j));
+						remove(configIdWindowStringYStart(i,j));
+						setConfigXEnd(i-1,j,getConfigXEnd(i,j));
+						remove(configIdWindowStringXEnd(i,j));
+						setConfigYEnd(i-1,j,getConfigYEnd(i,j));
+						remove(configIdWindowStringYEnd(i,j));
+					}
+					break;
+				case CONFIG_TYPE_CMOS_LUMEN:
+					for(j = LUMENConfig.LUMEN_FILTER_INDEX_FILTER_WHEEL; 
+					    j <= LUMENConfig.LUMEN_FILTER_INDEX_FILTER_SLIDE_UPPER; j++)
+					{
+						setConfigFilterWheel(i-1,j,getConfigFilterWheel(i,j));
+						remove(configIdStringFilterWheel(i,j));
+					}
+					setConfigXBin(i-1,getConfigXBin(i));
+					remove(configIdStringXBin(i));
+					setConfigYBin(i-1,getConfigYBin(i));
+					remove(configIdStringYBin(i));
+					setConfigWindowFlags(i-1,getConfigWindowFlags(i));
+					remove(configIdStringWindowFlags(i));
+
 					for(j=1;j<2;j++)
 					{
 						setConfigXStart(i-1,j,getConfigXStart(i,j));
@@ -1226,15 +1280,22 @@ public class IcsGUIConfigProperties extends Properties
 	}
 
 	/**
-	 * Method to get the filter wheel string of configuration id id (CCD_O).
+	 * Method to get the filter wheel string of configuration id id (CCD_O) (CMOS_LUMEN).
 	 * @param id The id of the configuration.
-	 * @param wheelIndex Which wheel to get the filter wheel string for. An integer, 1-based for IO:O,
-	 *       O_FILTER_INDEX_FILTER_WHEEL is the filter wheel, O_FILTER_INDEX_FILTER_SLIDE_LOWER is the lower
+	 * @param wheelIndex Which wheel to get the filter wheel string for. An integer, 1-based for IO:O / LUMEN.
+	 *       For IO:O O_FILTER_INDEX_FILTER_WHEEL is the filter wheel, 
+	 *       O_FILTER_INDEX_FILTER_SLIDE_LOWER is the lower
 	 *       filter slide, and O_FILTER_INDEX_FILTER_SLIDE_UPPER is the upper filter slide.
+	 *       For LUMEN LUMEN_FILTER_INDEX_FILTER_WHEEL is the filter wheel, 
+	 *       LUMEN_FILTER_INDEX_FILTER_SLIDE_LOWER is the lower
+	 *       filter slide, and LUMEN_FILTER_INDEX_FILTER_SLIDE_UPPER is the upper filter slide.
 	 * @return The configuration filter wheel string.
 	 * @see ngat.phase2.OConfig#O_FILTER_INDEX_FILTER_WHEEL
 	 * @see ngat.phase2.OConfig#O_FILTER_INDEX_FILTER_SLIDE_LOWER
 	 * @see ngat.phase2.OConfig#O_FILTER_INDEX_FILTER_SLIDE_UPPER
+	 * @see ngat.phase2.LUMENConfig#LUMEN_FILTER_INDEX_FILTER_WHEEL
+	 * @see ngat.phase2.LUMENConfig#LUMEN_FILTER_INDEX_FILTER_SLIDE_LOWER
+	 * @see ngat.phase2.LUMENConfig#LUMEN_FILTER_INDEX_FILTER_SLIDE_UPPER
 	 * @see #configIdStringFilterWheel
 	 * @see #getProperty
 	 */
@@ -1244,15 +1305,22 @@ public class IcsGUIConfigProperties extends Properties
 	}
 
 	/**
-	 * Method to set the upper filter wheel string of configuration id id (CCD_O).
-	 * @param wheelIndex Which wheel to get the filter wheel string for. An integer, 1-based for IO:O,
-	 *       O_FILTER_INDEX_FILTER_WHEEL is the filter wheel, O_FILTER_INDEX_FILTER_SLIDE_LOWER is the lower
+	 * Method to set the upper filter wheel string of configuration id id (CCD_O) (CMOS_LUMEN).
+	 * @param wheelIndex Which wheel to get the filter wheel string for. An integer, 1-based for IO:O / LUMEN.
+	 *       For IO:O: O_FILTER_INDEX_FILTER_WHEEL is the filter wheel, 
+	 *       O_FILTER_INDEX_FILTER_SLIDE_LOWER is the lower
 	 *       filter slide, and O_FILTER_INDEX_FILTER_SLIDE_UPPER is the upper filter slide.
+	 *       For LUMEN LUMEN_FILTER_INDEX_FILTER_WHEEL is the filter wheel, 
+	 *       LUMEN_FILTER_INDEX_FILTER_SLIDE_LOWER is the lower
+	 *       filter slide, and LUMEN_FILTER_INDEX_FILTER_SLIDE_UPPER is the upper filter slide.
 	 * @param id The id of the configuration.
 	 * @param s The configuration filter wheel string.
 	 * @see ngat.phase2.OConfig#O_FILTER_INDEX_FILTER_WHEEL
 	 * @see ngat.phase2.OConfig#O_FILTER_INDEX_FILTER_SLIDE_LOWER
 	 * @see ngat.phase2.OConfig#O_FILTER_INDEX_FILTER_SLIDE_UPPER
+	 * @see ngat.phase2.LUMENConfig#LUMEN_FILTER_INDEX_FILTER_WHEEL
+	 * @see ngat.phase2.LUMENConfig#LUMEN_FILTER_INDEX_FILTER_SLIDE_LOWER
+	 * @see ngat.phase2.LUMENConfig#LUMEN_FILTER_INDEX_FILTER_SLIDE_UPPER
 	 * @see #configIdStringFilterWheel
 	 * @see #setProperty
 	 */
@@ -2959,6 +3027,100 @@ public class IcsGUIConfigProperties extends Properties
 		detector.setYBin(getConfigYBin(id));
 		// note, other Detector fields not set, as they are not used by the instrument.
 
+	// setup window list
+		windowArray = new Window[detector.getMaxWindowCount()];
+		for(int i = 0; i < detector.getMaxWindowCount(); i++)
+		{
+		// Note, windows are only non-null if they are active in RCS created configs
+		// Lets re-create that effect here, we can use the config window flags.
+			if((getConfigWindowFlags(id) & (1<<i))>0)
+			{
+				windowArray[i] = new Window();
+
+				windowArray[i].setXs(getConfigXStart(id,i+1));
+				windowArray[i].setYs(getConfigYStart(id,i+1));
+				windowArray[i].setXe(getConfigXEnd(id,i+1));
+				windowArray[i].setYe(getConfigYEnd(id,i+1));
+			}
+			else
+				windowArray[i] = null;
+		}// end for on windows
+	// set windows into detector
+		detector.setWindows(windowArray);
+	// Note flags are held IN the window list, so must setWindowFlags AFTER detector windows set
+		detector.setWindowFlags(getConfigWindowFlags(id));
+	// set detector into config
+		c.setDetector(0,detector);
+	// return config
+		return c;
+	}
+
+	/**
+	 * Method to return a LUMENConfig, constructed from the information against id id.
+	 * @param id The Id number.
+	 * @return The constructed LUMENConfig.
+	 * @exception NumberFormatException Thrown if a numeric parameter is not returned from the properties
+	 * 	file as a legal number.
+	 * @exception IllegalArgumentException Thrown if the config id specified does not have a legal type.
+	 * @see #CONFIG_TYPE_CMOS_LUMEN
+	 * @see #getConfigType
+	 * @see #getConfigName
+	 * @see #getConfigCalibrateBefore
+	 * @see #getConfigCalibrateAfter
+	 * @see #getConfigFilterWheel
+	 * @see #getConfigXBin
+	 * @see #getConfigYBin
+	 * @see #getConfigWindowFlags
+	 * @see #getConfigXStart
+	 * @see #getConfigYStart
+	 * @see #getConfigXEnd
+	 * @see #getConfigYEnd
+	 * @see #getConfigWindowFlags
+	 * @see ngat.phase2.LUMENConfig
+	 * @see ngat.phase2.LUMENConfig#LUMEN_FILTER_INDEX_FILTER_WHEEL
+	 * @see ngat.phase2.LUMENConfig#LUMEN_FILTER_INDEX_FILTER_SLIDE_UPPER
+	 * @see ngat.phase2.LUMENConfig#setCalibrateBefore
+	 * @see ngat.phase2.LUMENConfig#setCalibrateAfter
+	 * @see ngat.phase2.LUMENConfig#setFilterName
+	 * @see ngat.phase2.LUMENConfig#setDetector
+	 * @see ngat.phase2.LUMENDetector
+	 * @see ngat.phase2.LUMENDetector#setXBin
+	 * @see ngat.phase2.LUMENDetector#setYBin
+	 * @see ngat.phase2.LUMENDetector#getMaxWindowCount
+	 * @see ngat.phase2.LUMENDetector#setWindows
+	 * @see ngat.phase2.LUMENDetector#setWindowFlags
+	 * @see ngat.phase2.Window
+	 * @see ngat.phase2.Window#setXs
+	 * @see ngat.phase2.Window#setYs
+	 * @see ngat.phase2.Window#setXe
+	 * @see ngat.phase2.Window#setYe
+	 */
+	private LUMENConfig getLUMENConfigById(int id) throws NumberFormatException, IllegalArgumentException
+	{
+		LUMENConfig c = null;
+		LUMENDetector detector = null;
+		Window windowArray[];
+
+	// check type
+		if(getConfigType(id) != CONFIG_TYPE_CMOS_LUMEN)
+		{
+			throw new IllegalArgumentException(this.getClass().getName()+":getLUMENConfigById:Id "
+				+id+" not a configuration of type LUMEN.");
+		}
+	// construct LUMENConfig
+		c = new LUMENConfig(getConfigName(id));
+		c.setCalibrateBefore(getConfigCalibrateBefore(id));
+		c.setCalibrateAfter(getConfigCalibrateAfter(id));
+		for(int i = LUMENConfig.LUMEN_FILTER_INDEX_FILTER_WHEEL;
+		    i <= LUMENConfig.LUMEN_FILTER_INDEX_FILTER_SLIDE_UPPER; i++)
+		{
+			c.setFilterName(i,getConfigFilterWheel(id,i));
+		}
+	// setup detector
+		detector = new LUMENDetector();
+		detector.setXBin(getConfigXBin(id));
+		detector.setYBin(getConfigYBin(id));
+		// note, other Detector fields not set, as they are not used by the instrument.
 	// setup window list
 		windowArray = new Window[detector.getMaxWindowCount()];
 		for(int i = 0; i < detector.getMaxWindowCount(); i++)

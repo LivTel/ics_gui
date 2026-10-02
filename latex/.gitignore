@@ -1,7 +1,3 @@
-ccs_gui_ui_error.ps
-ccs_gui_ui_main.ps
-ccs_gui_ui_menu.ps
-ccs_gui_ui_runat.ps
 icsgui_bias_dialog.eps
 icsgui_config_aa_dialog.eps
 icsgui_config_dialog.eps
@@ -16,8 +12,12 @@ icsgui_reboot_dialog.eps
 icsgui_send_menu.eps
 icsgui_setup_menu.eps
 pci_card_low_res_annotated.eps
+rcs_ccs_interaction.eps
 sdsu_dewar_electronics_back_low_res_annotated.eps
 sdsu_psu_low_res_annotated.eps
 sun_ultra5_back_low_res_annotated.eps
-rcs_ccs_interaction.eps
 terminal_low_res.eps
+ccs_gui_ui_error.ps
+ccs_gui_ui_main.ps
+ccs_gui_ui_menu.ps
+ccs_gui_ui_runat.ps
